@@ -25,7 +25,7 @@ Start_north = 0
 Start_position = (Start_east,Start_north) #Current Position
 GlobalPositionVect = [(0,0)]
 clock = 0
-filename_AIS = "C:/Users/haako/Documents/9. Semester/Fordypningsoppgave/PythonProject/Weather/env/input_files/ais_data_v4.csv"
+filename_AIS = "env/input_files/ais_data_v4.csv"
 travel_iteration            = 0
 #vessel parameters:
 vessel_length               = 101.26
@@ -65,7 +65,7 @@ def read_cols(filename_ais_data):
         latitudes_vect_func.append(round(latitudes.loc[i].iat[0],4))
         longditudes_vect_func.append(round(longditudes.loc[i].iat[0],4))
         heading_vect_func.append(heading.loc[i].iat[0])
-    heading_file = "C:/Users/haako/Documents/9. Semester/Fordypningsoppgave/PythonProject/Weather/env/input_files/heading.csv"
+    heading_file = "env/input_files/heading.csv"
     write_to_file(heading, heading_file)
     return dist_vect_func,travel_time_vect_func,latitudes_vect_func,longditudes_vect_func,heading_vect_func
 
@@ -380,7 +380,7 @@ def read_array_from_file(filename_func):
 #print("heading vector = ", heading_vect)
 
 #reads four years worth of weather data for our positions from file
-fn2 = "C:/Users/haako/Documents/9. Semester/Fordypningsoppgave/PythonProject/Weather/env/input_files/WSN-WSE 01-01-2012--31-12-2016.nc"
+fn2 = "env/input_files/WSN-WSE 01-01-2012--31-12-2016.nc"
 ds2 = nc.Dataset(fn2)
 #units time since 1.1.1900 00:00:00. Start date: 11.03.2013 to 26.06.2014 12:00:00 in 6 hour intervalls
 #lowerbound = 999354.0, Upper bound = 1003242, Length: 3888
@@ -537,9 +537,9 @@ def take_closest(myList, myNumber):
         return myList.index(before)/10
 
 def start_from_files():
-    avg_speed_sailed        = "C:/Users/haako/Documents/9. Semester/Fordypningsoppgave/PythonProject/Weather/env/output_files5/speed_sailed_over_time.txt"
-    avg_force_data          = "C:/Users/haako/Documents/9. Semester/Fordypningsoppgave/PythonProject/Weather/env/output_files5/avg_forward_force.txt"
-    avg_perp_force_data     = "C:/Users/haako/Documents/9. Semester/Fordypningsoppgave/PythonProject/Weather/env/output_files5/avg_perp_force.txt"
+    avg_speed_sailed        = "env/output_files5/speed_sailed_over_time.txt"
+    avg_force_data          = "env/output_files5/avg_forward_force.txt"
+    avg_perp_force_data     = "env/output_files5/avg_perp_force.txt"
 
     avg_speed_sailed_array  = read_array_from_file(avg_speed_sailed)
     avg_force_array         = read_array_from_file(avg_force_data)
@@ -606,9 +606,9 @@ def iterate_drift_angle(vessel_velocity):
 #Run to start from files one speed
 #start_from_files()
 
-#file =  "C:/Users/haako/Documents/9. Semester/Fordypningsoppgave/PythonProject/Weather/env/old_code/output_files5/speed_sailed_over_time.txt
-#file2 = "C:/Users/haako/Documents/9. Semester/Fordypningsoppgave/PythonProject/Weather/env/old_code/output_files5/avg_forward_force.txt"
-#file3 = "C:/Users/haako/Documents/9. Semester/Fordypningsoppgave/PythonProject/Weather/env/old_code/output_files5/avg_perp_force.txt"
+#file =  "env/old_code/output_files5/speed_sailed_over_time.txt
+#file2 = "env/old_code/output_files5/avg_forward_force.txt"
+#file3 = "env/old_code/output_files5/avg_perp_force.txt"
 #average_Speed = read_array_from_file(file)
 #average_force = read_array_from_file(file2)
 #average_perp  = read_array_from_file(file3)
