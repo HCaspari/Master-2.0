@@ -70,18 +70,6 @@ def read_cols(filename_ais_data):
     return dist_vect_func,travel_time_vect_func,latitudes_vect_func,longditudes_vect_func,heading_vect_func
 
 
-def read_route(filename_route_data):
-    df = pd.read_csv(filename_route_data)
-    latitudes   = df["latitude"]
-    longditudes = df["longditude"]
-    print(latitudes)
-    print(longditudes)
-    return 0
-Trond_aalesund = "Rute_Trondheim_Aalesund.csv"
-Aalesund_Floro = "Rute_Aalesund_floro.csv"
-Floro_Bergen = "Rute_Floro_Bergen.csv"
-Bergen_Stavange = "Rute_Bergen_Stavanger.csv"
-read_route(Trond_aalesund)
 
 #create vector of positions over trip, and removes duplicate positions, saves positions to file
 def vector_of_positions(lats,lons):
@@ -106,8 +94,8 @@ def vector_of_positions(lats,lons):
     return position_array_func
 
 
-dist_vect,travel_time,latitudes_vect,longditudes_vect,heading_vect = read_cols(filename_AIS)
-vector_of_positions(latitudes_vect,longditudes_vect)
+#dist_vect,travel_time,latitudes_vect,longditudes_vect,heading_vect = read_cols(filename_AIS)
+#vector_of_positions(latitudes_vect,longditudes_vect)
 
 #data = download_data() #Downloads data locally
 
@@ -638,8 +626,8 @@ end_position    = (10,56)   #Coordinates of port b
 initial_speed   = 10
 
 #Function that calculates time spent sailing from port a to port b
-def main(route_vector_func):
-    time_of_trip            = 0
+def main(route_vector_func,time):
+    time_of_trip            = time
     tot_sailing_dist        = 0
     bad_weather_positions   = []
     poor_sailing_time       = 0
@@ -681,19 +669,39 @@ def main(route_vector_func):
     print(f"total time sailed at less than 1 knot is {poor_sailing_time}\n"
           f"this time is used to sail {poor_sailing_distance} nautical miles"
           f"at an average speed of {poor_sailing_distance/poor_sailing_time} knots")
+
+    print(f"total sailing time on this route is {time_of_trip} and distance sailed is [{tot_sailing_dist}")
     return time_of_trip,tot_sailing_dist
 
 
 filename = "env/position_array"  # file containing position array of route
 position_array = read_position_vect_from_file(filename) # reads said file
-time_of_trip,total_sailing_distance = main(position_array)
-print(f"Time of trip is {time_of_trip},\n"
-      f" giving a total trip distance is {total_sailing_distance}\n"
-      f"with an average sailing speed of {total_sailing_distance/time_of_trip} knots")
+#time_of_trip,total_sailing_distance = main(position_array)
+#print(f"Time of trip is {time_of_trip},\n"
+#      f" giving a total trip distance is {total_sailing_distance}\n"
+#      f"with an average sailing speed of {total_sailing_distance/time_of_trip} knots")
+
+
+def read_route(filename_route_data):
+    df = pd.read_csv(filename_route_data)
+    latitudes   = df["latitude"]
+    longditudes = df["longditude"]
+    print(latitudes)
+    print(longditudes)
+    positions = []
+    for i in range(len(latitudes)):
+        positions.append((latitudes[i],longditudes[i]))
+    return positions
+Trond_aalesund = "Rute_Trondheim_Aalesund.csv"
+Aalesund_Floro = "Rute_Aalesund_floro.csv"
+Floro_Bergen = "Rute_Floro_Bergen.csv"
+Bergen_Stavange = "Rute_Bergen_Stavanger.csv"
+route_vector = read_route(Trond_aalesund)
+print(route_vector)
+
+
+
+main(route_vector,150)
+
 
 print("Finished <3<3")
-
-
-print("Git is LORD")
-
-print("git gud")
