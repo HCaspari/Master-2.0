@@ -692,3 +692,8 @@ print(f"Time of trip is {time_of_trip},\n"
       f"with an average sailing speed of {total_sailing_distance/time_of_trip} knots")
 
 print("Finished <3<3")
+
+
+print("Git is LORD")
+
+print("git gud")
