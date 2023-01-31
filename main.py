@@ -621,26 +621,19 @@ def iterate_drift_angle(vessel_velocity):
 
 #Windspeed_North, Windspeed_East = getweather(0,60,0)
 
-start_position  = (0,60)    #Cooridnates of port a
-end_position    = (10,56)   #Coordinates of port b
-initial_speed   = 10
-Trond_aalesund = "Rute_Trondheim_Aalesund.csv"
-Aalesund_Floro = "Rute_Aalesund_floro.csv"
-Floro_Bergen = "Rute_Floro_Bergen.csv"
-Bergen_Stavange = "Rute_Bergen_Stavanger.csv"
+
 
 #Function that calculates time spent sailing from port a to port b
-def main(route_name, time):
-    route_vector            = read_route(route_name)
+def main(route, time):
     time_of_trip            = time
     tot_sailing_dist        = 0
     bad_weather_positions   = []
     poor_sailing_time       = 0
     poor_sailing_distance   = 0
     initial_speed           = 4 #initializing sailing speed of 10 knots (will change after one iteration)
-    for i in range(len(route_vector)-1): #create itteration through route
-        position_first      = route_vector[i]
-        position_next       = route_vector[i+1]
+    for i in range(len(route)-1): #create itteration through route
+        position_first      = route[i]
+        position_next       = route[i+1]
         sailing_distance    = round(geopy.distance.geodesic(position_first,position_next).nautical,3)           #In Nautical Miles
         sailing_direction   = calc_bearing(position_first,position_next)                                        #In Degrees (North is 0)
         WSE_func,WSN_func   = getweather(time_of_trip,position_first[0],position_first[1])                      #Gives Wind speed East and North
@@ -653,10 +646,9 @@ def main(route_name, time):
             sailing_time        = sailing_distance/sailing_speed                                                    #time used to sail trip added
             time_of_trip        += sailing_time
             initial_speed       = sailing_speed
-
         tot_sailing_dist    += sailing_distance
         #check for extreme time usage
-        if sailing_speed < 1:
+        if initial_speed < 1:
             #bad_weather_positions.append(f"position is: {(position_first,position_next)},sailing speed is {sailing_speed},"
             #                             f" sailing time is {sailing_time}, and sailing distance is {sailing_distance}. \n")
             poor_sailing_time += sailing_time
@@ -671,7 +663,7 @@ def main(route_name, time):
           #f"this time is used to sail {poor_sailing_distance} nautical miles")
 
     #print(f"total sailing time on this route is {time_of_trip} and distance sailed is [{tot_sailing_dist}")
-    return time_of_trip,tot_sailing_dist, poor_sailing_time, poor_sailing_distance
+    return time_of_trip,tot_sailing_dist, poor_sailing_time, poor_sailing_distance, sailing_speed
 
 
 filename = "env/position_array"  # file containing position array of route
@@ -682,9 +674,8 @@ position_array = read_position_vect_from_file(filename) # reads said file
 #      f"with an average sailing speed of {total_sailing_distance/time_of_trip} knots")
 
 
-def read_route(filename_route_data):
-    route = filename_route_data
-    df = pd.read_csv(route)
+def read_route(csv):
+    df = pd.read_csv(csv)
     latitudes   = df["latitude"]
     longditudes = df["longditude"]
     #print(latitudes)
@@ -699,30 +690,35 @@ def read_route(filename_route_data):
 #main = time_of_trip,tot_sailing_dist, poor_sailing_time, poor_sailing_distance
 
 #change to simulation(route) so that you dont need to hardcode
-def simulation():
-    time_of_trip_Trond_aalesund     = np.zeros(365)
-    tot_sailing_dist_Trond_aal      = np.zeros(365)
-    poor_sailing_time_Trond_aal     = np.zeros(365)
-    poor_sailing_distance_Trond_aal = np.zeros(365)
-    time_of_trip_aal_floro          = np.zeros(365)
-    tot_sailing_dist_aal_floro      = np.zeros(365)
-    poor_sailing_time_aal_floro     = np.zeros(365)
-    poor_sailing_distance_aal_floro = np.zeros(365)
+def simulation(csv):
+    route_travel            = read_route(csv)
+    time_of_trip            = np.zeros(365)
+    tot_sailing_dist        = np.zeros(365)
+    poor_sailing_time       = np.zeros(365)
+    poor_sailing_distance   = np.zeros(365)
+    sailing_speed_vect      = np.zeros(365)
     for i in range(0,365):
-        time_of_trip_1,tot_sailing_dist_1, poor_sailing_time_1, poor_sailing_distance_1 = main(Trond_aalesund,i)
-        time_of_trip_2,tot_sailing_dist_2, poor_sailing_time_2, poor_sailing_distance_2 = main(Aalesund_Floro,i)
-        time_of_trip_Trond_aalesund[i]      = time_of_trip_1
-        tot_sailing_dist_Trond_aal[i]       = tot_sailing_dist_1
-        poor_sailing_time_Trond_aal[i]      = poor_sailing_time_1
-        poor_sailing_distance_Trond_aal[i]  = poor_sailing_distance_1
-        time_of_trip_aal_floro[i]           = time_of_trip_2
-        tot_sailing_dist_aal_floro[i]       = tot_sailing_dist_2
-        poor_sailing_time_aal_floro[i]      = poor_sailing_time_2
-        poor_sailing_distance_aal_floro[i]  = poor_sailing_distance_2
-    print(f"speed sailing trond-aalesund is {sum(tot_sailing_dist_Trond_aal)/sum(time_of_trip_Trond_aalesund)}")
+        time_of_trip_1,tot_sailing_dist_1, poor_sailing_time_1, poor_sailing_distance_1, sailing_speed = main(route_travel,i)
+        time_of_trip[i]             = time_of_trip_1
+        tot_sailing_dist[i]         = tot_sailing_dist_1
+        poor_sailing_time[i]        = poor_sailing_time_1
+        poor_sailing_distance[i]    = poor_sailing_distance_1
+        sailing_speed_vect[i]       = sailing_speed
+    print(f"speed sailing {csv} is {sum(tot_sailing_dist)/sum(time_of_trip)}")
     return 0
 
-simulation()
+start_position      = (0,60)    #Cooridnates of port a
+end_position        = (10,56)   #Coordinates of port b
+initial_speed       = 10
+Trond_aalesund      = "Rute_Trondheim_Aalesund.csv"
+Aalesund_Floro      = "Rute_Aalesund_floro.csv"
+Floro_Bergen        = "Rute_Floro_Bergen.csv"
+Bergen_Stavanger    = "Rute_Bergen_Stavanger.csv"
+
+simulation(Trond_aalesund)
+simulation(Aalesund_Floro)
+simulation(Floro_Bergen)
+simulation(Bergen_Stavanger)
 
 
 print("Finished <3<3")
