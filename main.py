@@ -624,19 +624,23 @@ def iterate_drift_angle(vessel_velocity):
 start_position  = (0,60)    #Cooridnates of port a
 end_position    = (10,56)   #Coordinates of port b
 initial_speed   = 10
+Trond_aalesund = "Rute_Trondheim_Aalesund.csv"
+Aalesund_Floro = "Rute_Aalesund_floro.csv"
+Floro_Bergen = "Rute_Floro_Bergen.csv"
+Bergen_Stavange = "Rute_Bergen_Stavanger.csv"
 
 #Function that calculates time spent sailing from port a to port b
-def main(route_vector_func,time):
+def main(route_name, time):
+    route_vector            = read_route(route_name)
     time_of_trip            = time
     tot_sailing_dist        = 0
     bad_weather_positions   = []
     poor_sailing_time       = 0
     poor_sailing_distance   = 0
-    #print(len(route_vector_func))
-    initial_speed = 10 #initializing sailing speed of 10 knots (will change after one iteration)
-    for i in range(len(route_vector_func)-1): #create itteration through route
-        position_first      = route_vector_func[i]
-        position_next       = route_vector_func[i+1]
+    initial_speed           = 4 #initializing sailing speed of 10 knots (will change after one iteration)
+    for i in range(len(route_vector)-1): #create itteration through route
+        position_first      = route_vector[i]
+        position_next       = route_vector[i+1]
         sailing_distance    = round(geopy.distance.geodesic(position_first,position_next).nautical,3)           #In Nautical Miles
         sailing_direction   = calc_bearing(position_first,position_next)                                        #In Degrees (North is 0)
         WSE_func,WSN_func   = getweather(time_of_trip,position_first[0],position_first[1])                      #Gives Wind speed East and North
@@ -649,29 +653,25 @@ def main(route_vector_func,time):
             sailing_time        = sailing_distance/sailing_speed                                                    #time used to sail trip added
             time_of_trip        += sailing_time
             initial_speed       = sailing_speed
-        #else:
-            #print(f"Masked Constant found at point {position_first}")
-        #sailing_distance    += 0
-        #sailing_speed       += 0
-        #sailing_time        += 0
-        #time_of_trip        += 0
-        tot_sailing_dist    += sailing_distance
-        #avg_speed           = tot_sailing_dist/time_of_trip
-        #print(f"This is iteration nr. {i}")
 
+        tot_sailing_dist    += sailing_distance
         #check for extreme time usage
         if sailing_speed < 1:
-            bad_weather_positions.append(f"position is: {(position_first,position_next)},sailing speed is {sailing_speed},"
-                                         f" sailing time is {sailing_time}, and sailing distance is {sailing_distance}. \n")
+            #bad_weather_positions.append(f"position is: {(position_first,position_next)},sailing speed is {sailing_speed},"
+            #                             f" sailing time is {sailing_time}, and sailing distance is {sailing_distance}. \n")
             poor_sailing_time += sailing_time
             poor_sailing_distance += sailing_distance
-    print(*bad_weather_positions, sep = "\n")
-    print(f"total time sailed at less than 1 knot is {poor_sailing_time}\n"
-          f"this time is used to sail {poor_sailing_distance} nautical miles"
-          f"at an average speed of {poor_sailing_distance/poor_sailing_time} knots")
 
-    print(f"total sailing time on this route is {time_of_trip} and distance sailed is [{tot_sailing_dist}")
-    return time_of_trip,tot_sailing_dist
+            #if poor_sailing_time > 0:
+                #print(f"total time sailed at less than 1 knot is {poor_sailing_time}\n"
+                #      f"this time is used to sail {poor_sailing_distance} nautical miles"
+                #      f"at an average speed of {poor_sailing_distance / poor_sailing_time} knots")
+    #print(*bad_weather_positions, sep = "\n")
+    #print(f"total time sailed at less than 1 knot is {poor_sailing_time}\n"
+          #f"this time is used to sail {poor_sailing_distance} nautical miles")
+
+    #print(f"total sailing time on this route is {time_of_trip} and distance sailed is [{tot_sailing_dist}")
+    return time_of_trip,tot_sailing_dist, poor_sailing_time, poor_sailing_distance
 
 
 filename = "env/position_array"  # file containing position array of route
@@ -683,25 +683,46 @@ position_array = read_position_vect_from_file(filename) # reads said file
 
 
 def read_route(filename_route_data):
-    df = pd.read_csv(filename_route_data)
+    route = filename_route_data
+    df = pd.read_csv(route)
     latitudes   = df["latitude"]
     longditudes = df["longditude"]
-    print(latitudes)
-    print(longditudes)
+    #print(latitudes)
+    #print(longditudes)
     positions = []
     for i in range(len(latitudes)):
         positions.append((latitudes[i],longditudes[i]))
     return positions
-Trond_aalesund = "Rute_Trondheim_Aalesund.csv"
-Aalesund_Floro = "Rute_Aalesund_floro.csv"
-Floro_Bergen = "Rute_Floro_Bergen.csv"
-Bergen_Stavange = "Rute_Bergen_Stavanger.csv"
-route_vector = read_route(Trond_aalesund)
-print(route_vector)
 
 
 
-main(route_vector,150)
+#main = time_of_trip,tot_sailing_dist, poor_sailing_time, poor_sailing_distance
+
+#change to simulation(route) so that you dont need to hardcode
+def simulation():
+    time_of_trip_Trond_aalesund     = np.zeros(365)
+    tot_sailing_dist_Trond_aal      = np.zeros(365)
+    poor_sailing_time_Trond_aal     = np.zeros(365)
+    poor_sailing_distance_Trond_aal = np.zeros(365)
+    time_of_trip_aal_floro          = np.zeros(365)
+    tot_sailing_dist_aal_floro      = np.zeros(365)
+    poor_sailing_time_aal_floro     = np.zeros(365)
+    poor_sailing_distance_aal_floro = np.zeros(365)
+    for i in range(0,365):
+        time_of_trip_1,tot_sailing_dist_1, poor_sailing_time_1, poor_sailing_distance_1 = main(Trond_aalesund,i)
+        time_of_trip_2,tot_sailing_dist_2, poor_sailing_time_2, poor_sailing_distance_2 = main(Aalesund_Floro,i)
+        time_of_trip_Trond_aalesund[i]      = time_of_trip_1
+        tot_sailing_dist_Trond_aal[i]       = tot_sailing_dist_1
+        poor_sailing_time_Trond_aal[i]      = poor_sailing_time_1
+        poor_sailing_distance_Trond_aal[i]  = poor_sailing_distance_1
+        time_of_trip_aal_floro[i]           = time_of_trip_2
+        tot_sailing_dist_aal_floro[i]       = tot_sailing_dist_2
+        poor_sailing_time_aal_floro[i]      = poor_sailing_time_2
+        poor_sailing_distance_aal_floro[i]  = poor_sailing_distance_2
+    print(f"speed sailing trond-aalesund is {sum(tot_sailing_dist_Trond_aal)/sum(time_of_trip_Trond_aalesund)}")
+    return 0
+
+simulation()
 
 
 print("Finished <3<3")
