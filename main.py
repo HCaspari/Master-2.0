@@ -117,6 +117,11 @@ def getweather(tid,latitude, longditude):
     lat_pos = int((latitude-58.25)*4)              #Access correct position in vector of north wind
     lon_pos = int((longditude+5.25)*4)             #Access correct position in vector of east wind
     WSN = ds2["northward_wind"][tid][lat_pos][lon_pos]
+    # ds2["northward_wind"][tid i timer][latitude][longditude])
+
+    #HVORFOR FÅR JEG MASKED VARIABLES HER? DET GIR FAEN MEG IKKE MENING!!!!
+
+
     if tid > 7280:
         print(len(ds2["northward_wind"][tid]))
         print(len(ds2["northward_wind"][tid][lat_pos]))
@@ -370,6 +375,16 @@ def read_array_from_file(filename_func):
 #reads four years worth of weather data for our positions from file
 fn2 = "env/input_files/WSN-WSE 01-01-2012--31-12-2016.nc"
 ds2 = nc.Dataset(fn2)
+print(ds2.__dict__)
+print(ds2.variables)
+#for dim in ds2.dimensions.values():
+#    print(dim)
+#for var in ds2.variables.values():
+#    print(var)
+#print(ds2["northward"][:])
+#ds2["northward_wind"][tid i timer][latitude][longditude])
+print(ds2["northward_wind"][365][60][125])
+
 #units time since 1.1.1900 00:00:00. Start date: 11.03.2013 to 26.06.2014 12:00:00 in 6 hour intervalls
 #lowerbound = 999354.0, Upper bound = 1003242, Length: 3888
 time_Vector = ds2["time"][:]
@@ -715,10 +730,10 @@ Aalesund_Floro      = "Rute_Aalesund_floro.csv"
 Floro_Bergen        = "Rute_Floro_Bergen.csv"
 Bergen_Stavanger    = "Rute_Bergen_Stavanger.csv"
 
-simulation(Trond_aalesund)
-simulation(Aalesund_Floro)
-simulation(Floro_Bergen)
-simulation(Bergen_Stavanger)
+#simulation(Trond_aalesund)
+#simulation(Aalesund_Floro)
+#simulation(Floro_Bergen)
+#simulation(Bergen_Stavanger)
 
 
 print("Finished <3<3")
