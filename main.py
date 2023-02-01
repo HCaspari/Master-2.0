@@ -389,13 +389,6 @@ def read_array_from_file(filename_func):
 #print("position array = ", position_array)
 #print("heading vector = ", heading_vect)
 
-#reads four years worth of weather data for our positions from file
-fn2 = "env/input_files/WSN-WSE 01-01-2012--31-12-2016.nc"
-ds2 = nc.Dataset(fn2)
-
-
-
-
 
 
 #units time since 1.1.1900 00:00:00. Start date: 11.03.2013 to 26.06.2014 12:00:00 in 6 hour intervalls
@@ -713,12 +706,13 @@ def read_route(csv):
 #change to simulation(route) so that you dont need to hardcode
 def simulation(csv):
     route_travel            = read_route(csv)
-    time_of_trip            = np.zeros(365)
-    tot_sailing_dist        = np.zeros(365)
-    poor_sailing_time       = np.zeros(365)
-    poor_sailing_distance   = np.zeros(365)
-    sailing_speed_vect      = np.zeros(365)
-    for time in range(0,365):
+    time_of_simulation      = 1460
+    time_of_trip            = np.zeros(time_of_simulation)
+    tot_sailing_dist        = np.zeros(time_of_simulation)
+    poor_sailing_time       = np.zeros(time_of_simulation)
+    poor_sailing_distance   = np.zeros(time_of_simulation)
+    sailing_speed_vect      = np.zeros(time_of_simulation)
+    for time in range(0,time_of_simulation):
         time_of_trip_1,tot_sailing_dist_1, poor_sailing_time_1, poor_sailing_distance_1, sailing_speed = main(route_travel,time)
         time_of_trip[time]             = time_of_trip_1
         tot_sailing_dist[time]         = tot_sailing_dist_1
@@ -730,7 +724,7 @@ def simulation(csv):
     print(f"total time sailed at less than 1 knot is {sum(poor_sailing_time)}\n"
           f"this time is used to sail {sum(poor_sailing_distance)} nautical miles\n"
           f"at an average speed of {poor_sailing_speed} knots")
-    return 0
+    return time_of_trip,tot_sailing_dist,sailing_speed_vect
 
 start_position      = (0,60)    #Cooridnates of port a
 end_position        = (10,56)   #Coordinates of port b
@@ -740,10 +734,12 @@ Aalesund_Floro      = "Rute_Aalesund_floro.csv"
 Floro_Bergen        = "Rute_Floro_Bergen.csv"
 Bergen_Stavanger    = "Rute_Bergen_Stavanger.csv"
 
-simulation(Trond_aalesund)
-simulation(Aalesund_Floro)
-simulation(Floro_Bergen)
-simulation(Bergen_Stavanger)
-
+Trip_time_vector, Tot_sailing_distance_vector, sailing_speed_vector = simulation(Trond_aalesund)
+#simulation(Aalesund_Floro)
+#simulation(Floro_Bergen)
+#simulation(Bergen_Stavanger)
+print(f"Trip time for each repetition {Trip_time_vector}")
+print(f"Total Sailing dist for each repetition {Tot_sailing_distance_vector[:10]}, should be equal")
+print(f"Sailing speed for each repetition {sailing_speed_vector} in knots")
 
 print("Finished <3<3")
