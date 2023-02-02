@@ -6,12 +6,12 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import geopy.distance #package to calculate distance between two lat/lon points
-from datetime import datetime
 #from env.old_code.MetoceanDownloader import MetoceanDownloader
 import netCDF4 as nc #read .nc files with weather data
 from numpy.ma.core import MaskedConstant
 from scipy.interpolate import interp1d
 from bisect import bisect_left
+from datetime import datetime, timedelta, date
 
 
 
@@ -44,9 +44,21 @@ EW_file = "Weather_Data/EW_01_07_2020__01_07_2022.nc" #Keys =['eastward_wind', '
 dataset_NW = nc.Dataset(NW_file)
 dataset_EW = nc.Dataset(EW_file)
 
+
+##################
+    #geospatial_lat_min: 58.9375
+    #geospatial_lat_max: 70.1875
+    #geospatial_lat_resolution: 0.125
+    #geospatial_lat_units: degrees_north
+    #geospatial_lon_min: 3.0625
+    #geospatial_lon_max: 20.9375
+    #geospatial_lon_resolution: 0.125
+    #geospatial_lon_units: degrees_east
+
+##################
 #handling datafiles:
 
-
+#print(dataset_EW)
 #for var in dataset_NW.variables.values():
 #    print(var)
 #print(dataset_NW.variables.keys())
@@ -61,20 +73,15 @@ eastward_time  = dataset_EW.variables["time"]
 eastward_lat   = dataset_EW.variables["lat"]
 eastward_lon   = dataset_EW.variables["lon"]
 
-#print(eastward_wind[1,5,60])
-#print(northward_wind[:])
-#print("Northward wind is \n", northward_wind)
-#print(northward_wind[:])
-#print(f"times available are {time[:]}")
-#print(f"latitudes east are {eastward_lon[:]}")
-#print(f"latitudes north are {northward_lon[:]}")
-#print(f"longidutes are {lon[:]}")
+print(f"The size of Eastward time is: {eastward_time.shape}")
+print(f"The first and last elements of Eastward time are {eastward_time[0]}, and {eastward_time[-1]}\n"
+      f"this gives {eastward_time[-1]-eastward_time[0]} seconds")
 
+print(f"given that start time is 01/01/1990 00:00:00, then adding 962 409 600 seconds \n"
+      f"gives the start date {date(1990,1,1)+ timedelta(days=11139)} "
+      f"and the end date {date(1990,1,1)+ timedelta(days=11869.9583333)}")
 
-#lists = ds2["northward_wind"][:, 40, 40]
-#print(ds2["northward_wind"][0,20,60])
-#print(ds2["northward_wind"][0,:,124])
-#print(ds2["eastward_wind"][0,20,60])
+#print(f"hour since 1990{date(1990,1,1)+ timedelta(days=42731850)}")
 
 #write data found to file called filename_func
 def write_to_file(data,filename_func):
@@ -387,7 +394,7 @@ def read_array_from_file(filename_func):
 #dist_vect,travel_time_vect,latitudes_vect,longditudes_vect, heading_vect = read_cols(filename_AIS)
 #position_array = vector_of_positions(latitudes_vect,longditudes_vect)[:1460]
 #print("position array = ", position_array)
-#print("heading vector = ", heading_vect)
+#print("heading vector = ", heading_vect)x|
 
 
 
@@ -648,25 +655,29 @@ def main(route, time):
     bad_weather_positions   = []
     poor_sailing_time       = 0
     poor_sailing_distance   = 0
-    initial_speed           = 4 #initializing sailing speed of 10 knots (will change after one iteration)
+    sailing_speed           = 4 #initializing sailing speed of 10 knots (will change after one iteration)
     for i in range(len(route)-1): #create itteration through route
         position_first      = route[i]
         position_next       = route[i+1]
         sailing_distance    = round(geopy.distance.geodesic(position_first,position_next).nautical,3)           #In Nautical Miles
         sailing_direction   = calc_bearing(position_first,position_next)                                        #In Degrees (North is 0)
         WSE_func,WSN_func   = getweather(time,position_first[0],position_first[1])                      #Gives Wind speed East and North
-        TWS_func            = np.sqrt(WSE_func**2 + WSN_func**2)                                                #Finds True Windspeed (pythagoras)
-        AWS_func            = AWS(TWS_func, initial_speed, sailing_direction)                                   #Apparent windspeed given vessel speed
-        AWD_func            = AWD(WSE_func,WSN_func,sailing_direction)                                          #Apparent wind direction given vessel heading
-        forward_force_func,perpendicular_force_func = Force_at_position(AWS_func,AWD_func)                      #Forward and Perpendicular force from Flettners
+        TWS                 = np.sqrt(WSE_func**2 + WSN_func**2)                                                #Finds True Windspeed (pythagoras)
+        TWA                 = np.arctan2(sailing_speed,TWS)                                                #Finds True Windspeed angle using atan2 function
+        alpha               = sailing_direction-TWA
+
+
+        AWS                 = np.sqrt(TWS**2 + sailing_speed**2 - 2*sailing_speed*TWS*np.cos(alpha))
+        #AWS_func            = AWS(TWS, sailing_speed, sailing_direction)                                   #Apparent windspeed given vessel speed
+        #AWD_func            = AWD(WSE_func,WSN_func,sailing_direction)                                          #Apparent wind direction given vessel heading
+        forward_force_func,perpendicular_force_func = Force_at_position(AWS,TWA)                      #Forward and Perpendicular force from Flettners
         if type(forward_force_func) != MaskedConstant or type(perpendicular_force_func) != MaskedConstant:
             sailing_speed    = Speed_sailed_point(perpendicular_force_func,forward_force_func, initial_speed)    #Sailing Speed obtained in KNOTS
             sailing_time     = sailing_distance/sailing_speed                                                    #time used to sail trip added
             time             += sailing_time
-            initial_speed    = sailing_speed
         tot_sailing_dist     += sailing_distance
         #check for extreme time usage
-        if initial_speed < 1:
+        if sailing_speed < 1:
             #bad_weather_positions.append(f"position is: {(position_first,position_next)},sailing speed is {sailing_speed},"
             #                             f" sailing time is {sailing_time}, and sailing distance is {sailing_distance}. \n")
             poor_sailing_time += sailing_time
@@ -706,7 +717,7 @@ def read_route(csv):
 #change to simulation(route) so that you dont need to hardcode
 def simulation(csv):
     route_travel            = read_route(csv)
-    time_of_simulation      = 1460
+    time_of_simulation      = 6315479
     time_of_trip            = np.zeros(time_of_simulation)
     tot_sailing_dist        = np.zeros(time_of_simulation)
     poor_sailing_time       = np.zeros(time_of_simulation)
@@ -719,6 +730,13 @@ def simulation(csv):
         poor_sailing_time[time]        = poor_sailing_time_1
         poor_sailing_distance[time]    = poor_sailing_distance_1
         sailing_speed_vect[time]       = sailing_speed
+        if time%1000 == 0 and time > 0:
+            poor_sailing_speed = sum(poor_sailing_distance) / sum(poor_sailing_time)
+            print(f"speed sailing {csv} is {np.average(sailing_speed_vect[0:time])}")
+            print(f"total time sailed at less than 1 knot is {poor_sailing_time[time]}\n"
+                  f"this time is used to sail {poor_sailing_distance[time]} nautical miles\n"
+                  f"at an average speed of {poor_sailing_speed} knots")
+            print(datetime.now())
     poor_sailing_speed = sum(poor_sailing_distance)/sum(poor_sailing_time)
     print(f"speed sailing {csv} is {np.average(sailing_speed_vect)}")
     print(f"total time sailed at less than 1 knot is {sum(poor_sailing_time)}\n"
