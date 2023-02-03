@@ -663,10 +663,8 @@ def main(route, time):
         sailing_direction   = calc_bearing(position_first,position_next)                                        #In Degrees (North is 0)
         WSE_func,WSN_func   = getweather(time,position_first[0],position_first[1])                      #Gives Wind speed East and North
         TWS                 = np.sqrt(WSE_func**2 + WSN_func**2)                                                #Finds True Windspeed (pythagoras)
-        TWA                 = np.arctan2(sailing_speed,TWS)                                                #Finds True Windspeed angle using atan2 function
-        alpha               = sailing_direction-TWA
-
-
+        TWA                 = np.arctan2(sailing_speed,TWS)-sailing_direction                                                #Finds True Windspeed angle using atan2 function
+        alpha               = np.arccos(WSE_func/(WSN_func+sailing_speed))
         AWS                 = np.sqrt(TWS**2 + sailing_speed**2 - 2*sailing_speed*TWS*np.cos(alpha))
         #AWS_func            = AWS(TWS, sailing_speed, sailing_direction)                                   #Apparent windspeed given vessel speed
         #AWD_func            = AWD(WSE_func,WSN_func,sailing_direction)                                          #Apparent wind direction given vessel heading
