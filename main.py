@@ -141,34 +141,27 @@ def vector_of_positions(lats,lons):
 
 #calculates weather at time=tid, latitude and londitude of trip
 def getweather(tid,latitude, longditude):
-    #tid += 962409600 #measurements go from 01/07/2020 - to 01/07/2022
-    if tid < 0:
-        print("time was out of bounds, time must be within the span of one year (less than 1460)")
-        return 1
-    elif latitude < 58.9375 or latitude > 70.1875: #Været må være hentet på posisjonen på latitude
-        print("latitude out of bounds, latitude between 58.9375 and 70.1875")
-        return 1
-    elif longditude < 3.0625 or longditude > 20.9375: #været må være hentet på posisjonen longditude
-        print("longditude out of bounds, longditude between 3.0625 and 20.9375")
-        return 1
-
     #to get the correct index one needs to increase values by 0.125
     #for example, latitude 58.9375 = latitude[0]
     lat_pos = int((latitude-58.9375)*8)              #Access correct position in vector of north wind
     lon_pos = int((longditude-3.0625)*8)             #Access correct position in vector of east wind
 
-    #if tid > 7280:
-    #    print(len(ds2["northward_wind"][tid]))
-    #    print(len(ds2["northward_wind"][tid][lat_pos]))
-    #   print(ds2["northward_wind"][tid][lat_pos][lon_pos])
-    #if lat_pos > len(ds2["northward_wind"][tid][lat_pos]):
-    #    print(f"index out of bound, no weather data available for this latitude")
-    #    return 1
-    #if lon_pos > len(ds2["northward_wind"][tid][lat_pos]):
-    #    print(f"index out of bound, no weather data available for this longditude")
-    #    return 1
-    #print(latitude,longditude, tid)
 
+    #tid += 962409600 #measurements go from 01/07/2020 - to 01/07/2022
+    if tid < 0 or tid >= len(dataset_NW["northward_wind"][:,lat_pos,lon_pos]):
+        print(f"time was out of bounds at {tid}, time must be within the span of one year (less than 1460)")
+        return 1
+        print("latitude out of bounds, latitude between 58.9375 and 70.1875")
+        return 1
+    elif longditude < 3.0625 or longditude > 20.9375: #været må være hentet på posisjonen longditude
+        print("longditude out of bounds, longditude between 3.0625 and 20.9375")
+        return 1
+    elif lat_pos >= len(dataset_NW["northward_wind"][tid,:,lon_pos]):
+        print(f"lat posistion is out of bound at {lat_pos} degrees")
+        return 1
+    elif lon_pos >= len(dataset_NW["northward_wind"][tid, lat_pos, :]):
+        print(f"lon posistion is out of bound at {lon_pos} degrees")
+        return 1
     WSN = dataset_NW["northward_wind"][tid,lat_pos,lon_pos]
     WSE = dataset_EW["eastward_wind"][tid,lat_pos,lon_pos]
 
@@ -531,7 +524,6 @@ def Speed_sailed_point(perp_force, forward_force, sailing_speed):
             return speed_achieved
     speed_achieved = take_closest(total_resistance_vector,forward_force) #IN KNOTS
 
-    #FIX HERE!!! MÅ FINNE ALTERNATIV MÅTE Å FINNE TIDEN PÅ <3
 
     return speed_achieved #IN KNOTS
 
@@ -659,16 +651,12 @@ def main(route, time):
     for i in range(len(route)-1): #create itteration through route
         position_first      = route[i]
         position_next       = route[i+1]
-        sailing_distance    = round(geopy.distance.geodesic(position_first,position_next).nautical,3)           #In Nautical Miles
-        sailing_direction   = calc_bearing(position_first,position_next)                                        #In Degrees (North is 0)
-        WSE_func,WSN_func   = getweather(time,position_first[0],position_first[1])                      #Gives Wind speed East and North
-        TWS                 = np.sqrt(WSE_func**2 + WSN_func**2)                                                #Finds True Windspeed (pythagoras)
-        TWA                 = np.arctan2(sailing_speed,TWS)-sailing_direction                                                #Finds True Windspeed angle using atan2 function
-        alpha               = np.arccos(WSE_func/(WSN_func+sailing_speed))
-        AWS                 = np.sqrt(TWS**2 + sailing_speed**2 - 2*sailing_speed*TWS*np.cos(alpha))
-        #AWS_func            = AWS(TWS, sailing_speed, sailing_direction)                                   #Apparent windspeed given vessel speed
-        #AWD_func            = AWD(WSE_func,WSN_func,sailing_direction)                                          #Apparent wind direction given vessel heading
-        forward_force_func,perpendicular_force_func = Force_at_position(AWS,TWA)                      #Forward and Perpendicular force from Flettners
+        sailing_distance    = round(geopy.distance.geodesic(position_first,position_next).nautical,3)    #In Nautical Miles
+        sailing_direction   = calc_bearing(position_first,position_next)                                 #In Degrees (North is 0)
+        WSE_func,WSN_func   = getweather(time,position_first[0],position_first[1])                       #Gives Wind speed East and North
+        TWS                 = np.sqrt(WSE_func**2 + WSN_func**2)                                         #Finds True Windspeed (pythagoras)
+        AWA                 = np.arctan2(TWS,sailing_speed)
+        forward_force_func,perpendicular_force_func = Force_at_position(AWS,AWA)                         #Forward and Perpendicular force from Flettners
         if type(forward_force_func) != MaskedConstant or type(perpendicular_force_func) != MaskedConstant:
             sailing_speed    = Speed_sailed_point(perpendicular_force_func,forward_force_func, initial_speed)    #Sailing Speed obtained in KNOTS
             sailing_time     = sailing_distance/sailing_speed                                                    #time used to sail trip added
@@ -750,12 +738,43 @@ Aalesund_Floro      = "Rute_Aalesund_floro.csv"
 Floro_Bergen        = "Rute_Floro_Bergen.csv"
 Bergen_Stavanger    = "Rute_Bergen_Stavanger.csv"
 
-Trip_time_vector, Tot_sailing_distance_vector, sailing_speed_vector = simulation(Trond_aalesund)
+#Trip_time_vector, Tot_sailing_distance_vector, sailing_speed_vector = simulation(Trond_aalesund)
 #simulation(Aalesund_Floro)
 #simulation(Floro_Bergen)
 #simulation(Bergen_Stavanger)
-print(f"Trip time for each repetition {Trip_time_vector}")
-print(f"Total Sailing dist for each repetition {Tot_sailing_distance_vector[:10]}, should be equal")
-print(f"Sailing speed for each repetition {sailing_speed_vector} in knots")
+#print(f"Trip time for each repetition {Trip_time_vector}")
+#print(f"Total Sailing dist for each repetition {Tot_sailing_distance_vector[:10]}, should be equal")
+#print(f"Sailing speed for each repetition {sailing_speed_vector} in knots")
+
+
+print(r2d(np.arctan2(0.75,0.50)),r2d(np.arctan2(0.75,-0.50)),r2d(np.arctan2(-0.75,-0.50)),r2d(np.arctan2(-0.75,0.50)))
+print(r2d(np.arctan2(10,4)))
+
+def prøve_å_forstå(Vessel_heading,Vessel_Speed,Wind_heading,Wind_speed):
+    route_travel_ex     = read_route(Trond_aalesund)
+    Vessel_speed_x      = np.cos(Vessel_heading)*Vessel_Speed
+    Vessel_speed_y      = np.sin(Vessel_heading)*Vessel_Speed
+    Wind_speed_x        = np.cos(Wind_heading)*Wind_speed
+    Wind_speed_y        = np.sin(Wind_heading)*Wind_speed
+    x                   = Wind_speed_x + Vessel_speed_x
+    y                   = Wind_speed_y + Vessel_speed_y
+    AWA                 = r2d(np.arctan2(y,x))
+    print(f"Apparent wind angle is {AWA} degrees")
+    return 0
+prøve_å_forstå(-45,4,60,10)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 print("Finished <3<3")
