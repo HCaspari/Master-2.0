@@ -219,6 +219,14 @@ a,b = getweather(0,58.938,4)
 getweather(datetime)
 #%date%hour%minute%second%
 
+def datetime_seconds(dtime):
+    dt = dtime
+    epoch = date(2020,7,1)
+    delta = (dt-epoch)
+    return delta.total_seconds()
+    
+
+
 #calculates direction between two points, (20.323,23.243),(34.235, 43.345)
 def calc_bearing(pointA, pointB):
     deg2rad = math.pi / 180
