@@ -1,4 +1,4 @@
-#yay
+#yay 2.0
 
 import math
 
