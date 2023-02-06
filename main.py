@@ -72,14 +72,22 @@ eastward_wind  = dataset_EW.variables["eastward_wind"]
 eastward_time  = dataset_EW.variables["time"]
 eastward_lat   = dataset_EW.variables["lat"]
 eastward_lon   = dataset_EW.variables["lon"]
+#print(northward_lon[:])
+#print(northward_lat[:])
+
 
 print(f"The size of Eastward time is: {eastward_time.shape}")
+
 print(f"The first and last elements of Eastward time are {eastward_time[0]}, and {eastward_time[-1]}\n"
       f"this gives {eastward_time[-1]-eastward_time[0]} seconds")
-
 print(f"given that start time is 01/01/1990 00:00:00, then adding 962 409 600 seconds \n"
       f"gives the start date {date(1990,1,1)+ timedelta(days=11139)} "
       f"and the end date {date(1990,1,1)+ timedelta(days=11869.9583333)}")
+print(f"The first and last elements of Eastward lat are {eastward_lat[0]}, and {eastward_lat[-1]}")
+print(f"The first and last elements of Eastward lon are {eastward_lon[0]}, and {eastward_lon[-1]}")
+print(f"The size of latitudes is: {eastward_lat.shape}")
+print(f"The size of longditudes  is: {eastward_lon.shape}")
+print(dataset_NW["northward_wind"][0,60,20])
 
 #print(f"hour since 1990{date(1990,1,1)+ timedelta(days=42731850)}")
 
@@ -140,11 +148,48 @@ def vector_of_positions(lats,lons):
 #data = download_data() #Downloads data locally
 
 #calculates weather at time=tid, latitude and londitude of trip
+#def getweather(tid,latitude, longditude):
+    #to get the correct index one needs to increase values by 0.125
+    #for example, latitude 58.9375 = latitude[0]
+#    lat_pos_north = round((latitude-dataset_NW["lat"][0])*8)/8
+    lon_pos_north = round((longditude-dataset_NW["lon"][0])*8)/8
+#    lat_pos_north = dataset_NW.variables["lat"][0]              #Access correct position in vector of north wind
+#    lon_pos_north = int((longditude-dataset_NW["northward_wind"]["lon"][0])*8)             #Access correct position in vector of east wind
+#    lat_pos_east = int((longditude-dataset_EW["eastward_wind"]["lat"][0])*8)             #Access correct position in vector of east wind
+#    lon_pos_east = int((longditude-dataset_EW["eastward_wind"]["lon"][0])*8)             #Access correct position in vector of east wind
+
+
+    #tid         += 962409600 #measurements go from 01/07/2020 - to 01/07/2022
+    #latitude    = round(latitude*8)/8
+    #longditude  = round(longditude*8)/8
+    #if tid < 0 or tid >= len(dataset_NW["northward_wind"][:,lat_pos,lon_pos]):
+    #    print(f"time was out of bounds at {tid}, time must be within the span of one year (less than 1460)")
+    #    return 1
+#    if latitude < 58.9375 or latitude > 70.1875:
+#        print("latitude out of bounds, latitude between 58.9375 and 70.1875")
+#        return 1
+#    elif longditude < 3.0625 or longditude > 20.9375: #været må være hentet på posisjonen longditude
+#        print("longditude out of bounds, longditude between 3.0625 and 20.9375")
+#        return 1
+#    elif lat_pos_north >= len(dataset_NW["northward_wind"][tid,:,lon_pos_north]):
+#        print(f"lat posistion is out of bound at {lat_pos_north} degrees")
+#        return 1
+#    elif lon_pos_north >= len(dataset_NW["northward_wind"][tid, lat_pos_north, :]):
+#        print(f"lon posistion is out of bound at {lon_pos_north} degrees")
+#        return 1#
+#    WSN = dataset_NW["northward_wind"][tid,lat_pos_north,lon_pos_north]
+#    WSE = dataset_EW["eastward_wind"][tid,lat_pos_east,lon_pos_east]
+
+
+#    return WSN,WSE
+print(northward_lat[0])
+print(northward_lon[0])
+print(northward_lat[:])
 def getweather(tid,latitude, longditude):
     #to get the correct index one needs to increase values by 0.125
     #for example, latitude 58.9375 = latitude[0]
-    lat_pos = int((latitude-58.9375)*8)              #Access correct position in vector of north wind
-    lon_pos = int((longditude-3.0625)*8)             #Access correct position in vector of east wind
+    lat_pos = int((latitude-eastward_lat[0])*8)              #Access correct position in vector of north wind
+    lon_pos = int((longditude-eastward_lon[0])*8)             #Access correct position in vector of east wind
 
 
     #tid += 962409600 #measurements go from 01/07/2020 - to 01/07/2022
@@ -167,6 +212,10 @@ def getweather(tid,latitude, longditude):
 
     return WSN,WSE
 
+a,b = getweather(0,58.938,4)
+
+getweather(datetime)
+#%date%hour%minute%second%
 
 #calculates direction between two points, (20.323,23.243),(34.235, 43.345)
 def calc_bearing(pointA, pointB):
@@ -214,6 +263,7 @@ def Find_WSV_over_trip_at_time_TID(position_array_func, tid):
         Wind_East_vector_func.append(WSE_func)
         Wind_tot_vector_func.append(np.sqrt(WSN_func**2 + WSE_func**2)) #returns total windspeed at position index j
     return Wind_North_vector_func,Wind_East_vector_func, Wind_tot_vector_func
+
 #function that gives true windspeed in m/s for wind north,east
 def AWS(TWS_func, sailing_speed_func,sailing_direction_func):
     AWS_func = TWS_func - sailing_speed_func * np.sin(np.pi / 180 * sailing_direction_func)
@@ -679,6 +729,10 @@ def main(route, time):
 
 filename = "env/position_array"  # file containing position array of route
 position_array = read_position_vect_from_file(filename) # reads said file
+
+Wind_North_vector_func,Wind_East_vector_func, Wind_tot_vector_func = Find_WSV_over_trip_at_time_TID(position_array,0)
+
+
 #time_of_trip,total_sailing_distance = main(position_array)
 #print(f"Time of trip is {time_of_trip},\n"
 #      f" giving a total trip distance is {total_sailing_distance}\n"
