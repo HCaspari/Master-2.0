@@ -78,18 +78,18 @@ eastward_lon   = dataset_EW.variables["lon"]
 #print(northward_lat[:])
 
 
-print(f"The size of Eastward time is: {eastward_time.shape}")
+#print(f"The size of Eastward time is: {eastward_time.shape}")
 
-print(f"The first and last elements of Eastward time are {eastward_time[0]}, and {eastward_time[-1]}\n"
-      f"this gives {eastward_time[-1]-eastward_time[0]} seconds")
-print(f"given that start time is 01/01/1990 00:00:00, then adding 962 409 600 seconds \n"
-      f"gives the start date {date(1990,1,1)+ timedelta(days=11139)} "
-      f"and the end date {date(1990,1,1)+ timedelta(days=11869.9583333)}")
-print(f"The first and last elements of Eastward lat are {eastward_lat[0]}, and {eastward_lat[-1]}")
-print(f"The first and last elements of Eastward lon are {eastward_lon[0]}, and {eastward_lon[-1]}")
-print(f"The size of latitudes is: {eastward_lat.shape}")
-print(f"The size of longditudes  is: {eastward_lon.shape}")
-print(dataset_NW["northward_wind"][0,60,20])
+#print(f"The first and last elements of Eastward time are {eastward_time[0]}, and {eastward_time[-1]}\n"
+#      f"this gives {eastward_time[-1]-eastward_time[0]} seconds")
+#print(f"given that start time is 01/01/1990 00:00:00, then adding 962 409 600 seconds \n"
+#      f"gives the start date {date(1990,1,1)+ timedelta(days=11139)} "
+#      f"and the end date {date(1990,1,1)+ timedelta(days=11869.9583333)}")
+#print(f"The first and last elements of Eastward lat are {eastward_lat[0]}, and {eastward_lat[-1]}")
+#print(f"The first and last elements of Eastward lon are {eastward_lon[0]}, and {eastward_lon[-1]}")
+#print(f"The size of latitudes is: {eastward_lat.shape}")
+#print(f"The size of longditudes  is: {eastward_lon.shape}")
+#print(dataset_NW["northward_wind"][0,60,20])
 
 #print(f"hour since 1990{date(1990,1,1)+ timedelta(days=42731850)}")
 
@@ -184,9 +184,9 @@ def vector_of_positions(lats,lons):
 
 
 #    return WSN,WSE
-print(northward_lat[0])
-print(northward_lon[0])
-print(northward_lat[:])
+#print(northward_lat[0])
+#print(northward_lon[0])
+#print(northward_lat[:])
 def getweather(tid,latitude, longditude):
     #to get the correct index one needs to increase values by 0.125
     #for example, latitude 58.9375 = latitude[0]
@@ -214,9 +214,9 @@ def getweather(tid,latitude, longditude):
 
     return WSN,WSE
 
-a,b = getweather(0,58.938,4)
+#a,b = getweather(0,58.938,4)
 
-getweather(datetime)
+#getweather(datetime)
 #%date%hour%minute%second%
 
 def datetime_seconds(dtime):
@@ -629,7 +629,7 @@ def start_from_files():
     plot_power("Average perpendicular force over route", avg_perp_force_array,"Month of period", "kN produced by flettner")
 
     return 0
-
+time_Vector = [0,1]
 def startfromscratch():
     avg_forward_force_over_time, avg_perp_force_over_time, speed_sailed_over_time = Force_over_year(time_Vector)
     return avg_forward_force_over_time, avg_perp_force_over_time
@@ -716,7 +716,7 @@ def main(route, time):
         WSE_func,WSN_func   = getweather(time,position_first[0],position_first[1])                       #Gives Wind speed East and North
         TWS                 = np.sqrt(WSE_func**2 + WSN_func**2)                                         #Finds True Windspeed (pythagoras)
         AWA                 = np.arctan2(TWS,sailing_speed)
-        forward_force_func,perpendicular_force_func = Force_at_position(AWS,AWA)                         #Forward and Perpendicular force from Flettners
+        forward_force_func,perpendicular_force_func = Force_at_position(TWS,AWA)                         #Forward and Perpendicular force from Flettners
         if type(forward_force_func) != MaskedConstant or type(perpendicular_force_func) != MaskedConstant:
             sailing_speed    = Speed_sailed_point(perpendicular_force_func,forward_force_func, initial_speed)    #Sailing Speed obtained in KNOTS
             sailing_time     = sailing_distance/sailing_speed                                                    #time used to sail trip added
@@ -740,7 +740,7 @@ def main(route, time):
 filename = "env/position_array"  # file containing position array of route
 position_array = read_position_vect_from_file(filename) # reads said file
 
-Wind_North_vector_func,Wind_East_vector_func, Wind_tot_vector_func = Find_WSV_over_trip_at_time_TID(position_array,0)
+#Wind_North_vector_func,Wind_East_vector_func, Wind_tot_vector_func = Find_WSV_over_trip_at_time_TID(position_array,0)
 
 
 #time_of_trip,total_sailing_distance = main(position_array)
@@ -753,8 +753,6 @@ def read_route(csv):
     df = pd.read_csv(csv)
     latitudes   = df["latitude"]
     longditudes = df["longditude"]
-    #print(latitudes)
-    #print(longditudes)
     positions = []
     for i in range(len(latitudes)):
         positions.append((latitudes[i],longditudes[i]))
@@ -767,22 +765,23 @@ def read_route(csv):
 #change to simulation(route) so that you dont need to hardcode
 def simulation(csv):
     route_travel            = read_route(csv)
-    time_of_simulation      = 6315479
+    time_of_simulation      = 2*365*24*60*60 #two years in seconds
     time_of_trip            = np.zeros(time_of_simulation)
     tot_sailing_dist        = np.zeros(time_of_simulation)
     poor_sailing_time       = np.zeros(time_of_simulation)
     poor_sailing_distance   = np.zeros(time_of_simulation)
     sailing_speed_vect      = np.zeros(time_of_simulation)
-    for time in range(0,time_of_simulation):
+    for time in range(0,time_of_simulation,3600): #calculating every hour
+
         time_of_trip_1,tot_sailing_dist_1, poor_sailing_time_1, poor_sailing_distance_1, sailing_speed = main(route_travel,time)
         time_of_trip[time]             = time_of_trip_1
         tot_sailing_dist[time]         = tot_sailing_dist_1
         poor_sailing_time[time]        = poor_sailing_time_1
         poor_sailing_distance[time]    = poor_sailing_distance_1
         sailing_speed_vect[time]       = sailing_speed
-        if time%1000 == 0 and time > 0:
+        if time%10 == 0 and time > 0:
             poor_sailing_speed = sum(poor_sailing_distance) / sum(poor_sailing_time)
-            print(f"speed sailing {csv} is {np.average(sailing_speed_vect[0:time])}")
+            print(f"speed sailing {csv}, distance of {tot_sailing_dist[time]} is {np.average(sailing_speed_vect[0:time])} knots")
             print(f"total time sailed at less than 1 knot is {poor_sailing_time[time]}\n"
                   f"this time is used to sail {poor_sailing_distance[time]} nautical miles\n"
                   f"at an average speed of {poor_sailing_speed} knots")
@@ -802,13 +801,16 @@ Aalesund_Floro      = "Rute_Aalesund_floro.csv"
 Floro_Bergen        = "Rute_Floro_Bergen.csv"
 Bergen_Stavanger    = "Rute_Bergen_Stavanger.csv"
 
-#Trip_time_vector, Tot_sailing_distance_vector, sailing_speed_vector = simulation(Trond_aalesund)
+
+Trip_time_vector, Tot_sailing_distance_vector, sailing_speed_vector = simulation(Trond_aalesund)
 #simulation(Aalesund_Floro)
 #simulation(Floro_Bergen)
 #simulation(Bergen_Stavanger)
-#print(f"Trip time for each repetition {Trip_time_vector}")
-#print(f"Total Sailing dist for each repetition {Tot_sailing_distance_vector[:10]}, should be equal")
-#print(f"Sailing speed for each repetition {sailing_speed_vector} in knots")
+
+
+print(f"Trip time for each repetition {Trip_time_vector}")
+print(f"Total Sailing dist for each repetition {Tot_sailing_distance_vector[:10]}, should be equal")
+print(f"Sailing speed for each repetition {sailing_speed_vector} in knots")
 
 
 print(r2d(np.arctan2(0.75,0.50)),r2d(np.arctan2(0.75,-0.50)),r2d(np.arctan2(-0.75,-0.50)),r2d(np.arctan2(-0.75,0.50)))
@@ -825,7 +827,7 @@ def prøve_å_forstå(Vessel_heading,Vessel_Speed,Wind_heading,Wind_speed):
     AWA                 = r2d(np.arctan2(y,x))
     print(f"Apparent wind angle is {AWA} degrees")
     return 0
-prøve_å_forstå(-45,4,60,10)
+#prøve_å_forstå(-45,4,60,10)
 
 
 
