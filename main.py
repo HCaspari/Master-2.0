@@ -769,14 +769,14 @@ def read_route(csv):
 
 #change to simulation(route) so that you dont need to hardcode
 def simulation(csv):
-    hour_intervall          = 12                                                #at what hourly interval should we simulate?
-    route_travel            = read_route(csv)
-    time_of_simulation      = 17520                                             #two years in hours
-    time_of_trip            = np.zeros(int(time_of_simulation/hour_intervall))
-    tot_sailing_dist        = np.zeros(int(time_of_simulation/hour_intervall))
-    poor_sailing_time       = np.zeros(int(time_of_simulation/hour_intervall))
-    poor_sailing_distance   = np.zeros(int(time_of_simulation/hour_intervall))
-    sailing_speed_simulation_vector      = np.zeros(int(time_of_simulation/hour_intervall))
+    hour_intervall                  = 12                                                #at what hourly interval should we simulate?
+    route_travel                    = read_route(csv)
+    time_of_simulation              = 17520                                             #two years in hours
+    time_of_trip                    = np.zeros(int(time_of_simulation/hour_intervall))
+    tot_sailing_dist                = np.zeros(int(time_of_simulation/hour_intervall))
+    poor_sailing_time               = np.zeros(int(time_of_simulation/hour_intervall))
+    poor_sailing_distance           = np.zeros(int(time_of_simulation/hour_intervall))
+    sailing_speed_simulation_vector = np.zeros(int(time_of_simulation/hour_intervall))
     for time in range(0,int(time_of_simulation/hour_intervall)) : #calculating every 12 hours
 
         time_of_trip_1,tot_sailing_dist_1, poor_sailing_time_1, poor_sailing_distance_1, sailing_speed_vector = main(route_travel,time)
@@ -809,20 +809,27 @@ Floro_Bergen        = "Route_Floro_Bergen.csv"
 Bergen_Stavanger    = "Route_Bergen_Stavanger.csv"
 
 
-Trip_time_vector, Tot_sailing_distance_vector, sailing_speed_simulation_vector = simulation(Trond_aalesund)
-#simulation(Aalesund_Floro)
-#simulation(Floro_Bergen)
-#simulation(Bergen_Stavanger)
+#Trip_time_vector_TA, Tot_sailing_distance_vector_TA, sailing_speed_simulation_vector_TA = simulation(Trond_aalesund)
+#Trip_time_vector_AF, Tot_sailing_distance_vector_AF, sailing_speed_simulation_vector_AF = simulation(Aalesund_Floro)
+#Trip_time_vector_FB, Tot_sailing_distance_vector_FB, sailing_speed_simulation_vector_FB = simulation(Floro_Bergen)
+#Trip_time_vector_BS, Tot_sailing_distance_vector_BS, sailing_speed_simulation_vector_BS = simulation(Bergen_Stavanger)
 
 
-print(f"Trip time for each repetition {Trip_time_vector}")
-print(f"Total Sailing dist for each repetition {Tot_sailing_distance_vector[:10]}, should be equal")
-print(f"Sailing speed for each repetition {sailing_speed_simulation_vector} in knots")
+#print(f"Trip time for each repetition {Trip_time_vector}")
+#print(f"Total Sailing dist for each repetition {Tot_sailing_distance_vector[:10]}, should be equal")
+#print(f"Sailing speed for each repetition {sailing_speed_simulation_vector} in knots")
 
 
 
-sailing_speed_trond_aalesund_fil = "Output_files/Trondheim_Aalesund_reise"
-write_to_file(sailing_speed_simulation_vector,sailing_speed_trond_aalesund_fil)
+sailing_speed_trond_aalesund_fil    = "Output_files/Trondheim_Aalesund_reise"
+sailing_speed_Aalesund_Floro_fil    = "Output_files/Aalesund_Floro_reise"
+sailing_speed_Floro_Bergen_fil      = "Output_files/Floro_Bergen_reise"
+sailing_speed_Bergen_Stavanger_fil  = "Output_files/Bergen_Stavanger_reise"
+
+#write_to_file(sailing_speed_simulation_vector,sailing_speed_trond_aalesund_fil)
+#write_to_file(sailing_speed_simulation_vector_AF,sailing_speed_Aalesund_Floro_fil)
+#write_to_file(sailing_speed_simulation_vector_FB,sailing_speed_Floro_Bergen_fil)
+#write_to_file(sailing_speed_simulation_vector_BS,sailing_speed_Bergen_Stavanger_fil)
 
 def prøve_å_forstå(Vessel_heading,Vessel_Speed,Wind_heading,Wind_speed):
     route_travel_ex     = read_route(Trond_aalesund)
@@ -838,9 +845,13 @@ def prøve_å_forstå(Vessel_heading,Vessel_Speed,Wind_heading,Wind_speed):
 #prøve_å_forstå(-45,4,60,10)
 
 
+#sailing_Speed = read_array_from_file(sailing_speed_trond_aalesund_fil)
+#print(np.average(sailing_Speed))
 
 
-
+TWS                 = np.sqrt(0**2 + 6**2)
+AWA                 = np.arctan2(TWS,4)
+print("Apparent Wind Angle given only northern wind is", AWA)
 
 
 
