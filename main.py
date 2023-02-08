@@ -789,7 +789,7 @@ def simulation(csv):
         poor_sailing_time[int(time)]         = poor_sailing_time_1
         poor_sailing_distance[int(time)]     = poor_sailing_distance_1
         sailing_speed_simulation_vector[time] = np.average(sailing_speed_vector)
-        if time%500 == 0 and time > 0:
+        if time%1000 == 0 and time > 0:
             poor_sailing_speed = sum(poor_sailing_distance) / (sum(poor_sailing_time))
             print(f"speed sailing {csv}, distance of {tot_sailing_dist[time]}\n"
                   f" is {np.average(sailing_speed_vector[0:time])} knots")
