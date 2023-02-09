@@ -14,6 +14,13 @@ from numpy.ma.core import MaskedConstant
 from scipy.interpolate import interp1d
 from bisect import bisect_left
 from datetime import datetime, timedelta, date
+import searoute as sr
+import chardet
+import folium as folium
+import webbrowser
+import gmplot as gmp
+
+
 
 
 
@@ -87,11 +94,11 @@ eastward_lon   = dataset_EW.variables["lon"]
 #      f"and the end date {date(1990,1,1)+ timedelta(days=11869.9583333)}")
 #print(f"The first and last elements of Eastward lat are {eastward_lat[0]}, and {eastward_lat[-1]}")
 #print(f"The first and last elements of Eastward lon are {eastward_lon[0]}, and {eastward_lon[-1]}")
-print(f"The first and last elements of Eastward time are {eastward_time[0]}, and {eastward_time[-1]}"
-      f"it is {eastward_time[-1] - eastward_time[0]} elements")
-print(f"The second element of Eastward time is {eastward_time[1]}")
-print(f"The increment of Eastward time is {eastward_time[1]-eastward_time[0]} which is {(eastward_time[1]-eastward_time[0])/60}  minutes or "
-      f"{(eastward_time[1]-eastward_time[0])/3600} hours")
+#print(f"The first and last elements of Eastward time are {eastward_time[0]}, and {eastward_time[-1]}"
+#      f"it is {eastward_time[-1] - eastward_time[0]} elements")
+#print(f"The second element of Eastward time is {eastward_time[1]}")
+#print(f"The increment of Eastward time is {eastward_time[1]-eastward_time[0]} which is {(eastward_time[1]-eastward_time[0])/60}  minutes or "
+#      f"{(eastward_time[1]-eastward_time[0])/3600} hours")
 #
 #print(f"The size of latitudes is: {eastward_lat.shape}")
 #print(f"The size of longditudes  is: {eastward_lon.shape}")
@@ -194,7 +201,7 @@ def vector_of_positions(lats,lons):
 #print(northward_lon[0])
 #print(northward_lat[:])
 #print(northward_lon[:])
-print(len(eastward_time[:]))
+#print(len(eastward_time[:]))
 
 def getweather(tid,latitude, longditude):
     #to get the correct index one needs to increase values by 0.125
@@ -233,8 +240,6 @@ def datetime_seconds(dtime):
     epoch = date(2020,7,1)
     delta = (dt-epoch)
     return delta.total_seconds()
-    
-
 
 #calculates direction between two points, (20.323,23.243),(34.235, 43.345)
 def calc_bearing(pointA, pointB):
@@ -282,7 +287,6 @@ def Find_WSV_over_trip_at_time_TID(position_array_func, tid):
         Wind_East_vector_func.append(WSE_func)
         Wind_tot_vector_func.append(np.sqrt(WSN_func**2 + WSE_func**2)) #returns total windspeed at position index j
     return Wind_North_vector_func,Wind_East_vector_func, Wind_tot_vector_func
-
 #function that gives true windspeed in m/s for wind north,east
 def AWS(TWS_func, sailing_speed_func,sailing_direction_func):
     AWS_func = TWS_func - sailing_speed_func * np.sin(np.pi / 180 * sailing_direction_func)
@@ -734,7 +738,7 @@ def main(route, time):
         vessel_heading   = calc_bearing(position_first,position_next)                                 #In Degrees (North is 0)
         WSE_func,WSN_func   = getweather(time,position_first[0],position_first[1])                       #Gives Wind speed East and North
         TWS                 = np.sqrt(WSE_func**2 + WSN_func**2)                                         #Finds True Windspeed (pythagoras)
-        AWA                 = alpha(vessel_speed=vessel_speed,vessel_heading=vessel_heading,NWS=WSN_func,EWS=WSE_func )                                              #Finds Apparent wind angle
+        AWA                 = alpha(vessel_speed,vessel_heading,WSN_func,WSE_func )                                              #Finds Apparent wind angle
         forward_force_func,perpendicular_force_func = Force_at_position(TWS,AWA)                         #Forward and Perpendicular force from Flettners
         if type(forward_force_func) != MaskedConstant or type(perpendicular_force_func) != MaskedConstant:
             vessel_speed    = Speed_sailed_point(perpendicular_force_func,forward_force_func, initial_speed)    #Sailing Speed obtained in KNOTS
@@ -767,12 +771,21 @@ def read_route(csv):
     positions = []
     for i in range(len(latitudes)):
         positions.append((latitudes[i],longditudes[i]))
+    positions = np.asarray(positions)
     return positions
 
 
 
 #main = time_of_trip,tot_sailing_dist, poor_sailing_time, poor_sailing_distance
 def simulation(csv):
+    """
+
+    :param csv: A csv
+    :return:    time_of_trip
+                tot_sailing_dist
+                sailing_speed_simulation_vector
+
+    """
     hour_intervall                  = 1                                                #at what hourly interval should we simulate?
     route_travel                    = read_route(csv)
     time_of_simulation              = 17520                                             #two years in hours
@@ -816,54 +829,109 @@ Aalesund_Floro      = "Route_Aalesund_floro.csv"
 Floro_Bergen        = "Route_Floro_Bergen.csv"
 Bergen_Stavanger    = "Route_Bergen_Stavanger.csv"
 
+route_Trond_Aal         = read_route(Trond_aalesund)
+route_AalFloro          = read_route(Aalesund_Floro)
+route_floro_bergen      = read_route(Floro_Bergen)
+route_bergen_stavanger  = read_route(Bergen_Stavanger)
+print(route_bergen_stavanger)
 
-Trip_time_vector_TA, Tot_sailing_distance_vector_TA, sailing_speed_simulation_vector_TA = simulation(Trond_aalesund)
-Trip_time_vector_AF, Tot_sailing_distance_vector_AF, sailing_speed_simulation_vector_AF = simulation(Aalesund_Floro)
-Trip_time_vector_FB, Tot_sailing_distance_vector_FB, sailing_speed_simulation_vector_FB = simulation(Floro_Bergen)
-Trip_time_vector_BS, Tot_sailing_distance_vector_BS, sailing_speed_simulation_vector_BS = simulation(Bergen_Stavanger)
+def runsimulation():
+    Trip_time_vector_TA, Tot_sailing_distance_vector_TA, sailing_speed_simulation_vector_TA = simulation(Trond_aalesund)
+    Trip_time_vector_AF, Tot_sailing_distance_vector_AF, sailing_speed_simulation_vector_AF = simulation(Aalesund_Floro)
+    Trip_time_vector_FB, Tot_sailing_distance_vector_FB, sailing_speed_simulation_vector_FB = simulation(Floro_Bergen)
+    Trip_time_vector_BS, Tot_sailing_distance_vector_BS, sailing_speed_simulation_vector_BS = simulation(Bergen_Stavanger)
 
-#Trip_time_vector_TA2, Tot_sailing_distance_vector_TA2, sailing_speed_simulation_vector_TA2 = simulation(Trond_aalesund)
+    #Trip_time_vector_TA2, Tot_sailing_distance_vector_TA2, sailing_speed_simulation_vector_TA2 = simulation(Trond_aalesund)
 
-#print(f"Trip time for each repetition {Trip_time_vector_TA2}")
-#print(f"Total Sailing dist for each repetition {Tot_sailing_distance_vector_TA2[:10]}, should be equal")
-#print(f"Sailing speed for each repetition {sailing_speed_simulation_vector_TA2} in knots")
-
-
-#sailing_speed_Trondheim_Aalesund_fil_2 = "Output_files/Trondheim_Aalesund_reise_2"
-
-
-sailing_speed_trond_aalesund_fil    = "Output_files/Trondheim_Aalesund_reise"
-sailing_speed_Aalesund_Floro_fil    = "Output_files/Aalesund_Floro_reise"
-sailing_speed_Floro_Bergen_fil      = "Output_files/Floro_Bergen_reise"
-sailing_speed_Bergen_Stavanger_fil  = "Output_files/Bergen_Stavanger_reise"
-
-#write_to_file(sailing_speed_simulation_vector_TA2,sailing_speed_Trondheim_Aalesund_fil_2)
-
-write_to_file(sailing_speed_simulation_vector_TA,sailing_speed_trond_aalesund_fil)
-write_to_file(sailing_speed_simulation_vector_AF,sailing_speed_Aalesund_Floro_fil)
-write_to_file(sailing_speed_simulation_vector_FB,sailing_speed_Floro_Bergen_fil)
-write_to_file(sailing_speed_simulation_vector_BS,sailing_speed_Bergen_Stavanger_fil)
+    #print(f"Trip time for each repetition {Trip_time_vector_TA2}")
+    #print(f"Total Sailing dist for each repetition {Tot_sailing_distance_vector_TA2[:10]}, should be equal")
+    #print(f"Sailing speed for each repetition {sailing_speed_simulation_vector_TA2} in knots")
 
 
-#sailing_Speed = read_array_from_file(sailing_speed_trond_aalesund_fil)
-#print(np.average(sailing_Speed))
+    #sailing_speed_Trondheim_Aalesund_fil_2 = "Output_files/Trondheim_Aalesund_reise_2"
 
 
-#print(alpha(0, 0, 0, 9),    "Easternly wind, should give 0")
-#print(alpha(0, 0, 3, 3),    "NorthEasternly wind, Should be 45")
-#print(alpha(0, 0, 9, 0),    "Northernly wind, Should be 90")
-#print(alpha(0, 0, 3,-3),    "Northwesternly wind, Should be 135")
-#print(alpha(0, 0,-3,-3),    "Southwesternly wind Should be 225")
-#print(alpha(0, 0,-3, 3),    "Southeasternly wind, should be 315")
+    sailing_speed_trond_aalesund_fil    = "Output_files/Trondheim_Aalesund_reise"
+    sailing_speed_Aalesund_Floro_fil    = "Output_files/Aalesund_Floro_reise"
+    sailing_speed_Floro_Bergen_fil      = "Output_files/Floro_Bergen_reise"
+    sailing_speed_Bergen_Stavanger_fil  = "Output_files/Bergen_Stavanger_reise"
 
-#arrayfil = "Output_files/Trondheim_Aalesund_reise_2"
-#array = read_array_from_file(arrayfil)
-#x = []
-#for i in range(1460):
-#    x.append(i)
-#plot_power("speed over year",array,"12 hour period","knots")
+    #write_to_file(sailing_speed_simulation_vector_TA2,sailing_speed_Trondheim_Aalesund_fil_2)
 
-#plt.plot(x,array)
-#plt.show()
+    write_to_file(sailing_speed_simulation_vector_TA,sailing_speed_trond_aalesund_fil)
+    write_to_file(sailing_speed_simulation_vector_AF,sailing_speed_Aalesund_Floro_fil)
+    write_to_file(sailing_speed_simulation_vector_FB,sailing_speed_Floro_Bergen_fil)
+    write_to_file(sailing_speed_simulation_vector_BS,sailing_speed_Bergen_Stavanger_fil)
+
+
+    #sailing_Speed = read_array_from_file(sailing_speed_trond_aalesund_fil)
+    #print(np.average(sailing_Speed))
+    return 0
+
+
+
+def generate_intermediate_points(start_point, end_point, num_points):
+    """
+    Generates intermediate points between two given coordinate points using linear interpolation.
+
+    Parameters:
+        start_point (tuple): The starting coordinate point, in the form (latitude, longitude)
+        end_point (tuple): The ending coordinate point, in the form (latitude, longitude)
+        num_points (int): The number of intermediate points to generate
+
+    Returns:
+        list: A list of intermediate points, in the form [(latitude, longitude), ...]
+    """
+    intermediate_points = []
+    latitude_delta = (end_point[0] - start_point[0]) / (num_points + 1)
+    longitude_delta = (end_point[1] - start_point[1]) / (num_points + 1)
+
+    for i in range(1, num_points + 1):
+        latitude = start_point[0] + i * latitude_delta
+        longitude = start_point[1] + i * longitude_delta
+        intermediate_points.append((latitude, longitude))
+
+    return intermediate_points
+
+
+def generate_intricate_route(route,points):
+    """
+    :param route: vector of positions over route
+    :param points: number of points between separate positions
+    :return: detailed route as vector of coordinates
+    """
+    newroute = [route[0][:]]
+    for position in range(route):
+        start_position  = route[position]
+        end_position    = route[position+1]
+        intermediate_points = generate_intermediate_points(start_position,end_position, points)
+        newroute.append(intermediate_points,end_position)
+
+    return newroute
+long_route_trond_aal = generate_intricate_route(route_Trond_Aal, 10)
+print(long_route_trond_aal)
+
+
+
+Trondheim_location = 63.437686821303096, 10.402184694640052
+Aalesund_location  = 62.93245830958637, 6.3481997169859055
+
+def createmap():
+
+    foliummap = folium.Map(location=Trondheim_location, tiles="Stamen Terrain", zoom_start=9)
+    #foliummap.show_in_browser()
+
+    route = trip_vector
+    for coordinates in route:
+        foliummap.add_child(
+                folium.Marker(
+                    location=coordinates,
+                    icon=folium.Icon(color="%s" % "blue"),
+                )
+        )
+
+    foliummap.show_in_browser()
+    return 0
+
 print("Finished <3<3")
 
