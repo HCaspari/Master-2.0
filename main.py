@@ -275,6 +275,7 @@ def d2r(degree):
     rad = np.pi*degree/180
     return rad
 #Finds windspeeds at position in position array and time in tid in weater data
+#function that gives true windspeed in m/s for wind north,east
 def Find_WSV_over_trip_at_time_TID(position_array_func, tid):
     Wind_North_vector_func = [] #gives wind_speed_north as position (position_Array [tid])
     Wind_East_vector_func  = []
@@ -287,21 +288,59 @@ def Find_WSV_over_trip_at_time_TID(position_array_func, tid):
         Wind_East_vector_func.append(WSE_func)
         Wind_tot_vector_func.append(np.sqrt(WSN_func**2 + WSE_func**2)) #returns total windspeed at position index j
     return Wind_North_vector_func,Wind_East_vector_func, Wind_tot_vector_func
-#function that gives true windspeed in m/s for wind north,east
-def AWS(TWS_func, sailing_speed_func,sailing_direction_func):
-    AWS_func = TWS_func - sailing_speed_func * np.sin(np.pi / 180 * sailing_direction_func)
-    return AWS_func
+
+
+
+def True_wind_speed(WSN,WSE):
+    TWS = np.sqrt(WSN**2+WSE**2)
+    return TWS
+
+
+def True_wind_direction(vessel_heading,wind_speed_north,wind_speed_east):
+    """
+    :param vessel_heading: Vessel heading
+    :param wind_speed_north: speed of wind in northward direction (negaitive means south)
+    :param wind_speed_east: speed of wind in eastern direction (negative means west)
+    :return: true wind direction in radians
+    """
+    wind_angle = math.atan2(wind_speed_north,wind_speed_east)
+    true_wind_direction = wind_angle-vessel_heading
+
+    return true_wind_direction
+def Apparent_Wind_Speed(true_wind_speed, vessel_speed, true_wind_direction):
+    """
+
+    :param true_wind_speed: Wind speed in relation to vessel heading
+    :param vessel_speed: speed vessel sails
+    :param true_wind_direction: heading of wind in relation to vessel
+    :return: apparend wind speed: speed of wind in relation to vessel speed and heading
+    """
+
+    #AWS_func = TWS_func - sailing_speed_func * np.sin(np.pi / 180 * sailing_direction_func)
+    #from Seddiek et al. function 1 and 2
+    AWS = np.sqrt(true_wind_speed ** 2 + vessel_speed**2-2*true_wind_speed*vessel_speed*np.cos(true_wind_direction))
+
+    return AWS
 #Function that return true wind direction in degrees from wind speed north/east (WSN/WSE)
-def AWD(WSNA, WSEA,sailing_dir_func):
-    AWD_func = round((180/np.pi)*(math.atan2(WSNA,WSEA))+sailing_dir_func,2)
-    if AWD_func >= 360:
-        AWD_func -= 360
-    return AWD_func
+
+def Apparent_wind_angle(TWS, AWS, VS):
+    """
+
+    :param      TWS: Speed of wind in relation to global axis
+    :param      AWS: speed of wind in relation to vessel speed and heading
+    :param      VS: speed of vessel
+    :return:    AWA: Apparent wind angle
+    """
+    AWA = math.acos((TWS ** 2 - AWS ** 2 - VS ** 2) / (-2 * AWS * VS))
+    if AWA >= 360:
+        AWA -= 360
+    return r2d(AWA)
+
 #function that returns true wind direction and speed using earlier functions
 def Apparent_wind_and_direction_arrays_over_trip(position_array_func, tid):#, vessel_velocity):
     Wind_North_vector_func, Wind_East_vector_func, Wind_tot_vector_func = Find_WSV_over_trip_at_time_TID(position_array_func, tid)          # windspeeds at (lat,lon) for t € 1050930 through 1051824
-    AWD_Trip  = AWD(Wind_North_vector_func, Wind_East_vector_func)  #true winddirection at (lat,lon) for t € 1050930 through 1051824
-    AWS_Trip  = AWS(Wind_tot_vector_func, AWD_Trip)#, vessel_velocity)          #true windspeed at (lat,lon) for t € 1050930 through 1051824
+    AWD_Trip  = Apparent_wind_angle(Wind_North_vector_func, Wind_East_vector_func)  #true winddirection at (lat,lon) for t € 1050930 through 1051824
+    AWS_Trip  = Apparent_Wind_Speed(Wind_tot_vector_func, AWD_Trip)#, vessel_velocity)          #true windspeed at (lat,lon) for t € 1050930 through 1051824
     return AWS_Trip,AWD_Trip
 #find force at each position of route
 def Force_at_position(AWS, AWD):
@@ -833,7 +872,7 @@ route_Trond_Aal         = read_route(Trond_aalesund)
 route_AalFloro          = read_route(Aalesund_Floro)
 route_floro_bergen      = read_route(Floro_Bergen)
 route_bergen_stavanger  = read_route(Bergen_Stavanger)
-print(route_bergen_stavanger)
+#print(route_bergen_stavanger)
 
 def runsimulation():
     Trip_time_vector_TA, Tot_sailing_distance_vector_TA, sailing_speed_simulation_vector_TA = simulation(Trond_aalesund)
@@ -893,7 +932,6 @@ def generate_intermediate_points(start_point, end_point, num_points):
 
     return intermediate_points
 
-
 def generate_intricate_route(route,points):
     """
     :param route: vector of positions over route
@@ -908,15 +946,18 @@ def generate_intricate_route(route,points):
         newroute.append(intermediate_points,end_position)
 
     return newroute
-long_route_trond_aal = generate_intricate_route(route_Trond_Aal, 10)
-print(long_route_trond_aal)
+#long_route_trond_aal = generate_intricate_route(route_Trond_Aal, 10)#
+#print(long_route_trond_aal)
 
 
+#Trondheim_location = 63.437686821303096, 10.402184694640052
+#Aalesund_location  = 62.93245830958637, 6.3481997169859055
 
-Trondheim_location = 63.437686821303096, 10.402184694640052
-Aalesund_location  = 62.93245830958637, 6.3481997169859055
-
-def createmap():
+def createmap(trip_vector):
+    """
+    :param trip_vector: A vector of coordinates over route
+    :return: a map that shows given route
+    """
 
     foliummap = folium.Map(location=Trondheim_location, tiles="Stamen Terrain", zoom_start=9)
     #foliummap.show_in_browser()
@@ -932,6 +973,24 @@ def createmap():
 
     foliummap.show_in_browser()
     return 0
+
+
+#AWS (wind speed, vessel speed, wind direction)
+WSN_temp            = 5
+WSE_temp            = 5
+vessel_speed_temp   = 2
+vessel_heading_temp = 0
+twd_temp            = True_wind_direction(vessel_heading_temp,WSN_temp,WSE_temp) #Heading, WSN, WSE
+degrees             = r2d(twd_temp)
+tws_temp            = True_wind_speed(WSN_temp,WSE_temp)
+AWS_temp            = Apparent_Wind_Speed(tws_temp,vessel_speed_temp,twd_temp) #TWS, VS, Twd
+
+sediek              = Apparent_wind_angle(tws_temp,AWS_temp,vessel_speed_temp)
+egendefinert        = alpha(vessel_speed_temp,vessel_heading_temp,WSN_temp,WSE_temp)
+print("apparent wind angle using alpha, egendefinert",egendefinert)
+print("apparent wind angle using function from sediek",sediek)
+
+
 
 print("Finished <3<3")
 
