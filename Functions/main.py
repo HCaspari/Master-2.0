@@ -20,10 +20,10 @@ import gmplot as gmp
 
 
 from file_handling import write_to_file
-from Force_functions import resistance_by_speed,solve_beta_by_perp_force, xfold
+from Force_functions import resistance_by_speed,solve_beta_by_perp_force, xfold, Force_produced
 from plot_functions import plot_power, plot_power_2, plot_percent, plot_avg_power, plot_weekly_and_daily_avg_power, plot_resistance
 from Weather_Handling import getweather, r2d, d2r, True_wind_direction, True_wind_speed, Apparent_Wind_Speed, Apparent_wind_angle, alpha
-from Old_route_calc_funcs import Force_at_position
+
 
 #Input stats
 mean_wind_speed = 10 #knots
@@ -221,7 +221,7 @@ def main(route, time):
         TWD                 = True_wind_direction(vessel_heading,WSN,WSE)
         AWS                 = Apparent_Wind_Speed(TWS,vessel_speed,TWD)
         AWA                 = alpha(vessel_speed,vessel_heading,WSN,WSE )                                              #Finds Apparent wind angle
-        forward_force_func,perpendicular_force_func = Force_at_position(AWS,AWA)                         #Forward and Perpendicular force from Flettners
+        forward_force_func,perpendicular_force_func = Force_produced(AWS, AWA)                         #Forward and Perpendicular force from Flettners
         if type(forward_force_func) != MaskedConstant or type(perpendicular_force_func) != MaskedConstant:
             vessel_speed    = Speed_sailed_point(perpendicular_force_func,forward_force_func, initial_speed)    #Sailing Speed obtained in KNOTS
             sailing_speed_vector.append(vessel_speed)

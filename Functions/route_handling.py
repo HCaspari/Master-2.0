@@ -20,7 +20,7 @@ import gmplot as gmp
 from plot_functions import plot_power,plot_avg_power,plot_resistance,plot_weekly_and_daily_avg_power
 from file_handling import write_to_file, read_cols, read_position_vect_from_file
 from Force_functions import resistance_by_speed,solve_beta_by_perp_force, xfold, iterate_drift_angle
-from Old_route_calc_funcs import Force_over_year,Force_over_trip,Force_at_position
+from Old_route_calc_funcs import Force_over_year,Force_over_trip
 
 #Input stats
 mean_wind_speed = 10 #knots
