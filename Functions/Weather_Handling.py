@@ -1,24 +1,8 @@
 
 import math
-
-import pandas as pd
-#from pandas import DataFrame
-#import random
 import numpy as np
-import matplotlib.pyplot as plt
-import geopy.distance #package to calculate distance between two lat/lon points
-#from env.old_code.MetoceanDownloader import MetoceanDownloader
 import netCDF4 as nc #read .nc files with weather data
-from numpy.ma.core import MaskedConstant
-from scipy.interpolate import interp1d
-from bisect import bisect_left
 from datetime import datetime, timedelta, date
-import searoute as sr
-import chardet
-import folium as folium
-import webbrowser
-import gmplot as gmp
-from file_handling import write_to_file
 
 #Input stats
 mean_wind_speed = 10 #knots
@@ -50,8 +34,8 @@ alpha = 3.5
 
 #datafiles
 
-NW_file = "../Weather_Data/NW_01_07_2020__01_07_2022.nc"  #Keys =['northward_wind', 'time', 'lat', 'lon']
-EW_file = "../Weather_Data/EW_01_07_2020__01_07_2022.nc"  #Keys =['eastward_wind', 'time', 'lat', 'lon']
+NW_file = "Weather_Data/NW_01_07_2020__01_07_2022.nc"  #Keys =['northward_wind', 'time', 'lat', 'lon']
+EW_file = "Weather_Data/EW_01_07_2020__01_07_2022.nc"  #Keys =['eastward_wind', 'time', 'lat', 'lon']
 dataset_NW = nc.Dataset(NW_file)
 dataset_EW = nc.Dataset(EW_file)
 
@@ -72,8 +56,8 @@ dataset_EW = nc.Dataset(EW_file)
 #print(dataset_EW)
 #for var in dataset_NW.variables.values():
 #    print(var)
-#print(dataset_NW.variables.keys())
-#print(dataset_EW.variables.keys())
+print("north",dataset_NW.variables.keys())
+print("East",dataset_EW.variables.keys())
 northward_wind  = dataset_NW.variables["northward_wind"]
 northward_time  = dataset_NW.variables["time"]
 northward_lat   = dataset_NW.variables["lat"]
@@ -166,7 +150,6 @@ def d2r(degree):
     rad = np.pi*degree/180
     return rad
 
-
 def getweather(tid,latitude, longditude):
     #to get the correct index one needs to increase values by 0.125
     #for example, latitude 58.9375 = latitude[0]
@@ -194,17 +177,11 @@ def getweather(tid,latitude, longditude):
 
     return WSN,WSE
 
-#a,b = getweather(0,58.938,4)
-
-#getweather(datetime)
-#%date%hour%minute%second%
-
 def datetime_seconds(dtime):
     dt = dtime
     epoch = date(2020,7,1)
     delta = (dt-epoch)
     return delta.total_seconds()
-
 
 def True_wind_speed(WSN,WSE):
     TWS = np.sqrt(WSN**2+WSE**2)
@@ -237,7 +214,6 @@ def Apparent_Wind_Speed(true_wind_speed, vessel_speed, true_wind_direction):
     AWS = np.sqrt(true_wind_speed ** 2 + vessel_speed**2-2*true_wind_speed*vessel_speed*np.cos(true_wind_direction))
 
     return AWS
-
 
 #function that gives AWA by Seddiek
 def Apparent_wind_angle(TWS, AWS, VS):

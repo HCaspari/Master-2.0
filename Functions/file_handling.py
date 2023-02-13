@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 #Input stats
 mean_wind_speed = 10 #knots
@@ -85,4 +86,14 @@ def read_array_from_file(filename_func):
         data_array.append(round(readdata.loc[i].iat[1],3))
     #print(data_array)
     return data_array
+
+def read_route(csv):
+    df = pd.read_csv(csv)
+    latitudes   = df["latitude"]
+    longditudes = df["longditude"]
+    positions = []
+    for i in range(len(latitudes)):
+        positions.append((latitudes[i],longditudes[i]))
+    positions = np.asarray(positions)
+    return positions
 

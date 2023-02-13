@@ -50,7 +50,7 @@ alpha = 3.5
 
 
 #finds resistance by speed using admirality formula
-def resistance_by_speed(sailing_speed):
+def Sailing_resistance(sailing_speed):
     admirality_coeff = 385.46
     power = (vessel_weight_disp**(2/3)*sailing_speed**3)/admirality_coeff
     force = round(power/(sailing_speed/5.44444444),2)
@@ -59,7 +59,7 @@ def resistance_by_speed(sailing_speed):
     return force
 
 #function that finds driftangle beta that is large enough to counteract drifting force
-def solve_beta_by_perp_force(perp_force_func, vessel_velocity):
+def Beta_solver(perp_force_func, vessel_velocity):
     Fy = perp_force_func*1000 #Newton
     RHS = Fy/(0.5*vessel_length*vessel_draft*vessel_velocity**2)
     # Solving second degree function to find beta
@@ -71,8 +71,8 @@ def solve_beta_by_perp_force(perp_force_func, vessel_velocity):
     Beta_func = round(max(Beta_1, Beta_2),3)  # the angle will always be the positive solution
     return Beta_func
 
-#function that finds xfold resistance by beta (Drift angle)
-def xfold(beta):
+#function that finds Drift_resistance_multiplier resistance by beta (Drift angle)
+def Drift_resistance_multiplier(beta):
     if beta < 8:
         modeltest = [0,1, 1.2, 1.25, 1.45, 1.9]
         modelX = [0, 2, 4, 6, 8, 10]
@@ -127,3 +127,51 @@ def Force_produced(AWS, AWD):
         forward_force   = round(min(forward_force,1400),2)              #Force is maximum 1400 kN, so as not to break flettners
 
     return forward_force, perp_force
+
+#function interpolates over y values in list and finds closest value in table, returns x value (basically inverse func)
+def take_closest(myList, myNumber):
+
+    pos = bisect_left(myList, myNumber)
+    if pos == 0:
+        return myList[0]
+    if pos == len(myList):
+        return myList[-1]
+    before = myList[pos - 1]
+    after = myList[pos]
+    if after - myNumber < myNumber - before:
+        return myList.index(after)/10
+    else:
+        return myList.index(before)/10
+
+
+def Speed_achieved(perp_force, forward_force):
+
+    # ratio hydrodynamic resistance to total res is approximately 0.85
+    ratio_hydrodyn_to_tot_res = 0.85
+
+    # Empty vectors to store values
+    sailing_resistance_vector = []
+    total_resistance_vector = []
+
+    # Set vessel speed [knots] in intervall from 0,20 with stepsize 0.1
+    vessel_velocity = np.linspace(0.1, 20, 200)
+    #
+    for velocity in vessel_velocity:
+        total_sailing_resistance = Sailing_resistance(velocity) * ratio_hydrodyn_to_tot_res
+        sailing_resistance_vector.append(total_sailing_resistance)
+        drift_angle = Beta_solver(perp_force, velocity)
+        resistance_multiplier = Drift_resistance_multiplier(drift_angle)
+        if resistance_multiplier < 1:
+            resistance_multiplier = 1
+        total_resistance = resistance_multiplier * total_sailing_resistance
+        total_resistance_vector.append(total_resistance)
+
+        #stop iteration when total_resistance > forward force
+        if total_resistance > forward_force:
+            speed_achieved = velocity
+            #speed_achieved = take_closest(total_resistance_vector,forward_force) #IN KNOTS
+            return speed_achieved
+    speed_achieved = take_closest(total_resistance_vector,forward_force) #IN KNOTS
+
+
+    return speed_achieved #IN KNOTS

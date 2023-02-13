@@ -19,8 +19,9 @@ import webbrowser
 import gmplot as gmp
 
 
-from file_handling import write_to_file
-from Force_functions import resistance_by_speed,solve_beta_by_perp_force, xfold, Force_produced
+from file_handling import write_to_file, read_route
+from route_handling import calc_bearing
+from Force_functions import Sailing_resistance,Beta_solver, Drift_resistance_multiplier, Force_produced, Speed_achieved
 from plot_functions import plot_power, plot_power_2, plot_percent, plot_avg_power, plot_weekly_and_daily_avg_power, plot_resistance
 from Weather_Handling import getweather, r2d, d2r, True_wind_direction, True_wind_speed, Apparent_Wind_Speed, Apparent_wind_angle, alpha
 
@@ -55,115 +56,7 @@ alpha_const = 3.5
 
 #comparisson_vessel_power_by_speed = vessel_velocity**3*0.8*0.55
 
-#calculates direction between two points, (20.323,23.243),(34.235, 43.345)
-def calc_bearing(pointA, pointB):
-    deg2rad = math.pi / 180
-    latA = pointA[0] * deg2rad
-    latB = pointB[0] * deg2rad
-    lonA = pointA[1] * deg2rad
-    lonB = pointB[1] * deg2rad
 
-    delta_ratio = math.log(math.tan(latB/ 2 + math.pi / 4) / math.tan(latA/ 2 + math.pi / 4))
-    delta_lon = abs(lonA - lonB)
-
-    delta_lon %= math.pi
-    bearing = math.atan2(delta_lon, delta_ratio)/deg2rad
-    return bearing
-
-#print(calc_bearing(pos1, pos2))
-
-
-
-
-
-
-#find force at each position of route
-
-#clears entries with nav status 2 or 5 for AIS data
-
-
-#returns propulsion force at every position along vector of positions from the true wind speed and direction
-# here one should input rawdata from flettner efficiency, for now using approximated values from paper
-# using source DOI: 10.1016/j.apenergy.2013.07.026, "Propulsive power contribution of a kite and a Flettner rotor on selected shipping routes"
-
-
-
-# finds speed sailed given perp force and forward force IN KNOTS
-def Speed_sailed(perp_force, forward_force):
-    # Empty vectors to store values
-    sailing_resistance_vector = []
-    total_resistance_vector = []
-
-    # Set vessel speed [knots] in intervall from 0,20 with stepsize 0.1
-    vessel_velocity = np.linspace(0.1, 20, 200)
-    # ratio hydrodynamic resistance to total res is approximately 0.85
-    ratio_hydrodyn_to_tot_res = 0.85
-
-    # loop through all vessel velocitites [knots] and find correpsonding drifting and sailing resistance
-    # add these together: total resistance
-    for velocity in vessel_velocity:
-        sailing_resistance = resistance_by_speed(velocity) * ratio_hydrodyn_to_tot_res
-        sailing_resistance_vector.append(sailing_resistance)
-        drift_angle = solve_beta_by_perp_force(perp_force, velocity)
-        resistance_multiplier = xfold(drift_angle)
-        if resistance_multiplier < 1:
-            resistance_multiplier = 1
-        total_resistance = resistance_multiplier * sailing_resistance
-        total_resistance_vector.append(total_resistance)
-
-        #stop iteration when total_resistance > forward force
-        if total_resistance > forward_force:
-            speed_achieved = velocity
-            #speed_achieved = take_closest(total_resistance_vector,forward_force) #IN KNOTS
-            return speed_achieved
-    speed_achieved = take_closest(total_resistance_vector,forward_force) #IN KNOTS
-    return speed_achieved #IN KNOTS
-def Speed_sailed_point(perp_force, forward_force, sailing_speed):
-
-    # ratio hydrodynamic resistance to total res is approximately 0.85
-    ratio_hydrodyn_to_tot_res = 0.85
-
-    # Empty vectors to store values
-    sailing_resistance_vector = []
-    total_resistance_vector = []
-
-    # Set vessel speed [knots] in intervall from 0,20 with stepsize 0.1
-    vessel_velocity = np.linspace(0.1, 20, 200)
-    #
-    for velocity in vessel_velocity:
-        sailing_resistance = resistance_by_speed(velocity) * ratio_hydrodyn_to_tot_res
-        sailing_resistance_vector.append(sailing_resistance)
-        drift_angle = solve_beta_by_perp_force(perp_force, velocity)
-        resistance_multiplier = xfold(drift_angle)
-        if resistance_multiplier < 1:
-            resistance_multiplier = 1
-        total_resistance = resistance_multiplier * sailing_resistance
-        total_resistance_vector.append(total_resistance)
-
-        #stop iteration when total_resistance > forward force
-        if total_resistance > forward_force:
-            speed_achieved = velocity
-            #speed_achieved = take_closest(total_resistance_vector,forward_force) #IN KNOTS
-            return speed_achieved
-    speed_achieved = take_closest(total_resistance_vector,forward_force) #IN KNOTS
-
-
-    return speed_achieved #IN KNOTS
-
-#function interpolates over y values in list and finds closest value in table, returns x value (basically inverse func)
-def take_closest(myList, myNumber):
-
-    pos = bisect_left(myList, myNumber)
-    if pos == 0:
-        return myList[0]
-    if pos == len(myList):
-        return myList[-1]
-    before = myList[pos - 1]
-    after = myList[pos]
-    if after - myNumber < myNumber - before:
-        return myList.index(after)/10
-    else:
-        return myList.index(before)/10
 
 
 
@@ -223,10 +116,12 @@ def main(route, time):
         AWA                 = alpha(vessel_speed,vessel_heading,WSN,WSE )                                              #Finds Apparent wind angle
         forward_force_func,perpendicular_force_func = Force_produced(AWS, AWA)                         #Forward and Perpendicular force from Flettners
         if type(forward_force_func) != MaskedConstant or type(perpendicular_force_func) != MaskedConstant:
-            vessel_speed    = Speed_sailed_point(perpendicular_force_func,forward_force_func, initial_speed)    #Sailing Speed obtained in KNOTS
+            vessel_speed    = Speed_achieved(perpendicular_force_func, forward_force_func)    #Sailing Speed obtained in KNOTS
             sailing_speed_vector.append(vessel_speed)
             sailing_time     = sailing_distance/vessel_speed                                                    #time used to sail trip added
             route_sailing_time.append(sailing_time)
+        if type(forward_force_func) == MaskedConstant or type(perpendicular_force_func) == MaskedConstant:
+            print("ouchie, we have a mask", i)
         tot_sailing_dist     += sailing_distance
         #check for extreme time usage
         if vessel_speed < 1:
@@ -244,15 +139,6 @@ def main(route, time):
 #      f"with an average sailing speed of {total_sailing_distance/time_of_trip} knots")
 
 
-def read_route(csv):
-    df = pd.read_csv(csv)
-    latitudes   = df["latitude"]
-    longditudes = df["longditude"]
-    positions = []
-    for i in range(len(latitudes)):
-        positions.append((latitudes[i],longditudes[i]))
-    positions = np.asarray(positions)
-    return positions
 
 
 
@@ -266,6 +152,8 @@ def simulation(csv):
                 sailing_speed_simulation_vector
 
     """
+    initial_speed       = 4
+
     hour_intervall                  = 1                                                #at what hourly interval should we simulate?
     route_travel                    = read_route(csv)
     time_of_simulation              = 17520                                             #two years in hours
@@ -300,74 +188,66 @@ def simulation(csv):
 
 
 #change to simulation(route) so that you dont need to hardcode
-end_position        = (10,56)
-start_position      = (0,60)    #Cooridnates of port a
-#Coordinates of port b
-initial_speed       = 4
-Trond_aalesund      = "Route_Trondheim_Aalesund.csv"
-Aalesund_Floro      = "Route_Aalesund_floro.csv"
-Floro_Bergen        = "Route_Floro_Bergen.csv"
-Bergen_Stavanger    = "Route_Bergen_Stavanger.csv"
-
-route_Trond_Aal         = read_route(Trond_aalesund)
-route_AalFloro          = read_route(Aalesund_Floro)
-route_floro_bergen      = read_route(Floro_Bergen)
-route_bergen_stavanger  = read_route(Bergen_Stavanger)
-#print(route_bergen_stavanger)
-
-def runsimulation():
-    Trip_time_vector_TA, Tot_sailing_distance_vector_TA, sailing_speed_simulation_vector_TA = simulation(Trond_aalesund)
-    Trip_time_vector_AF, Tot_sailing_distance_vector_AF, sailing_speed_simulation_vector_AF = simulation(Aalesund_Floro)
-    Trip_time_vector_FB, Tot_sailing_distance_vector_FB, sailing_speed_simulation_vector_FB = simulation(Floro_Bergen)
-    Trip_time_vector_BS, Tot_sailing_distance_vector_BS, sailing_speed_simulation_vector_BS = simulation(Bergen_Stavanger)
-
-    #Trip_time_vector_TA2, Tot_sailing_distance_vector_TA2, sailing_speed_simulation_vector_TA2 = simulation(Trond_aalesund)
-
-    #print(f"Trip time for each repetition {Trip_time_vector_TA2}")
-    #print(f"Total Sailing dist for each repetition {Tot_sailing_distance_vector_TA2[:10]}, should be equal")
-    #print(f"Sailing speed for each repetition {sailing_speed_simulation_vector_TA2} in knots")
 
 
-    #sailing_speed_Trondheim_Aalesund_fil_2 = "Output_files/Trondheim_Aalesund_reise_2"
+def runsimulation(route):
+    """
+        :param route:   0 runs all routes
+                        1 runs Trondheim Ålesund
+                        2 runs Ålesund Florø
+                        3 runs Florø Bergen
+                        4 runs Bergen Stavanger
+        :return: saved files with simulation results
+        """
 
+    Trond_aalesund      = "Route_data/Route_Trondheim_Aalesund.csv"
+    Aalesund_Floro      = "Route_data/Route_Aalesund_floro.csv"
+    Floro_Bergen        = "Route_data/Route_Floro_Bergen.csv"
+    Bergen_Stavanger    = "Route_data/Route_Bergen_Stavanger.csv"
 
-    sailing_speed_trond_aalesund_fil    = "Output_files/Trondheim_Aalesund_reise"
-    sailing_speed_Aalesund_Floro_fil    = "Output_files/Aalesund_Floro_reise"
-    sailing_speed_Floro_Bergen_fil      = "Output_files/Floro_Bergen_reise"
-    sailing_speed_Bergen_Stavanger_fil  = "Output_files/Bergen_Stavanger_reise"
+    if route == 1 or route == 0:
+        Trip_time_vector_TA, Tot_sailing_distance_vector_TA, sailing_speed_simulation_vector_TA = simulation(Trond_aalesund)
+        sailing_speed_trond_aalesund_fil    = "Output_files/Trondheim_Aalesund_reise_3"
+        write_to_file(sailing_speed_simulation_vector_TA, sailing_speed_trond_aalesund_fil)
 
-    #write_to_file(sailing_speed_simulation_vector_TA2,sailing_speed_Trondheim_Aalesund_fil_2)
+    if route == 2 or route == 0:
+        Trip_time_vector_AF, Tot_sailing_distance_vector_AF, sailing_speed_simulation_vector_AF = simulation(Aalesund_Floro)
+        sailing_speed_Aalesund_Floro_fil    = "Output_files/Aalesund_Floro_reise"
+        write_to_file(sailing_speed_simulation_vector_AF, sailing_speed_Aalesund_Floro_fil)
 
-    write_to_file(sailing_speed_simulation_vector_TA,sailing_speed_trond_aalesund_fil)
-    write_to_file(sailing_speed_simulation_vector_AF,sailing_speed_Aalesund_Floro_fil)
-    write_to_file(sailing_speed_simulation_vector_FB,sailing_speed_Floro_Bergen_fil)
-    write_to_file(sailing_speed_simulation_vector_BS,sailing_speed_Bergen_Stavanger_fil)
+    if route == 3 or route == 0:
+        Trip_time_vector_FB, Tot_sailing_distance_vector_FB, sailing_speed_simulation_vector_FB = simulation(Floro_Bergen)
+        sailing_speed_Floro_Bergen_fil      = "Output_files/Floro_Bergen_reise"
+        write_to_file(sailing_speed_simulation_vector_FB, sailing_speed_Floro_Bergen_fil)
 
+    if route == 4 or route == 0:
+        Trip_time_vector_BS, Tot_sailing_distance_vector_BS, sailing_speed_simulation_vector_BS = simulation(Bergen_Stavanger)
+        sailing_speed_Bergen_Stavanger_fil  = "Output_files/Bergen_Stavanger_reise"
+        write_to_file(sailing_speed_simulation_vector_BS, sailing_speed_Bergen_Stavanger_fil)
 
-    #sailing_Speed = read_array_from_file(sailing_speed_trond_aalesund_fil)
-    #print(np.average(sailing_Speed))
     return 0
 
 
 
-#AWS (wind speed, vessel speed, wind direction)
-WSN_temp            = 5
-WSE_temp            = -5
-vessel_speed_temp   = 0
-vessel_heading_temp = 0
-twd_temp            = True_wind_direction(vessel_heading_temp,WSN_temp,WSE_temp) #Heading, WSN, WSE
-degrees             = r2d(twd_temp)
-tws_temp            = True_wind_speed(WSN_temp,WSE_temp)
-AWS_temp            = Apparent_Wind_Speed(tws_temp,vessel_speed_temp,twd_temp) #TWS, VS, Twd
-print("AWS", AWS_temp)
-print("TWS",tws_temp)
-print("TWD",r2d(twd_temp))
-sediek              = Apparent_wind_angle(tws_temp,AWS_temp,vessel_speed_temp)
-egendefinert        = alpha(vessel_speed_temp,vessel_heading_temp,WSN_temp,WSE_temp)
-print("apparent wind angle using alpha, egendefinert",egendefinert)
-print("apparent wind angle using function from sediek",sediek)
+def test_func():
+    #AWS (wind speed, vessel speed, wind direction)
+    WSN_temp            = 5
+    WSE_temp            = -5
+    vessel_speed_temp   = 0
+    vessel_heading_temp = 0
+    twd_temp            = True_wind_direction(vessel_heading_temp,WSN_temp,WSE_temp) #Heading, WSN, WSE
+    degrees             = r2d(twd_temp)
+    tws_temp            = True_wind_speed(WSN_temp,WSE_temp)
+    AWS_temp            = Apparent_Wind_Speed(tws_temp,vessel_speed_temp,twd_temp) #TWS, VS, Twd
+    print("AWS", AWS_temp)
+    print("TWS",tws_temp)
+    print("TWD",r2d(twd_temp))
+    sediek              = Apparent_wind_angle(tws_temp,AWS_temp,vessel_speed_temp)
+    egendefinert        = alpha(vessel_speed_temp,vessel_heading_temp,WSN_temp,WSE_temp)
+    print("apparent wind angle using alpha, egendefinert",egendefinert)
+    print("apparent wind angle using function from sediek",sediek)
+    return 0
 
-
-
+runsimulation(1)
 print("Finished <3<3")
 

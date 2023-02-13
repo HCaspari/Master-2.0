@@ -19,7 +19,7 @@ import gmplot as gmp
 
 from plot_functions import plot_power,plot_avg_power,plot_resistance,plot_weekly_and_daily_avg_power
 from file_handling import write_to_file, read_cols, read_position_vect_from_file
-from Force_functions import resistance_by_speed,solve_beta_by_perp_force, xfold, iterate_drift_angle
+from Force_functions import Sailing_resistance,Beta_solver, Drift_resistance_multiplier, iterate_drift_angle
 from Old_route_calc_funcs import Force_over_year,Force_over_trip
 
 #Input stats
@@ -74,6 +74,21 @@ def vector_of_positions(lats,lons):
     position_array_file  = "../env/position_array"
     write_to_file(position_array_func,position_array_file)
     return position_array_func
+
+#calculates direction between two points, (20.323,23.243),(34.235, 43.345)
+def calc_bearing(pointA, pointB):
+    deg2rad = math.pi / 180
+    latA = pointA[0] * deg2rad
+    latB = pointB[0] * deg2rad
+    lonA = pointA[1] * deg2rad
+    lonB = pointB[1] * deg2rad
+
+    delta_ratio = math.log(math.tan(latB/ 2 + math.pi / 4) / math.tan(latA/ 2 + math.pi / 4))
+    delta_lon = abs(lonA - lonB)
+
+    delta_lon %= math.pi
+    bearing = math.atan2(delta_lon, delta_ratio)/deg2rad
+    return bearing
 
 def generate_intermediate_points(start_point, end_point, num_points):
     """
