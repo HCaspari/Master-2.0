@@ -10,7 +10,7 @@ Start_north = 0
 Start_position = (Start_east,Start_north) #Current Position
 GlobalPositionVect = [(0,0)]
 clock = 0
-filename_AIS = "env/input_files/ais_data_v4.csv"
+filename_AIS = "../env/input_files/ais_data_v4.csv"
 travel_iteration            = 0
 #vessel parameters:
 vessel_length               = 101.26

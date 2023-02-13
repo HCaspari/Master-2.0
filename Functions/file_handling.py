@@ -10,7 +10,7 @@ Start_north = 0
 Start_position = (Start_east,Start_north) #Current Position
 GlobalPositionVect = [(0,0)]
 clock = 0
-filename_AIS = "env/input_files/ais_data_v4.csv"
+filename_AIS = "../env/input_files/ais_data_v4.csv"
 travel_iteration            = 0
 #vessel parameters:
 vessel_length               = 101.26
@@ -54,7 +54,7 @@ def read_cols(filename_ais_data):
         latitudes_vect_func.append(round(latitudes.loc[i].iat[0],4))
         longditudes_vect_func.append(round(longditudes.loc[i].iat[0],4))
         heading_vect_func.append(heading.loc[i].iat[0])
-    heading_file = "env/input_files/heading.csv"
+    heading_file = "../env/input_files/heading.csv"
     write_to_file(heading, heading_file)
     return dist_vect_func,travel_time_vect_func,latitudes_vect_func,longditudes_vect_func,heading_vect_func
 

@@ -19,7 +19,7 @@ import gmplot as gmp
 
 from plot_functions import plot_power,plot_avg_power,plot_resistance,plot_weekly_and_daily_avg_power
 from file_handling import write_to_file, read_cols, read_position_vect_from_file
-from Resistance_functions import resistance_by_speed,solve_beta_by_perp_force, xfold, iterate_drift_angle
+from Force_functions import resistance_by_speed,solve_beta_by_perp_force, xfold, iterate_drift_angle
 from Old_route_calc_funcs import Force_over_year,Force_over_trip,Force_at_position
 
 #Input stats
@@ -32,7 +32,7 @@ Start_north = 0
 Start_position = (Start_east,Start_north) #Current Position
 GlobalPositionVect = [(0,0)]
 clock = 0
-filename_AIS = "env/input_files/ais_data_v4.csv"
+filename_AIS = "../env/input_files/ais_data_v4.csv"
 travel_iteration            = 0
 #vessel parameters:
 vessel_length               = 101.26
@@ -71,7 +71,7 @@ def vector_of_positions(lats,lons):
         else:
             j += 1
     #print(len(position_array_func))
-    position_array_file  = "env/position_array"
+    position_array_file  = "../env/position_array"
     write_to_file(position_array_func,position_array_file)
     return position_array_func
 

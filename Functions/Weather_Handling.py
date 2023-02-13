@@ -30,7 +30,7 @@ Start_north = 0
 Start_position = (Start_east,Start_north) #Current Position
 GlobalPositionVect = [(0,0)]
 clock = 0
-filename_AIS = "env/input_files/ais_data_v4.csv"
+filename_AIS = "../env/input_files/ais_data_v4.csv"
 travel_iteration            = 0
 #vessel parameters:
 vessel_length               = 101.26
@@ -50,8 +50,8 @@ alpha = 3.5
 
 #datafiles
 
-NW_file = "Weather_Data/NW_01_07_2020__01_07_2022.nc" #Keys =['northward_wind', 'time', 'lat', 'lon']
-EW_file = "Weather_Data/EW_01_07_2020__01_07_2022.nc" #Keys =['eastward_wind', 'time', 'lat', 'lon']
+NW_file = "../Weather_Data/NW_01_07_2020__01_07_2022.nc"  #Keys =['northward_wind', 'time', 'lat', 'lon']
+EW_file = "../Weather_Data/EW_01_07_2020__01_07_2022.nc"  #Keys =['eastward_wind', 'time', 'lat', 'lon']
 dataset_NW = nc.Dataset(NW_file)
 dataset_EW = nc.Dataset(EW_file)
 
@@ -255,6 +255,13 @@ def Apparent_wind_angle(TWS, AWS, VS):
 
 #Function that calculates AWA selfmade :D
 def alpha(vessel_speed,vessel_heading, NWS,EWS):
+    """
+    :param vessel_speed: Speed of vessel
+    :param vessel_heading: Heading of vessel
+    :param NWS: Northern wind speed (decomposed)
+    :param EWS: Eastern wind speed (decomposed)
+    :return: Apparent wind angle in degrees
+    """
     Vsx = np.cos(vessel_heading)*vessel_speed
     Vsy = np.sin(vessel_heading)*vessel_speed
     Wsx = EWS
