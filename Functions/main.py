@@ -96,20 +96,22 @@ alpha_const = 3.5
 
 
 #Function that calculates time spent sailing from port a to port b, through predetermined route
-def main(route, time):
+def main(route, iteration):
+
     tot_sailing_dist        = 0
     poor_sailing_time       = 0
     poor_sailing_distance   = 0
     sailing_speed_vector    = []
-    route_sailing_time      = []
-    vessel_speed           = 4 #initializing sailing speed of 4 knots (will change after one iteration)
+    coordinate_sailing_time = []
+    vessel_speed            = 4 #initializing sailing speed of 4 knots (will change after one iteration)
+    route_sailing_time      = iteration
 
     for i in range(len(route)-1): #create itteration through route
         position_first      = route[i]
         position_next       = route[i+1]
         sailing_distance    = round(geopy.distance.geodesic(position_first,position_next).nautical,3)    #In Nautical Miles
         vessel_heading      = calc_bearing(position_first,position_next)                                 #In Degrees (North is 0)
-        WSE,WSN             = getweather(time,position_first[0],position_first[1])                       #Gives Wind speed East and North
+        WSE,WSN             = getweather(route_sailing_time,position_first[0],position_first[1])                       #Gives Wind speed East and North
         TWS                 = True_wind_speed(WSN,WSE)                              #Finds True Windspeed (pythagoras)
         TWD                 = True_wind_direction(vessel_heading,WSN,WSE)
         AWS                 = Apparent_Wind_Speed(TWS,vessel_speed,TWD)
@@ -119,7 +121,7 @@ def main(route, time):
             vessel_speed    = Speed_achieved(perpendicular_force_func, forward_force_func)    #Sailing Speed obtained in KNOTS
             sailing_speed_vector.append(vessel_speed)
             sailing_time     = sailing_distance/vessel_speed                                                    #time used to sail trip added
-            route_sailing_time.append(sailing_time)
+            coordinate_sailing_time.append(sailing_time)
         if type(forward_force_func) == MaskedConstant or type(perpendicular_force_func) == MaskedConstant:
             print("ouchie, we have a mask", i)
         tot_sailing_dist     += sailing_distance
@@ -127,7 +129,9 @@ def main(route, time):
         if vessel_speed < 1:
             poor_sailing_time += sailing_time
             poor_sailing_distance += sailing_distance
-    total_time_sailed_route = sum(route_sailing_time)
+            
+        route_sailing_time += sailing_time
+    total_time_sailed_route = sum(coordinate_sailing_time)
     return total_time_sailed_route,tot_sailing_dist, poor_sailing_time, poor_sailing_distance, sailing_speed_vector
 
 
@@ -152,7 +156,6 @@ def simulation(csv):
                 sailing_speed_simulation_vector
 
     """
-    initial_speed       = 4
 
     hour_intervall                  = 1                                                #at what hourly interval should we simulate?
     route_travel                    = read_route(csv)
@@ -162,26 +165,26 @@ def simulation(csv):
     poor_sailing_time               = np.zeros(int(time_of_simulation/hour_intervall))
     poor_sailing_distance           = np.zeros(int(time_of_simulation/hour_intervall))
     sailing_speed_simulation_vector = np.zeros(int(time_of_simulation/hour_intervall))
-    for time in range(0,int(time_of_simulation/hour_intervall)) : #calculating every 12 hours
+    for iteration in range(0,int(time_of_simulation/hour_intervall)) : #repeating simulation for each hour_intervall through a year
 
-        time_of_trip_1,tot_sailing_dist_1, poor_sailing_time_1, poor_sailing_distance_1, sailing_speed_vector = main(route_travel,time)
-        time_of_trip[int(time)]              = time_of_trip_1
-        tot_sailing_dist[int(time)]          = tot_sailing_dist_1
-        poor_sailing_time[int(time)]         = poor_sailing_time_1
-        poor_sailing_distance[int(time)]     = poor_sailing_distance_1
-        sailing_speed_simulation_vector[time] = np.average(sailing_speed_vector)
-        if time%1000 == 0 and time > 0:
+        time_of_trip_1,tot_sailing_dist_1, poor_sailing_time_1, poor_sailing_distance_1, sailing_speed_vector = main(route_travel,iteration)
+        time_of_trip[int(iteration)]              = time_of_trip_1
+        tot_sailing_dist[int(iteration)]          = tot_sailing_dist_1
+        poor_sailing_time[int(iteration)]         = poor_sailing_time_1
+        poor_sailing_distance[int(iteration)]     = poor_sailing_distance_1
+        sailing_speed_simulation_vector[iteration] = np.average(sailing_speed_vector)
+        if iteration%1000 == 0 and iteration > 0:
             poor_sailing_speed = sum(poor_sailing_distance) / (sum(poor_sailing_time))
-            print(f"speed sailing {csv}, distance of {tot_sailing_dist[time]}\n"
-                  f" is {np.average(sailing_speed_vector[0:time])} knots")
-            print(f"total time sailed at less than 1 knot is {poor_sailing_time[time]}\n"
-                  f"this time is used to sail {poor_sailing_distance[time]} nautical miles\n"
+            print(f"speed sailing {csv}, distance of {tot_sailing_dist[iteration]}\n"
+                  f" is {np.average(sailing_speed_vector[0:iteration])} knots")
+            print(f"total iteration sailed at less than 1 knot is {poor_sailing_time[iteration]}\n"
+                  f"this iteration is used to sail {poor_sailing_distance[iteration]} nautical miles\n"
                   f"at an average speed of {poor_sailing_speed} knots")
-            print(f"{datetime.now()},time is {time}")
+            print(f"{datetime.now()},iteration is {iteration}")
     poor_sailing_speed = sum(poor_sailing_distance)/(sum(poor_sailing_time))
-    print(f"speed sailing {csv} is {np.average(sailing_speed_simulation_vector)}")
-    print(f"total time sailed at less than 1 knot is {sum(poor_sailing_time)}\n"
-          f"this time is used to sail {sum(poor_sailing_distance)} nautical miles\n"
+    print(f"Average speed sailing {csv} over {iteration} iterations is {np.average(sailing_speed_simulation_vector)}")
+    print(f"Throughout all iterations, the vessel sails less than one knot for an average of {np.average(poor_sailing_time)} hours\n"
+          f"this iteration is used to sail on average {np.avg(poor_sailing_distance)} nautical miles\n"
           f"at an average speed of {poor_sailing_speed} knots")
     return time_of_trip,tot_sailing_dist,sailing_speed_simulation_vector
 

@@ -171,6 +171,10 @@ def getweather(tid,latitude, longditude):
     elif lon_pos >= len(dataset_NW["northward_wind"][tid, lat_pos, :]):
         print(f"lon posistion is out of bound at {lon_pos} degrees")
         return 1
+    elif tid >= eastward_time[-1]: #Denne fanger opp situasjoner nær slutten av året der vi mangler værdata for et nytt år. her vil
+        #tiden vi henter værdatafra loope slik at istedenfor å PRØVE å hente været for 02/07/2021, så vil den loope tilbake og finne været for
+        #den 02/07/2020.
+        tid -= eastward_time[-1]
 
     WSN = dataset_NW["northward_wind"][tid,lat_pos,lon_pos]
     WSE = dataset_EW["eastward_wind"][tid,lat_pos,lon_pos]
