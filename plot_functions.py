@@ -96,3 +96,21 @@ def plot_resistance():
     plt.ylabel("kN")
     plt.show()
     return 0
+
+def plot_power_2(title, y_axis, x_label, y_label):
+    speed = [1,3,6,9,12]
+    plt.plot(speed,y_axis)
+    plt.title(title)
+    plt.xlabel(x_label)
+    plt.ylabel(y_label)
+    plt.show()
+    return 0
+
+def plot_percent(title, y_axis, x_label, y_label):
+    speed = [3,6,9,12]
+    plt.plot(speed,y_axis)
+    plt.title(title)
+    plt.xlabel(x_label)
+    plt.ylabel(y_label)
+    plt.show()
+    return 0

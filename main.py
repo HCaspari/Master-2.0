@@ -21,7 +21,7 @@ import gmplot as gmp
 
 from file_handling import write_to_file
 from Resistance_functions import resistance_by_speed,solve_beta_by_perp_force, xfold
-
+from plot_functions import plot_power, plot_power_2, plot_percent, plot_avg_power, plot_weekly_and_daily_avg_power, plot_resistance
 from Weather_Handling import getweather, r2d, d2r, True_wind_direction, True_wind_speed, Apparent_Wind_Speed, Apparent_wind_angle, alpha
 
 #Input stats
@@ -50,7 +50,7 @@ A   = h*d  #cross sectional area of flettner
 Cl  = 12.5
 Cd  = 0.2
 Cm  = 0.2
-alpha = 3.5
+alpha_const = 3.5
 
 #comparisson_vessel_power_by_speed = vessel_velocity**3*0.8*0.55
 
@@ -165,28 +165,10 @@ def take_closest(myList, myNumber):
         return myList.index(before)/10
 
 
-def plot_power_2(title, y_axis, x_label, y_label):
-    speed = [1,3,6,9,12]
-    plt.plot(speed,y_axis)
-    plt.title(title)
-    plt.xlabel(x_label)
-    plt.ylabel(y_label)
-    plt.show()
-    return 0
-
-def plot_percent(title, y_axis, x_label, y_label):
-    speed = [3,6,9,12]
-    plt.plot(speed,y_axis)
-    plt.title(title)
-    plt.xlabel(x_label)
-    plt.ylabel(y_label)
-    plt.show()
-    return 0
-
 def Force_at_position(AWS, AWD):
     lift = 0.5 * rho_air * A * AWS ** 2 * Cl                                 #lift force from traut
     drag = 0.5 * rho_air * A * AWS ** 2 * Cd                                 #drag force from traut
-    #P_input_fletner = 0.5 * rho_air * A * TWS ** 3 * Cm * alpha              #Input to flettner is energy to spin rotors
+    #P_input_fletner = 0.5 * rho_air * A * TWS ** 3 * Cm * alpha_const              #Input to flettner is energy to spin rotors
     if 0 <= AWD <= 90 or 270 <= AWD <= 360:                                  #drag is set to negative if the wind is coming ahead, and positive if not
         drag *= -1
     Force_4_flettners = (lift + drag)*4/1000 #kN                             #KiloNewton
