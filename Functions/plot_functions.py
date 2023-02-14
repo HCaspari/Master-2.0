@@ -115,10 +115,17 @@ def plot_percent(title, y_axis, x_label, y_label):
     plt.show()
     return 0
 
-columns = ['number', 'speed']
-df1 = pd.read_csv("Output_files/Aalesund_Floro_reise", header = None, names=columns)
-plt.hist(df1['speed'], edgecolor='black', range=[0,15])
-plt.title('Speed distribution Ålesund-Florø ')
-plt.xlabel('Speed [Knots]')
-plt.ylabel('Occurences')
-plt.show()
+
+#This function will output a histogram that show the speed distribution for a given route
+def historgram(filename):
+    columns = ['number', 'speed']
+    df1 = pd.read_csv(filename,header = None, names=columns)
+    plt.hist(df1['speed'], edgecolor='black', range=[0,15])
+    if filename == 'Output_files/Bergen_Stavanger_reise':
+        plt.title('Speed distribution'+ '  ' +(filename.replace('Output_files/','')))
+    plt.xlabel('Speed [Knots]')
+    plt.ylabel('Occurences')
+    plt.show()
+    return 0
+
+historgram('Output_files/Bergen_Stavanger_reise')
