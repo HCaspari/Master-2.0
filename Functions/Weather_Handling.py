@@ -56,8 +56,8 @@ dataset_EW = nc.Dataset(EW_file)
 #print(dataset_EW)
 #for var in dataset_NW.variables.values():
 #    print(var)
-print("north",dataset_NW.variables.keys())
-print("East",dataset_EW.variables.keys())
+#print("north",dataset_NW.variables.keys())
+#print("East",dataset_EW.variables.keys())
 northward_wind  = dataset_NW.variables["northward_wind"]
 northward_time  = dataset_NW.variables["time"]
 northward_lat   = dataset_NW.variables["lat"]
