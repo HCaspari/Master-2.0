@@ -159,7 +159,9 @@ def simulation(csv):
         poor_sailing_distance[int(iteration)]     = poor_sailing_distance_1
         sailing_speed_simulation_vector[iteration] = np.average(sailing_speed_vector)
         if iteration%1000 == 0 and iteration > 0:
-            poor_sailing_speed = sum(poor_sailing_distance) / (sum(poor_sailing_time))
+            poor_sailing_speed = 0
+            if poor_sailing_time_1 > 0:
+                poor_sailing_speed = poor_sailing_distance_1 / poor_sailing_time_1
             print(f"speed sailing {csv}, distance of {tot_sailing_dist[iteration]}\n"
                   f" is {np.average(sailing_speed_vector[0:iteration])} knots")
             print(f"total iteration sailed at less than 1 knot is {poor_sailing_time[iteration]}\n"
@@ -170,7 +172,7 @@ def simulation(csv):
     poor_sailing_speed = sum(poor_sailing_distance)/(sum(poor_sailing_time))
     print(f"Average speed sailing {csv} over {iteration} iterations is {np.average(sailing_speed_simulation_vector)}")
     print(f"Throughout all iterations, the vessel sails less than one knot for an average of {np.average(poor_sailing_time)} hours\n"
-          f"this iteration is used to sail on average {np.avg(poor_sailing_distance)} nautical miles\n"
+          f"this iteration is used to sail on average {np.average(poor_sailing_distance)} nautical miles\n"
           f"at an average speed of {poor_sailing_speed} knots")
     return time_of_trip,tot_sailing_dist,sailing_speed_simulation_vector
 
@@ -242,6 +244,6 @@ def test_func():
     print("apparent wind angle using function from sediek",sediek)
     return 0
 
-runsimulation(1)
+runsimulation(0)
 print("Finished <3<3")
 

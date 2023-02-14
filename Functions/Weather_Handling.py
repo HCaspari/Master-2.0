@@ -153,6 +153,11 @@ def d2r(degree):
 def getweather(tid,latitude, longditude):
     #to get the correct index one needs to increase values by 0.125
     #for example, latitude 58.9375 = latitude[0]
+    #a = eastward_time[1,10,10]
+    if tid >= 17520: #Denne fanger opp situasjoner nær slutten av året der vi mangler værdata for et nytt år. her vil
+        #tiden vi henter værdatafra loope slik at istedenfor å PRØVE å hente været for 02/07/2021, så vil den loope tilbake og finne været for
+        #den 02/07/2020.
+        tid -= 17520
     lat_pos = int((latitude-eastward_lat[0])*8)              #Access correct position in vector of north wind
     lon_pos = int((longditude-eastward_lon[0])*8)             #Access correct position in vector of east wind
     #tid += 962409600 #measurements go from 01/07/2020 - to 01/07/2022
@@ -165,16 +170,14 @@ def getweather(tid,latitude, longditude):
     elif longditude < eastward_lon [0] or longditude > eastward_lon[-1]: #været må være hentet på posisjonen longditude
         print("longditude out of bounds, longditude between 3.0625 and 20.9375")
         return 1
+    if lat_pos >= len(dataset_NW["northward_wind"][tid,:]):
+        print("yay")
     elif lat_pos >= len(dataset_NW["northward_wind"][tid,:,lon_pos]):
         print(f"lat posistion is out of bound at {lat_pos} degrees")
         return 1
     elif lon_pos >= len(dataset_NW["northward_wind"][tid, lat_pos, :]):
         print(f"lon posistion is out of bound at {lon_pos} degrees")
         return 1
-    elif tid >= eastward_time[-1]: #Denne fanger opp situasjoner nær slutten av året der vi mangler værdata for et nytt år. her vil
-        #tiden vi henter værdatafra loope slik at istedenfor å PRØVE å hente været for 02/07/2021, så vil den loope tilbake og finne været for
-        #den 02/07/2020.
-        tid -= eastward_time[-1]
 
     WSN = dataset_NW["northward_wind"][tid,lat_pos,lon_pos]
     WSE = dataset_EW["eastward_wind"][tid,lat_pos,lon_pos]
@@ -222,7 +225,6 @@ def Apparent_Wind_Speed(true_wind_speed, vessel_speed, true_wind_direction):
 #function that gives AWA by Seddiek
 def Apparent_wind_angle(TWS, AWS, VS):
     """
-
     :param      TWS: Speed of wind in relation to global axis
     :param      AWS: speed of wind in relation to vessel speed and heading
     :param      VS: speed of vessel
@@ -233,7 +235,8 @@ def Apparent_wind_angle(TWS, AWS, VS):
         AWA -= 360
     return r2d(AWA)
 
-#Function that calculates AWA selfmade :D
+
+#Function that calculates AWA selfmade
 def alpha(vessel_speed,vessel_heading, NWS,EWS):
     """
     :param vessel_speed: Speed of vessel
