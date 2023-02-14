@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-
+import pandas as pd
 #Input stats
 mean_wind_speed = 10 #knots
 mean_wind_direction = 90 #degrees
@@ -114,3 +114,11 @@ def plot_percent(title, y_axis, x_label, y_label):
     plt.ylabel(y_label)
     plt.show()
     return 0
+
+columns = ['number', 'speed']
+df1 = pd.read_csv("Output_files/Aalesund_Floro_reise", header = None, names=columns)
+plt.hist(df1['speed'], edgecolor='black', range=[0,15])
+plt.title('Speed distribution Ålesund-Florø ')
+plt.xlabel('Speed [Knots]')
+plt.ylabel('Occurences')
+plt.show()
