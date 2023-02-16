@@ -13,11 +13,11 @@ from numpy.ma.core import MaskedConstant
 from scipy.interpolate import interp1d
 from bisect import bisect_left
 from datetime import datetime, timedelta, date
-import searoute as sr
+#import searoute as sr
 import chardet
 import folium as folium
 import webbrowser
-import gmplot as gmp
+#import gmplot as gmp
 from file_handling import write_to_file
 
 #Input stats

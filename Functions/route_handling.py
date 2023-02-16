@@ -11,11 +11,11 @@ from numpy.ma.core import MaskedConstant
 from scipy.interpolate import interp1d
 from bisect import bisect_left
 from datetime import datetime, timedelta, date
-import searoute as sr
+#import searoute as sr
 import chardet
 import folium as folium
 import webbrowser
-import gmplot as gmp
+#import gmplot as gmp
 
 from plot_functions import plot_power,plot_avg_power,plot_resistance,plot_weekly_and_daily_avg_power
 from file_handling import write_to_file, read_cols, read_position_vect_from_file
@@ -55,6 +55,7 @@ Trond_Aalesund      = "Route_data/Route_Trondheim_Aalesund.csv"
 Aalesund_Floro      = "Route_data/Route_Aalesund_floro.csv"
 Floro_Bergen        = "Route_data/Route_Floro_Bergen.csv"
 Bergen_Stavanger    = "Route_data/Route_Bergen_Stavanger.csv"
+
 Route_Trond_Aal     = read_position_vect_from_file(Trond_Aalesund)
 Route_Aal_Floro     = read_position_vect_from_file(Aalesund_Floro)
 Route_Floro_Bergen  = read_position_vect_from_file(Floro_Bergen)

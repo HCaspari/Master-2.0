@@ -132,7 +132,8 @@ Trond_Aalesund      = "Trondheim Ålesund"
 Aalesund_Floro      = "Ålesund Florø"
 Floro_Bergen        = "Florø Bergen"
 Bergen_Stavanger    = "Bergen Stavanger"
-historgram('C:/Users/haako/Documents/10. Semester/MASTAH/Master 2.0/Output_files/Trondheim_Aalesund_reise', Trond_Aalesund)
-historgram('C:/Users/haako/Documents/10. Semester/MASTAH/Master 2.0/Output_files/Aalesund_Floro_reise', Aalesund_Floro)
-historgram('C:/Users/haako/Documents/10. Semester/MASTAH/Master 2.0/Output_files/Floro_Bergen_reise', Floro_Bergen)
-historgram('C:/Users/haako/Documents/10. Semester/MASTAH/Master 2.0/Output_files/Bergen_Stavanger_reise', Bergen_Stavanger)
+
+historgram('../Output_files/Trondheim_Aalesund_reise', Trond_Aalesund)
+historgram('../Output_files/Aalesund_Floro_reise', Aalesund_Floro)
+historgram('../Output_files/Floro_Bergen_reise', Floro_Bergen)
+historgram('../Output_files/Bergen_Stavanger_reise', Bergen_Stavanger)
