@@ -117,15 +117,22 @@ def plot_percent(title, y_axis, x_label, y_label):
 
 
 #This function will output a histogram that show the speed distribution for a given route
-def historgram(filename):
+def historgram(filename, title):
     columns = ['number', 'speed']
     df1 = pd.read_csv(filename,header = None, names=columns)
     plt.hist(df1['speed'], edgecolor='black', range=[0,15])
     if filename == 'Output_files/Bergen_Stavanger_reise':
         plt.title('Speed distribution'+ '  ' +(filename.replace('Output_files/','')))
+    plt.title(title)
     plt.xlabel('Speed [Knots]')
     plt.ylabel('Occurences')
     plt.show()
     return 0
-
-historgram('Output_files/Bergen_Stavanger_reise')
+Trond_Aalesund      = "Trondheim Ålesund"
+Aalesund_Floro      = "Ålesund Florø"
+Floro_Bergen        = "Florø Bergen"
+Bergen_Stavanger    = "Bergen Stavanger"
+historgram('C:/Users/haako/Documents/10. Semester/MASTAH/Master 2.0/Output_files/Trondheim_Aalesund_reise', Trond_Aalesund)
+historgram('C:/Users/haako/Documents/10. Semester/MASTAH/Master 2.0/Output_files/Aalesund_Floro_reise', Aalesund_Floro)
+historgram('C:/Users/haako/Documents/10. Semester/MASTAH/Master 2.0/Output_files/Floro_Bergen_reise', Floro_Bergen)
+historgram('C:/Users/haako/Documents/10. Semester/MASTAH/Master 2.0/Output_files/Bergen_Stavanger_reise', Bergen_Stavanger)

@@ -80,14 +80,28 @@ alpha_const = 3.5
 
 #Function that calculates time spent sailing from port a to port b, through predetermined route
 def main(route, iteration):
+    """
+    :param route: Vector of route coordinates [(x1,y1),(x2,y2),...,(xn,yn)]
+    :param iteration: Number of repetitions of simulation
+    :return:    For each iteration of simulation:
+                total_time_sailed_route: float
+                tot_sailing_dist: float
+                poor_sailing_time: float, time sailed less than 1 knot
+                poor_sailing_distance: float, distance sailed at less than 1 knot
+                sailing_speed_vector: vector of speed sailed at each point along route
+                TWS: Vector of true wind speed for each
+                AWA
 
-    tot_sailing_dist        = 0
-    poor_sailing_time       = 0
-    poor_sailing_distance   = 0
-    sailing_speed_vector    = []
-    coordinate_sailing_time = []
-    vessel_speed            = 4 #initializing sailing speed of 4 knots (will change after one iteration)
-    route_sailing_time      = iteration
+    """
+
+    tot_sailing_dist                = 0
+    poor_sailing_time               = 0
+    poor_sailing_distance           = 0
+    sailing_speed_vector            = []
+    coordinate_sailing_time         = []
+    apparent_wind_speed_observed    = []
+    vessel_speed                    = 4 #initializing sailing speed of 4 knots (will change after one iteration)
+    route_sailing_time              = iteration
 
     for i in range(len(route)-1): #create itteration through route
         position_first      = route[i]
@@ -116,6 +130,7 @@ def main(route, iteration):
             poor_sailing_distance += sailing_distance
 
         route_sailing_time += sailing_time
+        apparent_wind_speed_observed.append(AWS)
     total_time_sailed_route = sum(coordinate_sailing_time)
     return total_time_sailed_route,tot_sailing_dist, poor_sailing_time, poor_sailing_distance, sailing_speed_vector, TWS, AWA
 

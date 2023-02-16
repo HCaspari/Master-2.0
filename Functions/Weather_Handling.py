@@ -200,12 +200,12 @@ def True_wind_direction(vessel_heading,wind_speed_north,wind_speed_east):
     :param vessel_heading: Vessel heading
     :param wind_speed_north: speed of wind in northward direction (negaitive means south)
     :param wind_speed_east: speed of wind in eastern direction (negative means west)
-    :return: true wind direction in radians
+    :return: true wind direction [degrees]
     """
     wind_angle = math.atan2(wind_speed_north,wind_speed_east)
     true_wind_direction = wind_angle-vessel_heading
 
-    return true_wind_direction
+    return r2d(true_wind_direction)
 
 def Apparent_Wind_Speed(true_wind_speed, vessel_speed, true_wind_direction):
     """
@@ -213,7 +213,7 @@ def Apparent_Wind_Speed(true_wind_speed, vessel_speed, true_wind_direction):
     :param true_wind_speed: Wind speed in relation to vessel heading
     :param vessel_speed: speed vessel sails
     :param true_wind_direction: heading of wind in relation to vessel
-    :return: apparend wind speed: speed of wind in relation to vessel speed and heading
+    :return: apparend wind speed [float]: speed of wind in relation to vessel speed and heading
     """
 
     #AWS_func = TWS_func - sailing_speed_func * np.sin(np.pi / 180 * sailing_direction_func)
@@ -228,7 +228,7 @@ def Apparent_wind_angle(TWS, AWS, VS):
     :param      TWS: Speed of wind in relation to global axis
     :param      AWS: speed of wind in relation to vessel speed and heading
     :param      VS: speed of vessel
-    :return:    AWA: Apparent wind angle
+    :return:    AWA: Apparent wind angle [degree]
     """
     AWA = math.acos((TWS ** 2 - AWS ** 2 - VS ** 2) / (-2 * AWS * VS))
     if AWA >= 360:

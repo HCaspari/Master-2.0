@@ -51,7 +51,14 @@ Cm  = 0.2
 alpha = 3.5
 Trondheim_location = 63.437686821303096, 10.402184694640052
 Aalesund_location  = 62.93245830958637, 6.3481997169859055
-
+Trond_Aalesund      = "Route_data/Route_Trondheim_Aalesund.csv"
+Aalesund_Floro      = "Route_data/Route_Aalesund_floro.csv"
+Floro_Bergen        = "Route_data/Route_Floro_Bergen.csv"
+Bergen_Stavanger    = "Route_data/Route_Bergen_Stavanger.csv"
+Route_Trond_Aal     = read_position_vect_from_file(Trond_Aalesund)
+Route_Aal_Floro     = read_position_vect_from_file(Aalesund_Floro)
+Route_Floro_Bergen  = read_position_vect_from_file(Floro_Bergen)
+Route_Bergen_Stvg   = read_position_vect_from_file(Bergen_Stavanger)
 
 #create vector of positions over trip, and removes duplicate positions, saves positions to file
 def vector_of_positions(lats,lons):
@@ -127,8 +134,8 @@ def generate_intricate_route(route,points):
         newroute.append(intermediate_points)
     newroute.append(end_position)
     return newroute
-#long_route_trond_aal = generate_intricate_route(route_Trond_Aal, 10)#
-#print(long_route_trond_aal)
+long_route_trond_aal = generate_intricate_route(Route_Trond_Aal, 10)#
+print(long_route_trond_aal)
 #T_A_Oppgradert = generate_intricate_route(route_Trond_Aal,5)
 
 def createmap(trip_vector):
