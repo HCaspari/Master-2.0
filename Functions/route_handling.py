@@ -117,7 +117,7 @@ def generate_intermediate_points(start_point, end_point, num_points):
     for i in range(1, num_points + 1):
         latitude = start_point[0] + i * latitude_delta
         longitude = start_point[1] + i * longitude_delta
-        intermediate_points.append((latitude, longitude))
+        intermediate_points.append((round(latitude,3), round(longitude,3)))
 
     return intermediate_points
 
@@ -137,6 +137,8 @@ def generate_intricate_route(route,points):
     return newroute
 long_route_trond_aal = generate_intricate_route(Route_Trond_Aal, 10)#
 print(long_route_trond_aal)
+print(len(Route_Trond_Aal))
+print(len(long_route_trond_aal))
 #T_A_Oppgradert = generate_intricate_route(route_Trond_Aal,5)
 
 def createmap(trip_vector):
