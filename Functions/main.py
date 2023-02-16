@@ -206,10 +206,10 @@ def runsimulation(route):
         :return: saved files with simulation results
         """
 
-    Trond_aalesund      = "Route_data/Route_Trondheim_Aalesund.csv"
-    Aalesund_Floro      = "Route_data/Route_Aalesund_floro.csv"
-    Floro_Bergen        = "Route_data/Route_Floro_Bergen.csv"
-    Bergen_Stavanger    = "Route_data/Route_Bergen_Stavanger.csv"
+    Trond_aalesund      = "../Route_data/Route_Trondheim_Aalesund.csv"
+    Aalesund_Floro      = "../Route_data/Route_Aalesund_floro.csv"
+    Floro_Bergen        = "../Route_data/Route_Floro_Bergen.csv"
+    Bergen_Stavanger    = "../Route_data/Route_Bergen_Stavanger.csv"
     if route == 0:
         print ("Running simulation for all routes")
     if route == 1 or route == 0:

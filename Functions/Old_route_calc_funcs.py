@@ -7,7 +7,7 @@ from file_handling import write_to_file, read_array_from_file, read_position_vec
 from Weather_Handling import getweather, Apparent_wind_angle, Apparent_Wind_Speed
 #from main import Speed_sailed
 
-filename = "env/position_array"  # file containing position array of route
+filename = "../env/position_array"  # file containing position array of route
 position_array = read_position_vect_from_file(filename) # reads said file
 
 #Input stats
@@ -20,7 +20,7 @@ Start_north = 0
 Start_position = (Start_east,Start_north) #Current Position
 GlobalPositionVect = [(0,0)]
 clock = 0
-filename_AIS = "env/input_files/ais_data_v4.csv"
+filename_AIS = "../env/input_files/ais_data_v4.csv"
 travel_iteration            = 0
 #vessel parameters:
 vessel_length               = 101.26

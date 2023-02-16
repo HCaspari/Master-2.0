@@ -60,7 +60,7 @@ def read_cols(filename_ais_data):
     return dist_vect_func,travel_time_vect_func,latitudes_vect_func,longditudes_vect_func,heading_vect_func
 
 def read_position_vect_from_file(filename_func):
-    readdata = pd.read_csv(filename_func, usecols=["0", "1"])
+    readdata = pd.read_csv(filename_func)#, usecols=["1","0"])
     readdata = readdata[readdata != 0]
 
     position_array =  []
@@ -70,7 +70,7 @@ def read_position_vect_from_file(filename_func):
     return position_array
 
 def find_vals():
-    df = pd.read_csv("env/input_files/ais_data_v3.csv")
+    df = pd.read_csv("../env/input_files/ais_data_v3.csv")
     del df["Unnamed: 0"]
     df = df[df.nav_status !=2] #removes every entry with nav_Status = 2
     df = df[df.nav_status !=5] #removes every entry with nav_status = 5

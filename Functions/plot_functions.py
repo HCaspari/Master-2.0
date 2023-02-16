@@ -133,7 +133,7 @@ Aalesund_Floro      = "Ålesund Florø"
 Floro_Bergen        = "Florø Bergen"
 Bergen_Stavanger    = "Bergen Stavanger"
 
-historgram('../Output_files/Trondheim_Aalesund_reise', Trond_Aalesund)
-historgram('../Output_files/Aalesund_Floro_reise', Aalesund_Floro)
-historgram('../Output_files/Floro_Bergen_reise', Floro_Bergen)
-historgram('../Output_files/Bergen_Stavanger_reise', Bergen_Stavanger)
+#historgram('../Output_files/Trondheim_Aalesund_reise', Trond_Aalesund)
+#historgram('../Output_files/Aalesund_Floro_reise', Aalesund_Floro)
+#historgram('../Output_files/Floro_Bergen_reise', Floro_Bergen)
+#historgram('../Output_files/Bergen_Stavanger_reise', Bergen_Stavanger)

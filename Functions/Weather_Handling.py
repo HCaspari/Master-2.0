@@ -34,8 +34,8 @@ alpha = 3.5
 
 #datafiles
 
-NW_file = "Weather_Data/NW_01_07_2020__01_07_2022.nc"  #Keys =['northward_wind', 'time', 'lat', 'lon']
-EW_file = "Weather_Data/EW_01_07_2020__01_07_2022.nc"  #Keys =['eastward_wind', 'time', 'lat', 'lon']
+NW_file = "../Weather_Data/NW_01_07_2020__01_07_2022.nc"  #Keys =['northward_wind', 'time', 'lat', 'lon']
+EW_file = "../Weather_Data/EW_01_07_2020__01_07_2022.nc"  #Keys =['eastward_wind', 'time', 'lat', 'lon']
 dataset_NW = nc.Dataset(NW_file)
 dataset_EW = nc.Dataset(EW_file)
 
