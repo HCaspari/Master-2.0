@@ -180,8 +180,8 @@ def createmap(trip_vector):
     :param trip_vector: A vector of coordinates over route
     :return: a map that shows given route
     """
-
-    foliummap = folium.Map(location=Trondheim_location, tiles="Stamen Terrain", zoom_start=9)
+    middle_of_route = trip_vector[int(len(trip_vector)/2)]
+    foliummap = folium.Map(location=middle_of_route, tiles="Stamen Terrain", zoom_start=7)
     #foliummap.show_in_browser()
 
     route = trip_vector
@@ -216,12 +216,27 @@ def distance_between_points(route):
         end_coord = route[i + 1]
         dist_vect.append(geodesic(start_coord,end_coord).kilometers)
     print(dist_vect)
-distance_between_points(Route_Trond_Aal)
-distance_between_points(Route_Aal_Floro)
-distance_between_points(Route_Floro_Bergen)
-distance_between_points(Route_Bergen_Stvg)
+#distance_between_points(Route_Trond_Aal)
+#distance_between_points(Route_Aal_Floro)
+#distance_between_points(Route_Floro_Bergen)
+##distance_between_points(Route_Bergen_Stvg)
 
-distance_calc(Route_Trond_Aal)
-distance_calc(Route_Aal_Floro)
-distance_calc(Route_Floro_Bergen)
-distance_calc(Route_Bergen_Stvg)
+#distance_calc(Route_Trond_Aal)
+#distance_calc(Route_Aal_Floro)
+#distance_calc(Route_Floro_Bergen)
+#distance_calc(Route_Bergen_Stvg)
+
+intricate_Trond_aal = generate_intricate_route(Route_Trond_Aal,15)
+intricate_Aal_Floro = generate_intricate_route(Route_Aal_Floro,15)
+intricate_Floro_Brg = generate_intricate_route(Route_Floro_Bergen,15)
+intricate_Brg_Stvg  = generate_intricate_route(Route_Bergen_Stvg,15)
+route_Trond_Aals_intricate  = "../Route_data/route_Trond_Aales_Intricate"
+route_Aals_Floro_intricate  = "../Route_data/route_Aales_Floro_Intricate"
+route_Floro_Brg_intricate   = "../Route_data/route_Floro_Brg_Intricate"
+route_Brg_Stvg_intricate    = "../Route_data/route_Brg_Stv_Intricate"
+
+write_to_file(intricate_Trond_aal,route_Trond_Aals_intricate)
+write_to_file(intricate_Aal_Floro,route_Aals_Floro_intricate)
+write_to_file(intricate_Floro_Brg,route_Floro_Brg_intricate)
+write_to_file(intricate_Brg_Stvg,route_Brg_Stvg_intricate)
+#createmap(intricate_Brg_Stvg)

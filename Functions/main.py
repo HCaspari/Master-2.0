@@ -206,16 +206,16 @@ def runsimulation(route):
         :return: saved files with simulation results
         """
 
-    Trond_aalesund      = "../Route_data/Route_Trondheim_Aalesund.csv"
-    Aalesund_Floro      = "../Route_data/Route_Aalesund_floro.csv"
-    Floro_Bergen        = "../Route_data/Route_Floro_Bergen.csv"
-    Bergen_Stavanger    = "../Route_data/Route_Bergen_Stavanger.csv"
+    Trond_aalesund      = "../Route_data/route_Trond_Aales_Intricate.csv"
+    Aalesund_Floro      = "Route_data/route_Aales_Floro_Intricate.csv"
+    Floro_Bergen        = "Route_data/route_Floro_Brg_Intricate.csv"
+    Bergen_Stavanger    = "Route_data/route_Brg_Stv_Intricate.csv"
     if route == 0:
         print ("Running simulation for all routes")
     if route == 1 or route == 0:
         print("Running simulation for route Trondheim Aalesund now")
         Trip_time_vector_TA, Tot_sailing_distance_vector_TA, sailing_speed_simulation_vector_TA = simulation(Trond_aalesund)
-        sailing_speed_trond_aalesund_fil    = "Output_files/Trondheim_Aalesund_reise_3"
+        sailing_speed_trond_aalesund_fil    = "Output_files/Trondheim_Aalesund_reise"
         write_to_file(sailing_speed_simulation_vector_TA, sailing_speed_trond_aalesund_fil)
 
     if route == 2 or route == 0:
@@ -259,6 +259,6 @@ def test_func():
     print("apparent wind angle using function from sediek",sediek)
     return 0
 
-runsimulation(0)
+runsimulation(1)
 print("Finished <3<3")
 
