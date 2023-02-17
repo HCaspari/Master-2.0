@@ -143,7 +143,7 @@ def equal_dist():
     maptest.show_in_browser()
     return 0
 
-equal_dist()
+
 
 def generate_intricate_route(route,points):
     """
@@ -159,6 +159,7 @@ def generate_intricate_route(route,points):
         newroute.extend(intermediate_points)
         newroute.append((round(end_position[0],3),round(end_position[1],3)))
     return newroute
+
 def testthingy():
     print(f"Test Short route start {test_route[0]}")
     print(f"Test Short route end {test_route[-1]}")
@@ -174,7 +175,6 @@ def testthingy():
     print(f"lenght of short route: {len(Route_Trond_Aal)}")
     print(f"lenght of long route: {len(Route_Trond_Aal_Long)}")
     return 0
-
 def createmap(trip_vector):
     """
     :param trip_vector: A vector of coordinates over route
@@ -198,3 +198,30 @@ def createmap(trip_vector):
 #createmap(Route_Trond_Aal)
 #createmap(Route_Trond_Aal_Long)
 
+#createmap(Route_Trond_Aal)
+#Specific_route_TA = generate_intricate_route(Route_Trond_Aal,15)
+#createmap(Specific_route_TA)
+def distance_calc(route):
+    totaldist = 0
+    for i in range(len(route)-1):
+        start_coord = route[i]
+        end_coord = route[i + 1]
+        totaldist += geodesic(start_coord,end_coord).kilometers
+
+    print(f"Total distance = {totaldist}")
+def distance_between_points(route):
+    dist_vect = []
+    for i in range(len(route)-1):
+        start_coord = route[i]
+        end_coord = route[i + 1]
+        dist_vect.append(geodesic(start_coord,end_coord).kilometers)
+    print(dist_vect)
+distance_between_points(Route_Trond_Aal)
+distance_between_points(Route_Aal_Floro)
+distance_between_points(Route_Floro_Bergen)
+distance_between_points(Route_Bergen_Stvg)
+
+distance_calc(Route_Trond_Aal)
+distance_calc(Route_Aal_Floro)
+distance_calc(Route_Floro_Bergen)
+distance_calc(Route_Bergen_Stvg)
