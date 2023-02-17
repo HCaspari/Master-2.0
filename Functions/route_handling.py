@@ -14,8 +14,10 @@ from datetime import datetime, timedelta, date
 #import searoute as sr
 import chardet
 import folium as folium
+from geopy.distance import geodesic
 import webbrowser
 #import gmplot as gmp
+
 
 from plot_functions import plot_power,plot_avg_power,plot_resistance,plot_weekly_and_daily_avg_power
 from file_handling import write_to_file, read_cols, read_position_vect_from_file
@@ -120,6 +122,28 @@ def generate_intermediate_points(start_point, end_point, num_points):
         intermediate_points.append((round(latitude,3), round(longitude,3)))
 
     return intermediate_points
+test_route = [(0,0),(10,10),(20,20)]
+
+def equal_dist():
+    start_point = Route_Trond_Aal[0]
+    end_point = Route_Trond_Aal[-1]
+    distance = geodesic(start_point, end_point).nautical
+    num_points = 10
+    interval = distance / (num_points - 1)
+    points = []
+    for i in range(num_points):
+        distance_from_start = i * interval
+        fraction = distance_from_start / distance
+        lat = start_point[0] + fraction * (end_point[0] - start_point[0])
+        lon = start_point[1] + fraction * (end_point[1] - start_point[1])
+        points.append((lat, lon))
+
+    maptest = folium.Map(location=start_point, zoom_start=10)
+    folium.PolyLine(points, color="blue", weight=2.5, opacity=1).add_to(maptest)
+    maptest.show_in_browser()
+    return 0
+
+equal_dist()
 
 def generate_intricate_route(route,points):
     """
@@ -128,18 +152,28 @@ def generate_intricate_route(route,points):
     :return: detailed route as vector of coordinates
     """
     newroute = [route[0][:]]
-    for position in range(8):
+    for position in range(len(route)-1):
         start_position  = route[position]
         end_position    = route[position+1]
         intermediate_points = generate_intermediate_points(start_position,end_position, points)
-        newroute.append(intermediate_points)
-    newroute.append(end_position)
+        newroute.extend(intermediate_points)
+        newroute.append((round(end_position[0],3),round(end_position[1],3)))
     return newroute
-long_route_trond_aal = generate_intricate_route(Route_Trond_Aal, 10)#
-print(long_route_trond_aal)
-print(len(Route_Trond_Aal))
-print(len(long_route_trond_aal))
-#T_A_Oppgradert = generate_intricate_route(route_Trond_Aal,5)
+def testthingy():
+    print(f"Test Short route start {test_route[0]}")
+    print(f"Test Short route end {test_route[-1]}")
+    test_route_long = generate_intricate_route(test_route, 3)#
+    print(f"Test Long route vector: {test_route_long}")
+    print(f"Test lenght of short route: {len(test_route)}")
+    print(f"Test lenght of long route: {len(test_route_long)}")
+
+    print(f"Short route start {Route_Trond_Aal[0]}")
+    print(f"Short route end {Route_Trond_Aal[-1]}")
+    Route_Trond_Aal_Long = generate_intricate_route(Route_Trond_Aal, 3)#
+    print(f"Long route vector: {Route_Trond_Aal_Long}")
+    print(f"lenght of short route: {len(Route_Trond_Aal)}")
+    print(f"lenght of long route: {len(Route_Trond_Aal_Long)}")
+    return 0
 
 def createmap(trip_vector):
     """
@@ -158,13 +192,9 @@ def createmap(trip_vector):
                     icon=folium.Icon(color="%s" % "blue"),
                 )
         )
-        foliummap.add_child(
-            folium.Marker(
-                location=Aalesund_location,
-                icon=folium.Icon(color="%s" % "blue"),
-            )
-        )
 
     foliummap.show_in_browser()
     return 0
-#createmap(T_A_Oppgradert)
+#createmap(Route_Trond_Aal)
+#createmap(Route_Trond_Aal_Long)
+
