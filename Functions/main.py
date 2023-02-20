@@ -14,7 +14,7 @@ def fucketyfuck(path):
     if platform.system() == "Windows":
         print("../"+path)
         return "../"+path
-    elif platform.system() == "macOS":
+    elif platform.system() == "Darwin":
         print(path)
         return path
     else:
