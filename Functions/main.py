@@ -7,7 +7,7 @@ from file_handling import write_to_file, read_route
 from route_handling import calc_bearing
 from Force_functions import Force_produced, Speed_achieved
 from Weather_Handling import getweather, r2d, True_wind_direction, True_wind_speed, Apparent_Wind_Speed, Apparent_wind_angle, alpha
-
+from pathlib import Path, PureWindowsPath
 
 #Input stats
 mean_wind_speed = 10 #knots
@@ -233,11 +233,13 @@ def runsimulation(route):
     if route == 4 or route == 0:
         print("Running simulation for route Bergen Stavanger now")
         Trip_time_vector_BS, Tot_sailing_distance_vector_BS, sailing_speed_simulation_vector_BS = simulation(Bergen_Stavanger)
-        sailing_speed_Bergen_Stavanger_fil  = "Output_files/Bergen_Stavanger_reise"
+        sailing_speed_Bergen_Stavanger_fil  = PureWindowsPath(Path("../Output_files/Bergen_Stavanger_reise"))
         write_to_file(sailing_speed_simulation_vector_BS, sailing_speed_Bergen_Stavanger_fil)
     if route == 5:
         print(f"Testing file access: ")
-        test_fil = "Output_files/test_file"
+
+        test_fil = PureWindowsPath(Path("../Output_files/test_file"))
+
         test_vect = [0,1,69,3]
         write_to_file(test_vect,test_fil)
 
@@ -264,6 +266,6 @@ def test_func():
     print("apparent wind angle using function from sediek",sediek)
     return 0
 
-runsimulation(5)
+runsimulation(4)
 print("Finished <3<3")
 
