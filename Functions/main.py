@@ -8,6 +8,19 @@ from route_handling import calc_bearing
 from Force_functions import Force_produced, Speed_achieved
 from Weather_Handling import getweather, r2d, True_wind_direction, True_wind_speed, Apparent_Wind_Speed, Apparent_wind_angle, alpha
 from pathlib import Path, PureWindowsPath
+import platform
+
+def fucketyfuck(path):
+    if platform.system() == "Windows":
+        print("../"+path)
+        return "../"+path
+    elif platform.system() == "macOS":
+        print(path)
+        return path
+    else:
+        print("Your path is bad and you should feel bad")
+        print("or you are not Mathias or Håkon")
+        return 1
 
 #Input stats
 mean_wind_speed = 10 #knots
@@ -19,7 +32,7 @@ Start_north = 0
 Start_position = (Start_east,Start_north) #Current Position
 GlobalPositionVect = [(0,0)]
 clock = 0
-filename_AIS = PureWindowsPath(Path("../env/input_files/ais_data_v4.csv"))
+filename_AIS = "env/input_files/ais_data_v4.csv"
 travel_iteration            = 0
 #vessel parameters:
 vessel_length               = 101.26
@@ -37,6 +50,7 @@ Cd  = 0.2
 Cm  = 0.2
 alpha_const = 3.5
 
+fucketyfuck(filename_AIS)
 #comparisson_vessel_power_by_speed = vessel_velocity**3*0.8*0.55
 
 
@@ -266,6 +280,6 @@ def test_func():
     print("apparent wind angle using function from sediek",sediek)
     return 0
 
-runsimulation(0)
+runsimulation(5)
 print("Finished <3<3")
 
