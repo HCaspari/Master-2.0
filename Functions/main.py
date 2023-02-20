@@ -157,7 +157,7 @@ def simulation(csv):
 
     """
 
-    hour_intervall                  = 1                                                #at what hourly interval should we simulate?
+    hour_intervall                  = 6                                                #at what hourly interval should we simulate?
     route_travel                    = read_route(csv)
     time_of_simulation              = 17520                                             #two years in hours
     time_of_trip                    = np.zeros(int(time_of_simulation/hour_intervall))
@@ -173,7 +173,7 @@ def simulation(csv):
         poor_sailing_time[int(iteration)]         = poor_sailing_time_1
         poor_sailing_distance[int(iteration)]     = poor_sailing_distance_1
         sailing_speed_simulation_vector[iteration] = np.average(sailing_speed_vector)
-        if iteration%1000 == 0 and iteration > 0:
+        if iteration%60 == 0 and iteration > 0:
             poor_sailing_speed = 0
             if poor_sailing_time_1 > 0:
                 poor_sailing_speed = poor_sailing_distance_1 / poor_sailing_time_1
@@ -235,6 +235,11 @@ def runsimulation(route):
         Trip_time_vector_BS, Tot_sailing_distance_vector_BS, sailing_speed_simulation_vector_BS = simulation(Bergen_Stavanger)
         sailing_speed_Bergen_Stavanger_fil  = "Output_files/Bergen_Stavanger_reise"
         write_to_file(sailing_speed_simulation_vector_BS, sailing_speed_Bergen_Stavanger_fil)
+    if route == 5:
+        print(f"Testing file access: ")
+        test_fil = "../Output_files/test_file"
+        test_vect = [0,1,69,3]
+        write_to_file(test_vect,test_fil)
 
     return 0
 
@@ -259,6 +264,6 @@ def test_func():
     print("apparent wind angle using function from sediek",sediek)
     return 0
 
-runsimulation(1)
+runsimulation(5)
 print("Finished <3<3")
 
