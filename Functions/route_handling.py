@@ -34,7 +34,7 @@ Start_north = 0
 Start_position = (Start_east,Start_north) #Current Position
 GlobalPositionVect = [(0,0)]
 clock = 0
-filename_AIS = "../env/input_files/ais_data_v4.csv"
+filename_AIS = "env/input_files/ais_data_v4.csv"
 travel_iteration            = 0
 #vessel parameters:
 vessel_length               = 101.26
@@ -53,10 +53,10 @@ Cm  = 0.2
 alpha = 3.5
 Trondheim_location = 63.437686821303096, 10.402184694640052
 Aalesund_location  = 62.93245830958637, 6.3481997169859055
-Trond_Aalesund      = "../Route_data/Route_Trondheim_Aalesund.csv"
-Aalesund_Floro      = "../Route_data/Route_Aalesund_floro.csv"
-Floro_Bergen        = "../Route_data/Route_Floro_Bergen.csv"
-Bergen_Stavanger    = "../Route_data/Route_Bergen_Stavanger.csv"
+Trond_Aalesund      = "Route_data/Route_Trondheim_Aalesund.csv"
+Aalesund_Floro      = "Route_data/Route_Aalesund_floro.csv"
+Floro_Bergen        = "Route_data/Route_Floro_Bergen.csv"
+Bergen_Stavanger    = "Route_data/Route_Bergen_Stavanger.csv"
 
 Route_Trond_Aal     = read_position_vect_from_file(Trond_Aalesund)
 Route_Aal_Floro     = read_position_vect_from_file(Aalesund_Floro)
@@ -81,7 +81,7 @@ def vector_of_positions(lats,lons):
         else:
             j += 1
     #print(len(position_array_func))
-    position_array_file  = "../env/position_array"
+    position_array_file  = "env/position_array"
     write_to_file(position_array_func,position_array_file)
     return position_array_func
 
@@ -230,10 +230,10 @@ intricate_Trond_aal = generate_intricate_route(Route_Trond_Aal,15)
 intricate_Aal_Floro = generate_intricate_route(Route_Aal_Floro,15)
 intricate_Floro_Brg = generate_intricate_route(Route_Floro_Bergen,15)
 intricate_Brg_Stvg  = generate_intricate_route(Route_Bergen_Stvg,15)
-route_Trond_Aals_intricate  = "../Route_data/route_Trond_Aales_Intricate"
-route_Aals_Floro_intricate  = "../Route_data/route_Aales_Floro_Intricate"
-route_Floro_Brg_intricate   = "../Route_data/route_Floro_Brg_Intricate"
-route_Brg_Stvg_intricate    = "../Route_data/route_Brg_Stv_Intricate"
+route_Trond_Aals_intricate  = "Route_data/route_Trond_Aales_Intricate"
+route_Aals_Floro_intricate  = "Route_data/route_Aales_Floro_Intricate"
+route_Floro_Brg_intricate   = "Route_data/route_Floro_Brg_Intricate"
+route_Brg_Stvg_intricate    = "Route_data/route_Brg_Stv_Intricate"
 
 write_to_file(intricate_Trond_aal,route_Trond_Aals_intricate)
 write_to_file(intricate_Aal_Floro,route_Aals_Floro_intricate)

@@ -7,7 +7,7 @@ from file_handling import write_to_file, read_array_from_file, read_position_vec
 from Weather_Handling import getweather, Apparent_wind_angle, Apparent_Wind_Speed
 #from main import Speed_sailed
 
-filename = "../env/position_array"  # file containing position array of route
+filename = "env/position_array"  # file containing position array of route
 position_array = read_position_vect_from_file(filename) # reads said file
 
 #Input stats

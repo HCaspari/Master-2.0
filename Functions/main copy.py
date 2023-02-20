@@ -19,7 +19,7 @@ Start_north = 0
 Start_position = (Start_east,Start_north) #Current Position
 GlobalPositionVect = [(0,0)]
 clock = 0
-filename_AIS = "../env/input_files/ais_data_v4.csv"
+filename_AIS = "env/input_files/ais_data_v4.csv"
 travel_iteration            = 0
 #vessel parameters:
 vessel_length               = 101.26
@@ -206,7 +206,7 @@ def runsimulation(route):
         :return: saved files with simulation results
         """
 
-    Trond_aalesund      = "../Route_data/route_Trond_Aales_Intricate.csv"
+    Trond_aalesund      = "Route_data/route_Trond_Aales_Intricate.csv"
     Aalesund_Floro      = "Route_data/route_Aales_Floro_Intricate.csv"
     Floro_Bergen        = "Route_data/route_Floro_Brg_Intricate.csv"
     Bergen_Stavanger    = "Route_data/route_Brg_Stv_Intricate.csv"
@@ -264,6 +264,6 @@ def test_func():
     print("apparent wind angle using function from sediek",sediek)
     return 0
 
-runsimulation(5)
+runsimulation(3)
 print("Finished <3<3")
 
