@@ -19,6 +19,7 @@ import folium as folium
 import webbrowser
 #import gmplot as gmp
 from file_handling import write_to_file
+from pathlib import Path, PureWindowsPath
 
 #Input stats
 mean_wind_speed = 10 #knots
@@ -30,7 +31,7 @@ Start_north = 0
 Start_position = (Start_east,Start_north) #Current Position
 GlobalPositionVect = [(0,0)]
 clock = 0
-filename_AIS = "../env/input_files/ais_data_v4.csv"
+filename_AIS = PureWindowsPath(Path("../env/input_files/ais_data_v4.csv"))
 travel_iteration            = 0
 #vessel parameters:
 vessel_length               = 101.26
@@ -105,7 +106,7 @@ def iterate_drift_angle(vessel_velocity):
     for j in range(0,iterations,4):
         print(f"A drift angle of {j/10} degrees provides "
               f"{round(Fy_vector[j][1]/1000,3)} kN of force righting force" )
-    filename_avg_righting_force = "/Weather/env/old_code/output_files5/righting_force.txt"
+    filename_avg_righting_force = PureWindowsPath(Path("/Weather/env/old_code/output_files5/righting_force.txt"))
     write_to_file(Fy_vector,filename_avg_righting_force)
     return Fy_vector
 

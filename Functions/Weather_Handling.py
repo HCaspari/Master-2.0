@@ -3,6 +3,7 @@ import math
 import numpy as np
 import netCDF4 as nc #read .nc files with weather data
 from datetime import datetime, timedelta, date
+from pathlib import PureWindowsPath, WindowsPath, Path
 
 #Input stats
 mean_wind_speed = 10 #knots
@@ -14,7 +15,7 @@ Start_north = 0
 Start_position = (Start_east,Start_north) #Current Position
 GlobalPositionVect = [(0,0)]
 clock = 0
-filename_AIS = "../env/input_files/ais_data_v4.csv"
+filename_AIS = PureWindowsPath(Path("../env/input_files/ais_data_v4.csv"))
 travel_iteration            = 0
 #vessel parameters:
 vessel_length               = 101.26
@@ -34,8 +35,9 @@ alpha = 3.5
 
 #datafiles
 
-NW_file = "Weather_Data/NW_01_07_2020__01_07_2022.nc"  #Keys =['northward_wind', 'time', 'lat', 'lon']
-EW_file = "Weather_Data/EW_01_07_2020__01_07_2022.nc"  #Keys =['eastward_wind', 'time', 'lat', 'lon']
+
+NW_file = PureWindowsPath(Path("../Weather_Data/NW_01_07_2020__01_07_2022.nc")) #Keys =['northward_wind', 'time', 'lat', 'lon']
+EW_file = PureWindowsPath(Path("../Weather_Data/EW_01_07_2020__01_07_2022.nc"))  #Keys =['eastward_wind', 'time', 'lat', 'lon']
 dataset_NW = nc.Dataset(NW_file)
 dataset_EW = nc.Dataset(EW_file)
 

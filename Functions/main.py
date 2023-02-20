@@ -19,7 +19,7 @@ Start_north = 0
 Start_position = (Start_east,Start_north) #Current Position
 GlobalPositionVect = [(0,0)]
 clock = 0
-filename_AIS = "../env/input_files/ais_data_v4.csv"
+filename_AIS = PureWindowsPath(Path("../env/input_files/ais_data_v4.csv"))
 travel_iteration            = 0
 #vessel parameters:
 vessel_length               = 101.26
@@ -157,7 +157,7 @@ def simulation(csv):
 
     """
 
-    hour_intervall                  = 6                                                #at what hourly interval should we simulate?
+    hour_intervall                  = 1000                                                #at what hourly interval should we simulate?
     route_travel                    = read_route(csv)
     time_of_simulation              = 17520                                             #two years in hours
     time_of_trip                    = np.zeros(int(time_of_simulation/hour_intervall))
@@ -173,7 +173,7 @@ def simulation(csv):
         poor_sailing_time[int(iteration)]         = poor_sailing_time_1
         poor_sailing_distance[int(iteration)]     = poor_sailing_distance_1
         sailing_speed_simulation_vector[iteration] = np.average(sailing_speed_vector)
-        if iteration%60 == 0 and iteration > 0:
+        if iteration%1000 == 0 and iteration > 0:
             poor_sailing_speed = 0
             if poor_sailing_time_1 > 0:
                 poor_sailing_speed = poor_sailing_distance_1 / poor_sailing_time_1
@@ -206,28 +206,28 @@ def runsimulation(route):
         :return: saved files with simulation results
         """
 
-    Trond_aalesund      = "../Route_data/route_Trond_Aales_Intricate.csv"
-    Aalesund_Floro      = "Route_data/route_Aales_Floro_Intricate.csv"
-    Floro_Bergen        = "Route_data/route_Floro_Brg_Intricate.csv"
-    Bergen_Stavanger    = "Route_data/route_Brg_Stv_Intricate.csv"
+    Trond_aalesund      = PureWindowsPath(Path("../Route_data/route_Trond_Aales_Intricate.csv"))
+    Aalesund_Floro      = PureWindowsPath(Path("../Route_data/route_Aales_Floro_Intricate.csv"))
+    Floro_Bergen        = PureWindowsPath(Path("../Route_data/route_Floro_Brg_Intricate.csv"))
+    Bergen_Stavanger    = PureWindowsPath(Path("../Route_data/route_Brg_Stv_Intricate.csv"))
     if route == 0:
         print ("Running simulation for all routes")
     if route == 1 or route == 0:
         print("Running simulation for route Trondheim Aalesund now")
         Trip_time_vector_TA, Tot_sailing_distance_vector_TA, sailing_speed_simulation_vector_TA = simulation(Trond_aalesund)
-        sailing_speed_trond_aalesund_fil    = "Output_files/Trondheim_Aalesund_reise"
+        sailing_speed_trond_aalesund_fil    = PureWindowsPath(Path("../Output_files/Trondheim_Aalesund_reise"))
         write_to_file(sailing_speed_simulation_vector_TA, sailing_speed_trond_aalesund_fil)
 
     if route == 2 or route == 0:
         print("Running simulation for route Ålesund Florø now")
         Trip_time_vector_AF, Tot_sailing_distance_vector_AF, sailing_speed_simulation_vector_AF = simulation(Aalesund_Floro)
-        sailing_speed_Aalesund_Floro_fil    = "Output_files/Aalesund_Floro_reise"
+        sailing_speed_Aalesund_Floro_fil    = PureWindowsPath(Path("../Output_files/Aalesund_Floro_reise"))
         write_to_file(sailing_speed_simulation_vector_AF, sailing_speed_Aalesund_Floro_fil)
 
     if route == 3 or route == 0:
         print("Running simulation for route Florø Bergen now")
         Trip_time_vector_FB, Tot_sailing_distance_vector_FB, sailing_speed_simulation_vector_FB = simulation(Floro_Bergen)
-        sailing_speed_Floro_Bergen_fil      = "Output_files/Floro_Bergen_reise"
+        sailing_speed_Floro_Bergen_fil      = PureWindowsPath(Path("../Output_files/Floro_Bergen_reise"))
         write_to_file(sailing_speed_simulation_vector_FB, sailing_speed_Floro_Bergen_fil)
 
     if route == 4 or route == 0:
@@ -266,6 +266,6 @@ def test_func():
     print("apparent wind angle using function from sediek",sediek)
     return 0
 
-runsimulation(4)
+runsimulation(0)
 print("Finished <3<3")
 

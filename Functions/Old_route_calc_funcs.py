@@ -5,9 +5,10 @@ from datetime import datetime
 from plot_functions import plot_power
 from file_handling import write_to_file, read_array_from_file, read_position_vect_from_file
 from Weather_Handling import getweather, Apparent_wind_angle, Apparent_Wind_Speed
-#from main import Speed_sailed
+from pathlib import PureWindowsPath, Path
+from Force_functions import Force_produced, Speed_achieved
 
-filename = "env/position_array"  # file containing position array of route
+filename = "../env/position_array"  # file containing position array of route
 position_array = read_position_vect_from_file(filename) # reads said file
 
 #Input stats
@@ -52,7 +53,7 @@ def Force_over_trip(position_vector, time):
                 Forward_force_array[Pos_num] = Forward_force_array[Pos_num-1]
                 Perp_force_array[Pos_num] = Perp_force_array[Pos_num-1]
             else:
-                speed_sailed = Speed_sailed(Perp_force_position,Forward_force_position) #KNOTS
+                speed_sailed = Speed_achieved(Perp_force_position,Forward_force_position) #KNOTS
                 distance = speed_sailed*time
                 #print(distance)
                 Speed_sailed_array[Pos_num]  = speed_sailed #KNOTS
@@ -60,7 +61,7 @@ def Force_over_trip(position_vector, time):
                 Perp_force_array[Pos_num]    = Perp_force_position
         else:
             Forward_force_position, Perp_force_position = Force_produced(TWS, AWD_Array, Pos_num)
-            speed_sailed = Speed_sailed(Perp_force_position, Forward_force_position)  # KNOTS
+            speed_sailed = Speed_achieved(Perp_force_position, Forward_force_position)  # KNOTS
             Speed_sailed_array[Pos_num] = speed_sailed  # KNOTS
             Forward_force_array[Pos_num] = Forward_force_position
             Perp_force_array[Pos_num] = Perp_force_position
@@ -122,9 +123,9 @@ def Apparent_wind_and_direction_arrays_over_trip(position_array_func, tid):#, ve
     return AWS_Trip,AWD_Trip
 
 def start_from_files():
-    avg_speed_sailed        = "env/output_files5/speed_sailed_over_time.txt"
-    avg_force_data          = "env/output_files5/avg_forward_force.txt"
-    avg_perp_force_data     = "env/output_files5/avg_perp_force.txt"
+    avg_speed_sailed        = PureWindowsPath(Path("../env/output_files5/speed_sailed_over_time.txt"))
+    avg_force_data          = PureWindowsPath(Path("../env/output_files5/avg_forward_force.txt"))
+    avg_perp_force_data     = PureWindowsPath(Path("../env/output_files5/avg_perp_force.txt"))
 
     avg_speed_sailed_array  = read_array_from_file(avg_speed_sailed)
     avg_force_array         = read_array_from_file(avg_force_data)
