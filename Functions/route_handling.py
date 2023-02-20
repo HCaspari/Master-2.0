@@ -35,7 +35,7 @@ Start_north = 0
 Start_position = (Start_east,Start_north) #Current Position
 GlobalPositionVect = [(0,0)]
 clock = 0
-filename_AIS = "../env/input_files/ais_data_v4.csv"
+filename_AIS = PureWindowsPath(Path("../env/input_files/ais_data_v4.csv"))
 travel_iteration            = 0
 #vessel parameters:
 vessel_length               = 101.26
@@ -54,10 +54,10 @@ Cm  = 0.2
 alpha = 3.5
 Trondheim_location = 63.437686821303096, 10.402184694640052
 Aalesund_location  = 62.93245830958637, 6.3481997169859055
-Trond_Aalesund      = "../Route_data/Route_Trondheim_Aalesund.csv"
-Aalesund_Floro      = "../Route_data/Route_Aalesund_floro.csv"
-Floro_Bergen        = "../Route_data/Route_Floro_Bergen.csv"
-Bergen_Stavanger    = "../Route_data/Route_Bergen_Stavanger.csv"
+Trond_Aalesund      = Path("Route_data/route_Trond_Aales_Intricate.csv")
+Aalesund_Floro      = Path("../Route_data/route_Aales_Floro_Intricate.csv")
+Floro_Bergen        = Path("../Route_data/route_Floro_Brg_Intricate.csv")
+Bergen_Stavanger    = Path("../Route_data/route_Brg_Stv_Intricate.csv")
 
 Route_Trond_Aal     = read_position_vect_from_file(Trond_Aalesund)
 Route_Aal_Floro     = read_position_vect_from_file(Aalesund_Floro)
@@ -82,7 +82,7 @@ def vector_of_positions(lats,lons):
         else:
             j += 1
     #print(len(position_array_func))
-    position_array_file  = "../env/position_array"
+    position_array_file  = PureWindowsPath(Path("../env/position_array"))
     write_to_file(position_array_func,position_array_file)
     return position_array_func
 

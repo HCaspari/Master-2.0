@@ -1,4 +1,3 @@
-
 import numpy as np
 import geopy.distance #package to calculate distance between two lat/lon points
 from numpy.ma.core import MaskedConstant
@@ -266,6 +265,6 @@ def test_func():
     print("apparent wind angle using function from sediek",sediek)
     return 0
 
-runsimulation(0)
+runsimulation(4)
 print("Finished <3<3")
 

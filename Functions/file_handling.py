@@ -75,7 +75,7 @@ def find_vals():
     del df["Unnamed: 0"]
     df = df[df.nav_status !=2] #removes every entry with nav_Status = 2
     df = df[df.nav_status !=5] #removes every entry with nav_status = 5
-    df.to_csv("ais_data_v4.csv")
+    df.to_csv(PureWindowsPath(Path("ais_data_v4.csv")))
     return 0
 #function to read data from file (save time after running program through)
 def read_array_from_file(filename_func):
