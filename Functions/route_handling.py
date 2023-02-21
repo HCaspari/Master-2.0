@@ -16,14 +16,26 @@ import chardet
 import folium as folium
 from geopy.distance import geodesic
 import webbrowser
+import platform
 #import gmplot as gmp
-
 
 from plot_functions import plot_power,plot_avg_power,plot_resistance,plot_weekly_and_daily_avg_power
 from file_handling import write_to_file, read_cols, read_position_vect_from_file
 from Force_functions import Sailing_resistance,Beta_solver, Drift_resistance_multiplier, iterate_drift_angle
 #from Old_route_calc_funcs import Force_over_year,Force_over_trip
-from pathlib import Path, PureWindowsPath
+
+
+def fucketyfuck(path):
+    if platform.system() == "Windows":
+        print("../"+path)
+        return "../"+path
+    elif platform.system() == "Darwin":
+        print(path)
+        return path
+    else:
+        print("Your path is bad and you should feel bad")
+        print("or you are not Mathias or Håkon")
+        return 1
 
 #Input stats
 mean_wind_speed = 10 #knots
@@ -35,7 +47,7 @@ Start_north = 0
 Start_position = (Start_east,Start_north) #Current Position
 GlobalPositionVect = [(0,0)]
 clock = 0
-filename_AIS = PureWindowsPath(Path("../env/input_files/ais_data_v4.csv"))
+filename_AIS =fucketyfuck("env/input_files/ais_data_v4.csv")
 travel_iteration            = 0
 #vessel parameters:
 vessel_length               = 101.26
@@ -54,10 +66,10 @@ Cm  = 0.2
 alpha = 3.5
 Trondheim_location = 63.437686821303096, 10.402184694640052
 Aalesund_location  = 62.93245830958637, 6.3481997169859055
-Trond_Aalesund      = Path("Route_data/route_Trond_Aales_Intricate.csv")
-Aalesund_Floro      = Path("../Route_data/route_Aales_Floro_Intricate.csv")
-Floro_Bergen        = Path("../Route_data/route_Floro_Brg_Intricate.csv")
-Bergen_Stavanger    = Path("../Route_data/route_Brg_Stv_Intricate.csv")
+Trond_Aalesund      = fucketyfuck("Route_data/route_Trond_Aales_Intricate.csv")
+Aalesund_Floro      = fucketyfuck("Route_data/route_Aales_Floro_Intricate.csv")
+Floro_Bergen        = fucketyfuck("Route_data/route_Floro_Brg_Intricate.csv")
+Bergen_Stavanger    = fucketyfuck("Route_data/route_Brg_Stv_Intricate.csv")
 
 Route_Trond_Aal     = read_position_vect_from_file(Trond_Aalesund)
 Route_Aal_Floro     = read_position_vect_from_file(Aalesund_Floro)
@@ -82,7 +94,7 @@ def vector_of_positions(lats,lons):
         else:
             j += 1
     #print(len(position_array_func))
-    position_array_file  = PureWindowsPath(Path("../env/position_array"))
+    position_array_file  = fucketyfuck("env/position_array")
     write_to_file(position_array_func,position_array_file)
     return position_array_func
 
@@ -231,13 +243,15 @@ intricate_Trond_aal = generate_intricate_route(Route_Trond_Aal,15)
 intricate_Aal_Floro = generate_intricate_route(Route_Aal_Floro,15)
 intricate_Floro_Brg = generate_intricate_route(Route_Floro_Bergen,15)
 intricate_Brg_Stvg  = generate_intricate_route(Route_Bergen_Stvg,15)
-route_Trond_Aals_intricate  = PureWindowsPath(Path("../Route_data/route_Trond_Aales_Intricate"))
-route_Aals_Floro_intricate  = PureWindowsPath(Path("../Route_data/route_Aales_Floro_Intricate"))
-route_Floro_Brg_intricate   = PureWindowsPath(Path("../Route_data/route_Floro_Brg_Intricate"))
-route_Brg_Stvg_intricate    = PureWindowsPath(Path("../Route_data/route_Brg_Stv_Intricate"))
+route_Trond_Aals_intricate  = fucketyfuck("Route_data/route_Trond_Aales_Intricate")
+route_Aals_Floro_intricate  = fucketyfuck("Route_data/route_Aales_Floro_Intricate")
+route_Floro_Brg_intricate   = fucketyfuck("Route_data/route_Floro_Brg_Intricate")
+route_Brg_Stvg_intricate    = fucketyfuck("Route_data/route_Brg_Stv_Intricate")
 
 write_to_file(intricate_Trond_aal,route_Trond_Aals_intricate)
 write_to_file(intricate_Aal_Floro,route_Aals_Floro_intricate)
 write_to_file(intricate_Floro_Brg,route_Floro_Brg_intricate)
 write_to_file(intricate_Brg_Stvg,route_Brg_Stvg_intricate)
 #createmap(intricate_Brg_Stvg)
+
+

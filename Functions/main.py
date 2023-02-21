@@ -4,23 +4,12 @@ import geopy.distance #package to calculate distance between two lat/lon points
 from numpy.ma.core import MaskedConstant
 from datetime import datetime
 from file_handling import write_to_file, read_route
-from route_handling import calc_bearing
 from Force_functions import Force_produced, Speed_achieved
 from Weather_Handling import getweather, r2d, True_wind_direction, True_wind_speed, Apparent_Wind_Speed, Apparent_wind_angle, alpha
 from pathlib import Path, PureWindowsPath
-import platform
+from route_handling import calc_bearing, fucketyfuck
 
-def fucketyfuck(path):
-    if platform.system() == "Windows":
-        print("../"+path)
-        return "../"+path
-    elif platform.system() == "Darwin":
-        print(path)
-        return path
-    else:
-        print("Your path is bad and you should feel bad")
-        print("or you are not Mathias or Håkon")
-        return 1
+
 
 #Input stats
 mean_wind_speed = 10 #knots
@@ -220,39 +209,39 @@ def runsimulation(route):
         :return: saved files with simulation results
         """
 
-    Trond_aalesund      = PureWindowsPath(Path("../Route_data/route_Trond_Aales_Intricate.csv"))
-    Aalesund_Floro      = PureWindowsPath(Path("../Route_data/route_Aales_Floro_Intricate.csv"))
-    Floro_Bergen        = PureWindowsPath(Path("../Route_data/route_Floro_Brg_Intricate.csv"))
-    Bergen_Stavanger    = PureWindowsPath(Path("../Route_data/route_Brg_Stv_Intricate.csv"))
+    Trond_aalesund      = "Route_data/route_Trond_Aales_Intricate.csv"
+    Aalesund_Floro      = "Route_data/route_Aales_Floro_Intricate.csv"
+    Floro_Bergen        = "Route_data/route_Floro_Brg_Intricate.csv"
+    Bergen_Stavanger    = "Route_data/route_Brg_Stv_Intricate.csv"
     if route == 0:
         print ("Running simulation for all routes")
     if route == 1 or route == 0:
         print("Running simulation for route Trondheim Aalesund now")
         Trip_time_vector_TA, Tot_sailing_distance_vector_TA, sailing_speed_simulation_vector_TA = simulation(Trond_aalesund)
-        sailing_speed_trond_aalesund_fil    = PureWindowsPath(Path("../Output_files/Trondheim_Aalesund_reise"))
+        sailing_speed_trond_aalesund_fil    = fucketyfuck("Output_files/Trondheim_Aalesund_reise")
         write_to_file(sailing_speed_simulation_vector_TA, sailing_speed_trond_aalesund_fil)
 
     if route == 2 or route == 0:
         print("Running simulation for route Ålesund Florø now")
         Trip_time_vector_AF, Tot_sailing_distance_vector_AF, sailing_speed_simulation_vector_AF = simulation(Aalesund_Floro)
-        sailing_speed_Aalesund_Floro_fil    = PureWindowsPath(Path("../Output_files/Aalesund_Floro_reise"))
+        sailing_speed_Aalesund_Floro_fil    = fucketyfuck("Output_files/Aalesund_Floro_reise")
         write_to_file(sailing_speed_simulation_vector_AF, sailing_speed_Aalesund_Floro_fil)
 
     if route == 3 or route == 0:
         print("Running simulation for route Florø Bergen now")
         Trip_time_vector_FB, Tot_sailing_distance_vector_FB, sailing_speed_simulation_vector_FB = simulation(Floro_Bergen)
-        sailing_speed_Floro_Bergen_fil      = PureWindowsPath(Path("../Output_files/Floro_Bergen_reise"))
+        sailing_speed_Floro_Bergen_fil      = fucketyfuck("Output_files/Floro_Bergen_reise")
         write_to_file(sailing_speed_simulation_vector_FB, sailing_speed_Floro_Bergen_fil)
 
     if route == 4 or route == 0:
         print("Running simulation for route Bergen Stavanger now")
         Trip_time_vector_BS, Tot_sailing_distance_vector_BS, sailing_speed_simulation_vector_BS = simulation(Bergen_Stavanger)
-        sailing_speed_Bergen_Stavanger_fil  = PureWindowsPath(Path("../Output_files/Bergen_Stavanger_reise"))
+        sailing_speed_Bergen_Stavanger_fil  = fucketyfuck("Output_files/Bergen_Stavanger_reise")
         write_to_file(sailing_speed_simulation_vector_BS, sailing_speed_Bergen_Stavanger_fil)
     if route == 5:
         print(f"Testing file access: ")
 
-        test_fil = PureWindowsPath(Path("../Output_files/test_file"))
+        test_fil = fucketyfuck("Output_files/test_file")
 
         test_vect = [0,1,69,3]
         write_to_file(test_vect,test_fil)
@@ -280,6 +269,6 @@ def test_func():
     print("apparent wind angle using function from sediek",sediek)
     return 0
 
-runsimulation(5)
+runsimulation(4)
 print("Finished <3<3")
 
