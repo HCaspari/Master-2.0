@@ -137,4 +137,4 @@ vector = []
 #historgram(mac_windows_file_handle('Output_files/Trondheim_Aalesund_reise', Trond_Aalesund))
 #historgram(mac_windows_file_handle('Output_files/Aalesund_Floro_reise', Aalesund_Floro))
 #historgram(mac_windows_file_handle('Output_files/Floro_Bergen_reise', Floro_Bergen))
-historgram(mac_windows_file_handle('Output_files/savespeed_TrondAales.csv', Trond_Aalesund))
+historgram(mac_windows_file_handle('Output_files/savespeed_TrondAales.csv'), Trond_Aalesund)
