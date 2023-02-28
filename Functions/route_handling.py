@@ -12,20 +12,27 @@ from scipy.interpolate import interp1d
 from bisect import bisect_left
 from datetime import datetime, timedelta, date
 #import searoute as sr
-import chardet
+
 import folium as folium
 from geopy.distance import geodesic
-import webbrowser
 import platform
-#import gmplot as gmp
-
-from plot_functions import plot_power,plot_avg_power,plot_resistance,plot_weekly_and_daily_avg_power
-from file_handling import write_to_file, read_cols, read_position_vect_from_file
-from Force_functions import Sailing_resistance,Beta_solver, Drift_resistance_multiplier, iterate_drift_angle
-#from Old_route_calc_funcs import Force_over_year,Force_over_trip
 
 
-def fucketyfuck(path):
+#write data found to file called filename_func
+def write_to_file(data,filename_func):
+    pd.DataFrame(data).to_csv(filename_func)
+    return 0
+
+def read_position_vect_from_file(filename_func):
+    readdata = pd.read_csv(filename_func)#, usecols=["1","0"])
+    readdata = readdata[readdata != 0]
+
+    position_array =  []
+    for i in range(len(readdata)):
+        position_array.append((round(readdata.loc[i].iat[0], 3),round(readdata.loc[i].iat[1], 3)))
+    return position_array
+
+def mac_windows_file_handle(path):
     if platform.system() == "Windows":
         return "../"+path
     elif platform.system() == "Darwin":
@@ -43,7 +50,7 @@ Start_north = 0
 Start_position = (Start_east,Start_north) #Current Position
 GlobalPositionVect = [(0,0)]
 clock = 0
-filename_AIS =fucketyfuck("env/input_files/ais_data_v4.csv")
+filename_AIS =mac_windows_file_handle("env/input_files/ais_data_v4.csv")
 travel_iteration            = 0
 #vessel parameters:
 vessel_length               = 101.26
@@ -62,10 +69,10 @@ Cm  = 0.2
 alpha = 3.5
 Trondheim_location = 63.437686821303096, 10.402184694640052
 Aalesund_location  = 62.93245830958637, 6.3481997169859055
-Trond_Aalesund      = fucketyfuck("Route_data/route_Trond_Aales_Intricate.csv")
-Aalesund_Floro      = fucketyfuck("Route_data/route_Aales_Floro_Intricate.csv")
-Floro_Bergen        = fucketyfuck("Route_data/route_Floro_Brg_Intricate.csv")
-Bergen_Stavanger    = fucketyfuck("Route_data/route_Brg_Stv_Intricate.csv")
+Trond_Aalesund      = mac_windows_file_handle("Route_data/route_Trond_Aales_Intricate.csv")
+Aalesund_Floro      = mac_windows_file_handle("Route_data/route_Aales_Floro_Intricate.csv")
+Floro_Bergen        = mac_windows_file_handle("Route_data/route_Floro_Brg_Intricate.csv")
+Bergen_Stavanger    = mac_windows_file_handle("Route_data/route_Brg_Stv_Intricate.csv")
 
 Route_Trond_Aal     = read_position_vect_from_file(Trond_Aalesund)
 Route_Aal_Floro     = read_position_vect_from_file(Aalesund_Floro)
@@ -90,7 +97,7 @@ def vector_of_positions(lats,lons):
         else:
             j += 1
     #print(len(position_array_func))
-    position_array_file  = fucketyfuck("env/position_array")
+    position_array_file  = mac_windows_file_handle("env/position_array")
     write_to_file(position_array_func,position_array_file)
     return position_array_func
 
@@ -239,10 +246,10 @@ intricate_Trond_aal = generate_intricate_route(Route_Trond_Aal,15)
 intricate_Aal_Floro = generate_intricate_route(Route_Aal_Floro,15)
 intricate_Floro_Brg = generate_intricate_route(Route_Floro_Bergen,15)
 intricate_Brg_Stvg  = generate_intricate_route(Route_Bergen_Stvg,15)
-route_Trond_Aals_intricate  = fucketyfuck("Route_data/route_Trond_Aales_Intricate")
-route_Aals_Floro_intricate  = fucketyfuck("Route_data/route_Aales_Floro_Intricate")
-route_Floro_Brg_intricate   = fucketyfuck("Route_data/route_Floro_Brg_Intricate")
-route_Brg_Stvg_intricate    = fucketyfuck("Route_data/route_Brg_Stv_Intricate")
+route_Trond_Aals_intricate  = mac_windows_file_handle("Route_data/route_Trond_Aales_Intricate")
+route_Aals_Floro_intricate  = mac_windows_file_handle("Route_data/route_Aales_Floro_Intricate")
+route_Floro_Brg_intricate   = mac_windows_file_handle("Route_data/route_Floro_Brg_Intricate")
+route_Brg_Stvg_intricate    = mac_windows_file_handle("Route_data/route_Brg_Stv_Intricate")
 
 write_to_file(intricate_Trond_aal,route_Trond_Aals_intricate)
 write_to_file(intricate_Aal_Floro,route_Aals_Floro_intricate)

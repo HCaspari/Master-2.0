@@ -1,5 +1,7 @@
 import pandas as pd
 import numpy as np
+from route_handling import mac_windows_file_handle
+
 
 
 #Input stats
@@ -12,7 +14,7 @@ Start_north = 0
 Start_position = (Start_east,Start_north) #Current Position
 GlobalPositionVect = [(0,0)]
 clock = 0
-filename_AIS = ("env/input_files/ais_data_v4.csv")
+filename_AIS = mac_windows_file_handle("env/input_files/ais_data_v4.csv")
 travel_iteration            = 0
 #vessel parameters:
 vessel_length               = 101.26
@@ -56,7 +58,7 @@ def read_cols(filename_ais_data):
         latitudes_vect_func.append(round(latitudes.loc[i].iat[0],4))
         longditudes_vect_func.append(round(longditudes.loc[i].iat[0],4))
         heading_vect_func.append(heading.loc[i].iat[0])
-    heading_file = ("env/input_files/heading.csv")
+    heading_file = mac_windows_file_handle("env/input_files/heading.csv")
     write_to_file(heading, heading_file)
     return dist_vect_func,travel_time_vect_func,latitudes_vect_func,longditudes_vect_func,heading_vect_func
 
@@ -65,17 +67,16 @@ def read_position_vect_from_file(filename_func):
     readdata = readdata[readdata != 0]
 
     position_array =  []
-    #print(f"im reading {filename_func} now")
     for i in range(len(readdata)):
         position_array.append((round(readdata.loc[i].iat[0], 3),round(readdata.loc[i].iat[1], 3)))
     return position_array
 
 def find_vals():
-    df = pd.read_csv("env/input_files/ais_data_v3.csv")
+    df = pd.read_csv(mac_windows_file_handle("env/input_files/ais_data_v3.csv"))
     del df["Unnamed: 0"]
     df = df[df.nav_status !=2] #removes every entry with nav_Status = 2
     df = df[df.nav_status !=5] #removes every entry with nav_status = 5
-    df.to_csv("ais_data_v4.csv")
+    df.to_csv(mac_windows_file_handle("ais_data_v4.csv"))
     return 0
 #function to read data from file (save time after running program through)
 def read_array_from_file(filename_func):
@@ -98,11 +99,10 @@ def read_route(csv):
     positions = np.asarray(positions)
     return positions
 
-filname = "Output_files/Bergen_Stavanger_reise"
+filname = mac_windows_file_handle("Output_files/Bergen_Stavanger_reise")
 ARRAY = read_array_from_file(filname)
 counter = 0
 for i in range(len(ARRAY)):
     if ARRAY[i] < 1:
         counter += 1
-    
 print(counter)

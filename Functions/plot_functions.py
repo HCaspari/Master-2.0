@@ -1,5 +1,7 @@
 import matplotlib.pyplot as plt
 import pandas as pd
+from route_handling import mac_windows_file_handle
+
 #Input stats
 mean_wind_speed = 10 #knots
 mean_wind_direction = 90 #degrees
@@ -10,7 +12,7 @@ Start_north = 0
 Start_position = (Start_east,Start_north) #Current Position
 GlobalPositionVect = [(0,0)]
 clock = 0
-filename_AIS = "../env/input_files/ais_data_v4.csv"
+filename_AIS = mac_windows_file_handle("env/input_files/ais_data_v4.csv")
 travel_iteration            = 0
 #vessel parameters:
 vessel_length               = 101.26
@@ -132,7 +134,7 @@ Floro_Bergen        = "Florø Bergen"
 Bergen_Stavanger    = "Bergen Stavanger"
 vector = []
 
-#historgram('Output_files/Trondheim_Aalesund_reise', Trond_Aalesund)
-#historgram('../Output_files/Aalesund_Floro_reise', Aalesund_Floro)
-#historgram('../Output_files/Floro_Bergen_reise', Floro_Bergen)
-historgram('Output_files/savespeed_TrondAales.csv', Trond_Aalesund)
+#historgram(mac_windows_file_handle('Output_files/Trondheim_Aalesund_reise', Trond_Aalesund))
+#historgram(mac_windows_file_handle('Output_files/Aalesund_Floro_reise', Aalesund_Floro))
+#historgram(mac_windows_file_handle('Output_files/Floro_Bergen_reise', Floro_Bergen))
+historgram(mac_windows_file_handle('Output_files/savespeed_TrondAales.csv', Trond_Aalesund))
