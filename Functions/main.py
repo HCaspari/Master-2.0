@@ -295,6 +295,8 @@ def test_func():
     print("apparent wind angle using function from sediek",sediek)
     return 0
 
-runsimulation(4)
+#runsimulation(4)
 print("Finished <3<3")
 
+print("If you got here, life is good. Push from Håkon worked at 1134, 28.02.2023")
+print("Bonus print: Mathias er digg")
