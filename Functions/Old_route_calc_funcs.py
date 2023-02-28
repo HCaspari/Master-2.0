@@ -40,66 +40,6 @@ Cm  = 0.2
 alpha = 3.5
 
 
-def Force_over_trip(position_vector, time):
-    Forward_force_array   = np.zeros(len(position_vector))
-    Perp_force_array      = np.zeros(len(position_vector))
-    Speed_sailed_array    = np.zeros(len(position_vector))
-    TWS, AWD_Array        = Apparent_wind_and_direction_arrays_over_trip(position_vector, time)
-    for Pos_num in range(len( position_vector)): #Finds total force over each trip
-        if Pos_num >= 1:
-            Forward_force_position, Perp_force_position = Force_produced(TWS, AWD_Array, Pos_num)
-            if Forward_force_position == Forward_force_array[Pos_num-1]:
-                Speed_sailed_array[Pos_num] = Speed_sailed_array[Pos_num-1]  # KNOTS
-                Forward_force_array[Pos_num] = Forward_force_array[Pos_num-1]
-                Perp_force_array[Pos_num] = Perp_force_array[Pos_num-1]
-            else:
-                speed_sailed = Speed_achieved(Perp_force_position,Forward_force_position) #KNOTS
-                distance = speed_sailed*time
-                #print(distance)
-                Speed_sailed_array[Pos_num]  = speed_sailed #KNOTS
-                Forward_force_array[Pos_num] = Forward_force_position
-                Perp_force_array[Pos_num]    = Perp_force_position
-        else:
-            Forward_force_position, Perp_force_position = Force_produced(TWS, AWD_Array, Pos_num)
-            speed_sailed = Speed_achieved(Perp_force_position, Forward_force_position)  # KNOTS
-            Speed_sailed_array[Pos_num] = speed_sailed  # KNOTS
-            Forward_force_array[Pos_num] = Forward_force_position
-            Perp_force_array[Pos_num] = Perp_force_position
-    Forward_force_total = np.sum(Forward_force_array)
-    Perp_force_total    = np.sum(Perp_force_array)
-    Speed_sailed_total  = np.sum(Speed_sailed_array) #KNOTS
-    Avg_perp_force_trip = Perp_force_total/len(Perp_force_array)
-    Avg_forw_force_trip = Forward_force_total/len(Forward_force_array)
-    Avg_WS              = sum(TWS)/len(TWS)
-    Avg_Speed_sailed    = Speed_sailed_total/len(Speed_sailed_array) #KNOTS
-    return Avg_forw_force_trip, Avg_perp_force_trip, Avg_WS, Avg_Speed_sailed#KNOTS , Speed_sailed_array
-#function to calculate forward force, average force, perpendicular force over time array, and add to files
-def Force_over_year(six_hour_periods):#1460 for a year, 7307 for whole period
-    forw_force_array_time           = np.zeros(len(six_hour_periods))
-    perp_force_array_time           = np.zeros(len(six_hour_periods))
-    avg_AWS_array_over_time         = np.zeros(len(six_hour_periods))
-    speed_sailed_array_over_time    = np.zeros(len(six_hour_periods))
-    for time in range(0,len(six_hour_periods)):#skal være 7307 Finds force at each position for each day of year
-        avg_perp_force_trip, avg_forward_force_trip , avg_WS, avg_speed_sailed_over_trip = Force_over_trip(position_array, time)
-        forw_force_array_time[time]             = avg_forward_force_trip
-        perp_force_array_time[time]             = avg_perp_force_trip
-        avg_AWS_array_over_time[time]           = avg_WS
-        speed_sailed_array_over_time[time]      = avg_speed_sailed_over_trip
-        if time%10 == 0:
-            #print(f"speed at this iteration is {vessel_velocity*5.44} knots")
-            print(f"avg. force at day {time/4} is equal to {forw_force_array_time[time]}")
-            print(f"perp. force at day {time/4} is equal to {perp_force_array_time[time]}")
-            print(f"average speed sailed at day {time/4} is equal to {speed_sailed_array_over_time[time]} knots")
-            print(f"Current time= {datetime.now().time()}")
-    # writing to pandas, uncomment to rewrite file
-    filename_avg_forward_force  = f"../env/output_files5/avg_forward_force.txt"
-    filename_perp_force         = f"../env/output_files5/avg_perp_force.txt"
-    filename_speed_sailed       = f"../env/output_files5/speed_sailed_over_time.txt"
-    write_to_file(forw_force_array_time, filename_avg_forward_force)
-    write_to_file(perp_force_array_time, filename_perp_force)     #winddir 31.12
-    write_to_file(speed_sailed_array_over_time,filename_speed_sailed)
-    return forw_force_array_time, perp_force_array_time, speed_sailed_array_over_time
-
 #Finds windspeeds at position in position array and time in tid in weater data
 #function that gives true windspeed in m/s for wind north,east
 def Find_WSV_over_trip_at_time_TID(position_array_func, tid):
@@ -150,7 +90,3 @@ def start_from_files():
 
     return 0
 time_Vector = [0,1]
-def startfromscratch():
-    avg_forward_force_over_time, avg_perp_force_over_time, speed_sailed_over_time = Force_over_year(time_Vector)
-    return avg_forward_force_over_time, avg_perp_force_over_time
-

@@ -147,14 +147,28 @@ eastward_lon   = dataset_EW.variables["lon"]
 
 #translates radians to degrees for python
 def r2d(rad):
+    """
+    :param rad: input angle radians
+    :return: angle in degrees
+    """
     degree = rad*180/np.pi
     return degree
 #translates degrees to rads for pythong
 def d2r(degree):
+    """
+    :param degree: input angle degrees
+    :return: angle in radians
+    """
     rad = np.pi*degree/180
     return rad
 
 def getweather(tid,latitude, longditude):
+    """
+    :param tid: Time we want to access weather data
+    :param latitude: Latitude where we want to access weather data
+    :param longditude: Longdtitude where we want to access weather data
+    :return: WSN and WSE in m/s at time = tid, and position (lat,lon)
+    """
     #to get the correct index one needs to increase values by 0.125
     #for example, latitude 58.9375 = latitude[0]
     #a = eastward_time[1,10,10]
@@ -189,6 +203,10 @@ def getweather(tid,latitude, longditude):
     return WSN,WSE
 
 def datetime_seconds(dtime):
+    """
+    :param dtime: inputs date during over 2 year period (for this dataset)
+    :return: point of time in seconds from 01/07/2020. Gives posibility of accessing specific sailing speed at given date and time
+    """
     dt = dtime
     epoch = date(2020,7,1)
     delta = (dt-epoch)
@@ -196,7 +214,9 @@ def datetime_seconds(dtime):
 
 def True_wind_speed(WSN,WSE): 
     """
-    m/s
+    :param WSN: Wind Speed North in m/s
+    :param WSE: Wind Speed East in m/s
+    :return: True wind speed in m/s
     """
     TWS = np.sqrt(WSN**2+WSE**2)
     return TWS
