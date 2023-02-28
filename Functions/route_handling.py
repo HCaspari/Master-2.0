@@ -27,14 +27,10 @@ from Force_functions import Sailing_resistance,Beta_solver, Drift_resistance_mul
 
 def fucketyfuck(path):
     if platform.system() == "Windows":
-        print("../"+path)
         return "../"+path
     elif platform.system() == "Darwin":
-        print(path)
         return path
     else:
-        print("Your path is bad and you should feel bad")
-        print("or you are not Mathias or Håkon")
         return 1
 
 #Input stats

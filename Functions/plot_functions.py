@@ -120,9 +120,7 @@ def plot_percent(title, y_axis, x_label, y_label):
 def historgram(filename, title):
     columns = ['number', 'speed']
     df1 = pd.read_csv(filename,header = None, names=columns)
-    plt.hist(df1['speed'], edgecolor='black', range=[0,15])
-    if filename == 'Output_files/Bergen_Stavanger_reise':
-        plt.title('Speed distribution'+ '  ' +(filename.replace('Output_files/','')))
+    plt.hist(df1['speed'], edgecolor='black', range=[0,15], bins=15)
     plt.title(title)
     plt.xlabel('Speed [Knots]')
     plt.ylabel('Occurences')
@@ -132,8 +130,9 @@ Trond_Aalesund      = "Trondheim Ålesund"
 Aalesund_Floro      = "Ålesund Florø"
 Floro_Bergen        = "Florø Bergen"
 Bergen_Stavanger    = "Bergen Stavanger"
+vector = []
 
-#historgram('../Output_files/Trondheim_Aalesund_reise', Trond_Aalesund)
+#historgram('Output_files/Trondheim_Aalesund_reise', Trond_Aalesund)
 #historgram('../Output_files/Aalesund_Floro_reise', Aalesund_Floro)
 #historgram('../Output_files/Floro_Bergen_reise', Floro_Bergen)
-#historgram('../Output_files/Bergen_Stavanger_reise', Bergen_Stavanger)
+historgram('Output_files/savespeed_TrondAales.csv', Trond_Aalesund)

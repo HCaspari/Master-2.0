@@ -191,7 +191,10 @@ def datetime_seconds(dtime):
     delta = (dt-epoch)
     return delta.total_seconds()
 
-def True_wind_speed(WSN,WSE):
+def True_wind_speed(WSN,WSE): 
+    """
+    m/s
+    """
     TWS = np.sqrt(WSN**2+WSE**2)
     return TWS
 
@@ -214,7 +217,7 @@ def Apparent_Wind_Speed(true_wind_speed, vessel_speed, true_wind_direction):
     :param true_wind_speed: Wind speed in relation to vessel heading
     :param vessel_speed: speed vessel sails
     :param true_wind_direction: heading of wind in relation to vessel
-    :return: apparend wind speed [float]: speed of wind in relation to vessel speed and heading
+    :return: apparend wind speed m/s [float]: speed of wind in relation to vessel speed and heading
     """
 
     #AWS_func = TWS_func - sailing_speed_func * np.sin(np.pi / 180 * sailing_direction_func)
