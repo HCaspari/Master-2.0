@@ -3,7 +3,7 @@ import geopy.distance #package to calculate distance between two lat/lon points
 from numpy.ma.core import MaskedConstant
 from datetime import datetime
 from file_handling import write_to_file, read_route
-from Force_functions import Force_produced, Speed_achieved
+from Force_functions import Force_produced, Force_produced_new_CL, Speed_achieved
 from Weather_Handling import getweather, r2d, True_wind_direction, True_wind_speed, Apparent_Wind_Speed, Apparent_wind_angle, alpha
 
 from route_handling import calc_bearing, mac_windows_file_handle
@@ -105,6 +105,8 @@ def main(route, iteration, routenumber):
     vessel_speed                    = 4 #initializing sailing speed of 4 knots (will change after one iteration)
     route_sailing_time              = iteration
 
+    alt_sailing_Speed = []
+
     for i in range(len(route)-1): #create itteration through route
         position_first      = route[i]
         position_next       = route[i+1]
@@ -116,9 +118,11 @@ def main(route, iteration, routenumber):
         AWS                 = Apparent_Wind_Speed(TWS,vessel_speed,TWD)
         AWA                 = alpha(vessel_speed,vessel_heading,WSN,WSE )                                              #Finds Apparent wind angle
         forward_force_func,perpendicular_force_func = Force_produced(AWS, AWA)                         #Forward and Perpendicular force from Flettners
+
         if type(forward_force_func) == MaskedConstant or type(perpendicular_force_func) == MaskedConstant:
             print("ouchie, we have a mask", i)
             return 1
+
 
         vessel_speed    = Speed_achieved(perpendicular_force_func, forward_force_func)    #Sailing Speed obtained in KNOTS
 
@@ -130,6 +134,13 @@ def main(route, iteration, routenumber):
             print(AWS, " TWS when vessel speed is greater than 8")
 
         sailing_speed_vector.append(vessel_speed)
+
+
+        forward_force_func_2,perpendicular_force_func_2 = Force_produced_new_CL(AWS, AWA)                         #Forward and Perpendicular force from Flettners
+        vessel_speed_2    = Speed_achieved(perpendicular_force_func_2, forward_force_func_2)    #Sailing Speed obtained in KNOTS
+        alt_sailing_Speed.append(vessel_speed_2)
+
+
 
         if routenumber == 1:
             file_speed_Trond_Aalesund = mac_windows_file_handle("Output_files/savespeed_TrondAales.csv")
@@ -295,7 +306,7 @@ def test_func():
     print("apparent wind angle using function from sediek",sediek)
     return 0
 
-#runsimulation(4)
+runsimulation(1)
 print("Finished <3<3")
 
 print("If you got here, life is good. Push from Håkon worked at 1134, 28.02.2023")
