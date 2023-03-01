@@ -3,10 +3,10 @@ import geopy.distance #package to calculate distance between two lat/lon points
 from numpy.ma.core import MaskedConstant
 from datetime import datetime
 from file_handling import write_to_file, read_route
-from Force_functions import Force_produced, Force_produced_new_CL, Speed_achieved
+from Force_functions import Force_produced, Force_produced_new_CL, Speed_achieved, Speed_achieved_old
 from Weather_Handling import getweather, r2d, True_wind_direction, True_wind_speed, Apparent_Wind_Speed, Apparent_wind_angle, alpha
 
-from route_handling import calc_bearing, mac_windows_file_handle
+from route_handling import calc_vessel_heading, mac_windows_file_handle
 
 
 
@@ -102,6 +102,7 @@ def main(route, iteration, routenumber):
     sailing_speed_vector            = []
     coordinate_sailing_time         = []
     apparent_wind_speed_observed    = []
+    power_Consumption_flettner      = []
     vessel_speed                    = 4 #initializing sailing speed of 4 knots (will change after one iteration)
     route_sailing_time              = iteration
 
@@ -114,9 +115,9 @@ def main(route, iteration, routenumber):
         position_first      = route[i]
         position_next       = route[i+1]
         sailing_distance    = round(geopy.distance.geodesic(position_first,position_next).nautical,3)    #In Nautical Miles
-        vessel_heading      = calc_bearing(position_first,position_next)                                 #In Degrees (North is 0)
-        WSE,WSN             = getweather(route_sailing_time,position_first[0],position_first[1])                       #Gives Wind speed East and North
-        TWS                 = True_wind_speed(WSN,WSE)                              #Finds True Windspeed (pythagoras)
+        vessel_heading      = calc_vessel_heading(position_first, position_next)                         #In Degrees (North is 0)
+        WSE,WSN             = getweather(route_sailing_time,position_first[0],position_first[1])         #Gives Wind speed East and North
+        TWS                 = True_wind_speed(WSN,WSE)                                                  #Finds True Windspeed (pythagoras)
         TWD                 = True_wind_direction(vessel_heading,WSN,WSE)
         AWS                 = Apparent_Wind_Speed(TWS,vessel_speed,TWD)
         AWA                 = alpha(vessel_speed,vessel_heading,WSN,WSE )                                              #Finds Apparent wind angle
@@ -132,7 +133,7 @@ def main(route, iteration, routenumber):
 
 
         vessel_speed    = Speed_achieved(perpendicular_force_func, forward_force_func)    #Sailing Speed obtained in KNOTS
-
+        vessel_speed    = Speed_achieved_old(perpendicular_force_func, forward_force_func)
         if vessel_speed == 6:
             print(AWS, " TWS when vessel speed is greater than 6")
         if vessel_speed == 7:
@@ -143,10 +144,10 @@ def main(route, iteration, routenumber):
         sailing_speed_vector.append(vessel_speed)
 
 
-        forward_force_func_2,perpendicular_force_func_2 = Force_produced_new_CL(AWS, AWA)                         #Forward and Perpendicular force from Flettners
-        vessel_speed_2    = Speed_achieved(perpendicular_force_func_2, forward_force_func_2)    #Sailing Speed obtained in KNOTS
+        forward_force_func_2,perpendicular_force_func_2, power_consumption = Force_produced_new_CL(AWS, AWA)                         #Forward and Perpendicular force from Flettners
+        vessel_speed_2      = Speed_achieved(perpendicular_force_func_2, forward_force_func_2)    #Sailing Speed obtained in KNOTS
         alt_sailing_Speed.append(vessel_speed_2)
-
+        power_Consumption_flettner.append(power_consumption)
 
 
         if routenumber == 1:
@@ -330,6 +331,11 @@ def test_func():
     return 0
 
 runsimulation(1)
+
+for beta in range(10):
+    print("for angle equal to",beta,"drift resistance is", (0.0004 * beta ** 3 - 0.009 * beta ** 2 + 0.0754 * beta - 0.0015)/1000)
+True_wind_direction(53.24,3.35,-2.17)
+
 print("Finished <3<3")
 
 print("If you got here, life is good. Push from Håkon worked at 1134, 28.02.2023")

@@ -102,8 +102,15 @@ def vector_of_positions(lats,lons):
     return position_array_func
 
 #calculates direction between two points, (20.323,23.243),(34.235, 43.345)
-def calc_bearing(pointA, pointB):
+def calc_vessel_heading(pointA, pointB):
+    """
+
+    :param pointA: Coordinates of a
+    :param pointB: coordinates of b
+    :return: value in degreees
+    """
     deg2rad = math.pi / 180
+    rad2deg = 180 / math.pi
     latA = pointA[0] * deg2rad
     latB = pointB[0] * deg2rad
     lonA = pointA[1] * deg2rad
@@ -113,8 +120,8 @@ def calc_bearing(pointA, pointB):
     delta_lon = abs(lonA - lonB)
 
     delta_lon %= math.pi
-    bearing = math.atan2(delta_lon, delta_ratio)/deg2rad
-    return bearing
+    vessel_heading = math.atan2(delta_lon, delta_ratio) * rad2deg
+    return vessel_heading #IN DEGREES
 
 def generate_intermediate_points(start_point, end_point, num_points):
     """

@@ -224,7 +224,7 @@ def True_wind_speed(WSN,WSE):
 #Function that return true wind direction in degrees from wind speed north/east (WSN/WSE)
 def True_wind_direction(vessel_heading,wind_speed_north,wind_speed_east):
     """
-    :param vessel_heading: Vessel heading
+    :param vessel_heading: Vessel heading in degrees
     :param wind_speed_north: speed of wind in northward direction (negaitive means south)
     :param wind_speed_east: speed of wind in eastern direction (negative means west)
     :return: true wind direction [degrees]
@@ -232,7 +232,7 @@ def True_wind_direction(vessel_heading,wind_speed_north,wind_speed_east):
     wind_angle = math.atan2(wind_speed_north,wind_speed_east)
     true_wind_direction = wind_angle-vessel_heading
 
-    return r2d(true_wind_direction)
+    return true_wind_direction
 
 def Apparent_Wind_Speed(true_wind_speed, vessel_speed, true_wind_direction):
     """
