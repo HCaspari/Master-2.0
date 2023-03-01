@@ -107,6 +107,9 @@ def main(route, iteration, routenumber):
 
     alt_sailing_Speed = []
 
+    true_wind_speed_vector = []
+    true_wind_direction_vector = []
+
     for i in range(len(route)-1): #create itteration through route
         position_first      = route[i]
         position_next       = route[i+1]
@@ -119,6 +122,10 @@ def main(route, iteration, routenumber):
         AWA                 = alpha(vessel_speed,vessel_heading,WSN,WSE )                                              #Finds Apparent wind angle
         forward_force_func,perpendicular_force_func = Force_produced(AWS, AWA)                         #Forward and Perpendicular force from Flettners
 
+        true_wind_speed_vector.append(TWS)
+        true_wind_direction_vector.append(TWD)
+
+
         if type(forward_force_func) == MaskedConstant or type(perpendicular_force_func) == MaskedConstant:
             print("ouchie, we have a mask", i)
             return 1
@@ -126,11 +133,11 @@ def main(route, iteration, routenumber):
 
         vessel_speed    = Speed_achieved(perpendicular_force_func, forward_force_func)    #Sailing Speed obtained in KNOTS
 
-        if vessel_speed > 6:
+        if vessel_speed == 6:
             print(AWS, " TWS when vessel speed is greater than 6")
-        if vessel_speed > 7:
+        if vessel_speed == 7:
             print(AWS, " TWS when vessel speed is greater than 7")
-        if vessel_speed > 8:
+        if vessel_speed == 8:
             print(AWS, " TWS when vessel speed is greater than 8")
 
         sailing_speed_vector.append(vessel_speed)
@@ -144,19 +151,35 @@ def main(route, iteration, routenumber):
 
         if routenumber == 1:
             file_speed_Trond_Aalesund = mac_windows_file_handle("Output_files/savespeed_TrondAales.csv")
+            file_TWS_Trond_Aalesund = mac_windows_file_handle("Output_files/saveTWS_TrondAales.csv")
+            file_TWD_Trond_Aalesund = mac_windows_file_handle("Output_files/saveTWD_TrondAales.csv")
             write_to_file(sailing_speed_vector, file_speed_Trond_Aalesund)
+            write_to_file(true_wind_speed_vector,file_TWS_Trond_Aalesund)
+            write_to_file(true_wind_direction_vector,file_TWD_Trond_Aalesund)
 
         if routenumber == 2:
             file_speed_Aalesund_Floro = mac_windows_file_handle("Output_files/savespeed_AalesFloro.csv")
+            file_TWS_Aalesund_Floro = mac_windows_file_handle("Output_files/saveTWS_AalesFloro.csv")
+            file_TWD_Aalesund_Floro = mac_windows_file_handle("Output_files/saveTWD_AalesFloro.csv")
             write_to_file(sailing_speed_vector, file_speed_Aalesund_Floro)
+            write_to_file(true_wind_speed_vector,file_TWS_Aalesund_Floro)
+            write_to_file(true_wind_direction_vector,file_TWD_Aalesund_Floro)
 
         if routenumber == 3:
             file_speed_Floro_Bergen = mac_windows_file_handle("Output_files/savespeed_FloroBergen.csv")
+            file_TWS_Floro_Bergen = mac_windows_file_handle("Output_files/saveTWS_FloroBergen.csv")
+            file_TWD_Floro_Bergen = mac_windows_file_handle("Output_files/saveTWD_FloroBergen.csv")
             write_to_file(sailing_speed_vector, file_speed_Floro_Bergen)
+            write_to_file(true_wind_speed_vector,file_TWS_Floro_Bergen)
+            write_to_file(true_wind_direction_vector,file_TWD_Floro_Bergen)
 
         if routenumber == 4:
             file_speed_Bergen_Stavanger = mac_windows_file_handle("Output_files/savespeed_BrgStvg.csv")
+            file_TWS_Bergen_Stavanger = mac_windows_file_handle("Output_files/saveTWS_BergenStavanger.csv")
+            file_TWD_Bergen_Stavanger = mac_windows_file_handle("Output_files/saveTWD_BergenStavanger.csv")
             write_to_file(sailing_speed_vector, file_speed_Bergen_Stavanger)
+            write_to_file(true_wind_speed_vector,file_TWS_Bergen_Stavanger)
+            write_to_file(true_wind_direction_vector,file_TWD_Bergen_Stavanger)
 
 
         sailing_time     = sailing_distance/vessel_speed                                                    #time used to sail trip added
