@@ -182,7 +182,7 @@ def main(route, iteration, routenumber):
 
         if vessel_speed == 0:
             sailing_time = 1                                           #If ship experiences no wind, it waits an hour before attempting to sail with new wind
-            print("Slowsteam :(")
+            print(f"Slowsteam :( at location {position_first}, at time {route_sailing_time}")
         else:
             sailing_time     = sailing_distance/vessel_speed           #time used to sail trip added
 
@@ -340,5 +340,5 @@ True_wind_direction(53.24,3.35,-2.17)
 
 print("Finished <3<3")
 
-print("If you got here, life is good. Push from Håkon worked at 1134, 28.02.2023")
-print("Bonus print: Mathias er digg")
+
+print("Bonus print: Mathias er digg, kl. 14.54, den 03032023")
