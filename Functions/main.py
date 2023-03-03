@@ -3,7 +3,7 @@ import geopy.distance #package to calculate distance between two lat/lon points
 from numpy.ma.core import MaskedConstant
 from datetime import datetime
 from file_handling import write_to_file, read_route
-from Force_functions import Force_produced, Speed_achieved, Speed_achieved_old
+from Force_functions import Force_produced, Speed_achieved_old
 from Weather_Handling import getweather, r2d, True_wind_direction, True_wind_speed, Apparent_Wind_Speed, Apparent_wind_angle, alpha
 
 from route_handling import calc_vessel_heading, mac_windows_file_handle

@@ -233,8 +233,9 @@ def Speed_achieved_old(perp_force, forward_force):
         drift_angle = Beta_solver(perp_force, velocity)
         resistance_multiplier = Drift_resistance_multiplier(drift_angle)
         if resistance_multiplier < 1:
-            resistance_multiplier = 1
-            total_resistance        = resistance_multiplier * total_sailing_resistance
+            total_resistance_vector.append(total_resistance)
+        else:
+            total_resistance = resistance_multiplier * total_sailing_resistance
             total_resistance_vector.append(total_resistance)
 
 
