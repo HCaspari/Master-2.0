@@ -230,7 +230,7 @@ def True_wind_direction(vessel_heading,wind_speed_north,wind_speed_east):
     :return: true wind direction [degrees]
     """
     wind_angle = math.atan2(wind_speed_north,wind_speed_east)
-    true_wind_direction = wind_angle-vessel_heading
+    true_wind_direction = r2d(wind_angle)-vessel_heading
 
     return true_wind_direction
 

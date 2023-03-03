@@ -221,11 +221,12 @@ def Speed_achieved_old(perp_force, forward_force):
 
     # Empty vectors to store values
     sailing_resistance_vector = []
-    total_resistance_vector = []
+    total_resistance_vector = [0]
     total_resistance_vector_alt = []
 
     # Set vessel speed [knots] in intervall from 0,20 with stepsize 0.1
     vessel_velocity = np.linspace(0.1, 20, 200)
+    total_resistance = 0
     #
     for velocity in vessel_velocity:
         total_sailing_resistance = Sailing_resistance(velocity) * ratio_hydrodyn_to_tot_res
