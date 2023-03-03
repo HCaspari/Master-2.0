@@ -3,7 +3,7 @@ import geopy.distance #package to calculate distance between two lat/lon points
 from numpy.ma.core import MaskedConstant
 from datetime import datetime
 from file_handling import write_to_file, read_route
-from Force_functions import Force_produced, Force_produced_new_CL, Speed_achieved, Speed_achieved_old
+from Force_functions import Force_produced, Speed_achieved, Speed_achieved_old
 from Weather_Handling import getweather, r2d, True_wind_direction, True_wind_speed, Apparent_Wind_Speed, Apparent_wind_angle, alpha
 
 from route_handling import calc_vessel_heading, mac_windows_file_handle
@@ -116,12 +116,12 @@ def main(route, iteration, routenumber):
         position_next       = route[i+1]
         sailing_distance    = round(geopy.distance.geodesic(position_first,position_next).nautical,3)    #In Nautical Miles
         vessel_heading      = calc_vessel_heading(position_first, position_next)                         #In Degrees (North is 0)
-        WSE,WSN             = getweather(route_sailing_time,position_first[0],position_first[1])         #Gives Wind speed East and North
-        TWS                 = True_wind_speed(WSN,WSE)                                                  #Finds True Windspeed (pythagoras)
-        TWD                 = True_wind_direction(vessel_heading,WSN,WSE)
-        AWS                 = Apparent_Wind_Speed(TWS,vessel_speed,TWD)
-        AWA                 = alpha(vessel_speed,vessel_heading,WSN,WSE )                                              #Finds Apparent wind angle
-        forward_force_func,perpendicular_force_func = Force_produced(AWS, AWA)                         #Forward and Perpendicular force from Flettners
+        WSE,WSN             = getweather(route_sailing_time,position_first[0],position_first[1])         #Wind speed East and North
+        TWS                 = True_wind_speed(WSN,WSE)                                                   #True Windspeed (pythagoras)
+        TWD                 = True_wind_direction(vessel_heading,WSN,WSE)                                #True Wind Direction
+        AWS                 = Apparent_Wind_Speed(TWS,vessel_speed,TWD)                                  #Apparent wind speed
+        AWA                 = alpha(vessel_speed,vessel_heading,WSN,WSE )                                #Apparent wind angle
+        forward_force_func,perpendicular_force_func = Force_produced(AWS, AWA)                           #Forward and Perpendicular force from Flettners
 
         true_wind_speed_vector.append(TWS)
         true_wind_direction_vector.append(TWD)
@@ -132,8 +132,8 @@ def main(route, iteration, routenumber):
             return 1
 
 
-        vessel_speed    = Speed_achieved(perpendicular_force_func, forward_force_func)    #Sailing Speed obtained in KNOTS
-        vessel_speed    = Speed_achieved_old(perpendicular_force_func, forward_force_func)
+        vessel_speed    = Speed_achieved_old(perpendicular_force_func, forward_force_func)    #Sailing Speed obtained in KNOTS
+
         if vessel_speed == 6:
             print(AWS, " TWS when vessel speed is greater than 6")
         if vessel_speed == 7:
@@ -143,47 +143,48 @@ def main(route, iteration, routenumber):
 
         sailing_speed_vector.append(vessel_speed)
 
-
-        forward_force_func_2,perpendicular_force_func_2, power_consumption = Force_produced_new_CL(AWS, AWA)                         #Forward and Perpendicular force from Flettners
-        vessel_speed_2      = Speed_achieved(perpendicular_force_func_2, forward_force_func_2)    #Sailing Speed obtained in KNOTS
-        alt_sailing_Speed.append(vessel_speed_2)
-        power_Consumption_flettner.append(power_consumption)
-
-
         if routenumber == 1:
-            file_speed_Trond_Aalesund = mac_windows_file_handle("Output_files/savespeed_TrondAales.csv")
-            file_TWS_Trond_Aalesund = mac_windows_file_handle("Output_files/saveTWS_TrondAales.csv")
-            file_TWD_Trond_Aalesund = mac_windows_file_handle("Output_files/saveTWD_TrondAales.csv")
+            if i == 0:
+                file_speed_Trond_Aalesund = mac_windows_file_handle("Output_files/savespeed_TrondAales.csv")
+                file_TWS_Trond_Aalesund = mac_windows_file_handle("Output_files/saveTWS_TrondAales.csv")
+                file_TWD_Trond_Aalesund = mac_windows_file_handle("Output_files/saveTWD_TrondAales.csv")
             write_to_file(sailing_speed_vector, file_speed_Trond_Aalesund)
             write_to_file(true_wind_speed_vector,file_TWS_Trond_Aalesund)
             write_to_file(true_wind_direction_vector,file_TWD_Trond_Aalesund)
 
-        if routenumber == 2:
-            file_speed_Aalesund_Floro = mac_windows_file_handle("Output_files/savespeed_AalesFloro.csv")
-            file_TWS_Aalesund_Floro = mac_windows_file_handle("Output_files/saveTWS_AalesFloro.csv")
-            file_TWD_Aalesund_Floro = mac_windows_file_handle("Output_files/saveTWD_AalesFloro.csv")
+        elif routenumber == 2:
+            if i == 0:
+                file_speed_Aalesund_Floro = mac_windows_file_handle("Output_files/savespeed_AalesFloro.csv")
+                file_TWS_Aalesund_Floro = mac_windows_file_handle("Output_files/saveTWS_AalesFloro.csv")
+                file_TWD_Aalesund_Floro = mac_windows_file_handle("Output_files/saveTWD_AalesFloro.csv")
             write_to_file(sailing_speed_vector, file_speed_Aalesund_Floro)
             write_to_file(true_wind_speed_vector,file_TWS_Aalesund_Floro)
             write_to_file(true_wind_direction_vector,file_TWD_Aalesund_Floro)
 
-        if routenumber == 3:
-            file_speed_Floro_Bergen = mac_windows_file_handle("Output_files/savespeed_FloroBergen.csv")
-            file_TWS_Floro_Bergen = mac_windows_file_handle("Output_files/saveTWS_FloroBergen.csv")
-            file_TWD_Floro_Bergen = mac_windows_file_handle("Output_files/saveTWD_FloroBergen.csv")
+        elif routenumber == 3:
+            if i == 0:
+                file_speed_Floro_Bergen = mac_windows_file_handle("Output_files/savespeed_FloroBergen.csv")
+                file_TWS_Floro_Bergen = mac_windows_file_handle("Output_files/saveTWS_FloroBergen.csv")
+                file_TWD_Floro_Bergen = mac_windows_file_handle("Output_files/saveTWD_FloroBergen.csv")
             write_to_file(sailing_speed_vector, file_speed_Floro_Bergen)
             write_to_file(true_wind_speed_vector,file_TWS_Floro_Bergen)
             write_to_file(true_wind_direction_vector,file_TWD_Floro_Bergen)
 
-        if routenumber == 4:
-            file_speed_Bergen_Stavanger = mac_windows_file_handle("Output_files/savespeed_BrgStvg.csv")
-            file_TWS_Bergen_Stavanger = mac_windows_file_handle("Output_files/saveTWS_BergenStavanger.csv")
-            file_TWD_Bergen_Stavanger = mac_windows_file_handle("Output_files/saveTWD_BergenStavanger.csv")
+        elif routenumber == 4:
+            if i == 0:
+                file_speed_Bergen_Stavanger = mac_windows_file_handle("Output_files/savespeed_BrgStvg.csv")
+                file_TWS_Bergen_Stavanger = mac_windows_file_handle("Output_files/saveTWS_BergenStavanger.csv")
+                file_TWD_Bergen_Stavanger = mac_windows_file_handle("Output_files/saveTWD_BergenStavanger.csv")
             write_to_file(sailing_speed_vector, file_speed_Bergen_Stavanger)
             write_to_file(true_wind_speed_vector,file_TWS_Bergen_Stavanger)
             write_to_file(true_wind_direction_vector,file_TWD_Bergen_Stavanger)
 
+        if vessel_speed == 0:
+            sailing_time = 1                                           #If ship experiences no wind, it waits an hour before attempting to sail with new wind
+            print("Slowsteam :(")
+        else:
+            sailing_time     = sailing_distance/vessel_speed           #time used to sail trip added
 
-        sailing_time     = sailing_distance/vessel_speed                                                    #time used to sail trip added
         coordinate_sailing_time.append(sailing_time)
         tot_sailing_dist     += sailing_distance
         #check for extreme time usage

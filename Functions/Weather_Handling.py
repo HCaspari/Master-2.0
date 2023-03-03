@@ -188,7 +188,7 @@ def getweather(tid,latitude, longditude):
     elif longditude < eastward_lon [0] or longditude > eastward_lon[-1]: #været må være hentet på posisjonen longditude
         print("longditude out of bounds, longditude between 3.0625 and 20.9375")
         return 1
-    if lat_pos >= len(dataset_NW["northward_wind"][tid,:]):
+    elif lat_pos >= len(dataset_NW["northward_wind"][tid,:]):
         print("yay")
     elif lat_pos >= len(dataset_NW["northward_wind"][tid,:,lon_pos]):
         print(f"lat posistion is out of bound at {lat_pos} degrees")

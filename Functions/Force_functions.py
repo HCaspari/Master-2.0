@@ -221,8 +221,7 @@ def Speed_achieved_old(perp_force, forward_force):
 
     # Empty vectors to store values
     sailing_resistance_vector = []
-    total_resistance_vector = [0]
-    total_resistance_vector_alt = []
+    total_resistance_vector = []
 
     # Set vessel speed [knots] in intervall from 0,20 with stepsize 0.1
     vessel_velocity = np.linspace(0.1, 20, 200)
@@ -231,8 +230,8 @@ def Speed_achieved_old(perp_force, forward_force):
     for velocity in vessel_velocity:
         total_sailing_resistance = Sailing_resistance(velocity) * ratio_hydrodyn_to_tot_res
         sailing_resistance_vector.append(total_sailing_resistance)
-        beta = Beta_solver(perp_force, velocity)
-        resistance_multiplier = Drift_resistance_multiplier(beta)
+        drift_angle = Beta_solver(perp_force, velocity)
+        resistance_multiplier = Drift_resistance_multiplier(drift_angle)
         if resistance_multiplier < 1:
             resistance_multiplier = 1
             total_resistance        = resistance_multiplier * total_sailing_resistance
@@ -246,42 +245,5 @@ def Speed_achieved_old(perp_force, forward_force):
 
     speed_achieved = take_closest(total_resistance_vector, forward_force)  # IN KNOTS
 
-    return speed_achieved  # IN KNOTS
-
-def Speed_achieved(perp_force, forward_force):
-    """
-    :param perp_force: sideforces observed by the vessel from flettners (in kN)
-    :param forward_force:  propulsive force observed by vessel from flettners (in kN)
-    :return: speed achieved by vessel when observing these forces
-    """
-
-    # ratio hydrodynamic resistance to total res is approximately 0.85
-    ratio_hydrodyn_to_tot_res = 0.85
-
-    # Empty vectors to store values
-
-    total_resistance_vector = []
-    total_resistance_vector_alt = []
-
-    # Set vessel speed [knots] in intervall from 0,20 with stepsize 0.1
-    vessel_velocity = np.linspace(0.1, 20, 200)
-    for velocity in vessel_velocity:
-        total_sailing_resistance = Sailing_resistance(velocity) * ratio_hydrodyn_to_tot_res
-
-        beta = Beta_solver(perp_force, velocity)
-
-
-        #Checks alternative drift resistance
-        resistance_drift_alt = total_sailing_resistance*(0.0004 * beta ** 3 - 0.009 * beta ** 2 + 0.0754 * beta - 0.0015) #in kN
-        total_resistance_alt = (total_sailing_resistance + resistance_drift_alt)/1000
-        total_resistance_vector_alt.append(total_resistance_alt)
-        #alternative that finds speed achieved with alternative drift resistance
-        if total_resistance_alt > forward_force:
-            speed_achieved = velocity
-            print(speed_achieved)
-            return speed_achieved
-
-    #speed_achieved = take_closest(total_resistance_vector,forward_force) #IN KNOTS
-    speed_achieved = 0.1
 
     return speed_achieved #IN KNOTS
