@@ -126,13 +126,14 @@ def main(route, iteration, routenumber):
         true_wind_speed_vector.append(TWS)
         true_wind_direction_vector.append(TWD)
 
-
         if type(forward_force_func) == MaskedConstant or type(perpendicular_force_func) == MaskedConstant:
             print("ouchie, we have a mask", i)
             return 1
 
 
         vessel_speed    = Speed_achieved_old(perpendicular_force_func, forward_force_func)    #Sailing Speed obtained in KNOTS
+        if i == 100:
+            print(f"vessel speed at iteration:{i} is: {vessel_speed}")
 
         if vessel_speed == 6:
             print(AWS, " TWS when vessel speed is greater than 6")

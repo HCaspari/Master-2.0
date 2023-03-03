@@ -220,7 +220,7 @@ def Speed_achieved_old(perp_force, forward_force):
     ratio_hydrodyn_to_tot_res = 0.85
 
     # Empty vectors to store values
-    sailing_resistance_vector = []
+    hydro_sailing_resistance_vector = []
     total_resistance_vector = []
 
     # Set vessel speed [knots] in intervall from 0,20 with stepsize 0.1
@@ -228,16 +228,17 @@ def Speed_achieved_old(perp_force, forward_force):
     total_resistance = 0
     #
     for velocity in vessel_velocity:
-        total_sailing_resistance = Sailing_resistance(velocity) * ratio_hydrodyn_to_tot_res
-        sailing_resistance_vector.append(total_sailing_resistance)
+        hydro_sailing_resistance = Sailing_resistance(velocity) * ratio_hydrodyn_to_tot_res
+        hydro_sailing_resistance_vector.append(hydro_sailing_resistance)
+
         drift_angle = Beta_solver(perp_force, velocity)
         resistance_multiplier = Drift_resistance_multiplier(drift_angle)
         if resistance_multiplier < 1:
+            total_resistance = hydro_sailing_resistance
             total_resistance_vector.append(total_resistance)
         else:
-            total_resistance = resistance_multiplier * total_sailing_resistance
+            total_resistance = resistance_multiplier * hydro_sailing_resistance
             total_resistance_vector.append(total_resistance)
-
 
         # stop iteration when total_resistance > forward force
         if total_resistance > forward_force:
