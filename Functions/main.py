@@ -132,8 +132,7 @@ def main(route, iteration, routenumber):
 
 
         vessel_speed    = Speed_achieved_old(perpendicular_force_func, forward_force_func)    #Sailing Speed obtained in KNOTS
-        if i == 100:
-            print(f"vessel speed at iteration:{i} is: {vessel_speed}")
+
 
         if vessel_speed == 6:
             print(AWS, " TWS when vessel speed is greater than 6")
@@ -223,7 +222,7 @@ def simulation(csv,routenumber):
 
     """
 
-    hour_intervall                  = 6                                                #at what hourly interval should we simulate?
+    hour_intervall                  = 1                                                #at what hourly interval should we simulate?
     route_travel                    = read_route(csv)
     time_of_simulation              = 17520                                             #two years in hours
     time_of_trip                    = np.zeros(int(time_of_simulation/hour_intervall))
@@ -332,11 +331,8 @@ def test_func():
     print("apparent wind angle using function from sediek",sediek)
     return 0
 
-runsimulation(1)
+runsimulation(4)
 
-for beta in range(10):
-    print("for angle equal to",beta,"drift resistance is", (0.0004 * beta ** 3 - 0.009 * beta ** 2 + 0.0754 * beta - 0.0015)/1000)
-True_wind_direction(53.24,3.35,-2.17)
 
 print("Finished <3<3")
 
