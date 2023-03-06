@@ -6,7 +6,7 @@ from file_handling import write_to_file, read_route
 from Force_functions import Force_produced, Speed_achieved_old
 from Weather_Handling import getweather, r2d, True_wind_direction, True_wind_speed, Apparent_Wind_Speed, Apparent_wind_angle, alpha
 
-from route_handling import calc_vessel_heading, mac_windows_file_handle
+from route_handling import calc_vessel_heading, mac_windows_file_handle, calc_vessel_heading_2
 
 
 
@@ -115,7 +115,7 @@ def main(route, iteration, routenumber):
         position_first      = route[i]
         position_next       = route[i+1]
         sailing_distance    = round(geopy.distance.geodesic(position_first,position_next).nautical,3)    #In Nautical Miles
-        vessel_heading      = calc_vessel_heading(position_first, position_next)                         #In Degrees (North is 0)
+        vessel_heading      = calc_vessel_heading_2(position_first, position_next)                       #In Degrees (North is 90)
         WSE,WSN             = getweather(route_sailing_time,position_first[0],position_first[1])         #Wind speed East and North
         TWS                 = True_wind_speed(WSN,WSE)                                                   #True Windspeed (pythagoras)
         TWD                 = True_wind_direction(vessel_heading,WSN,WSE)                                #True Wind Direction
@@ -131,7 +131,7 @@ def main(route, iteration, routenumber):
             return 1
 
 
-        vessel_speed    = Speed_achieved_old(perpendicular_force_func, forward_force_func)    #Sailing Speed obtained in KNOTS
+        vessel_speed    = round(Speed_achieved_old(perpendicular_force_func, forward_force_func),3)    #Sailing Speed obtained in KNOTS
 
 
         if vessel_speed == 6:
@@ -185,7 +185,7 @@ def main(route, iteration, routenumber):
         else:
             sailing_time     = sailing_distance/vessel_speed           #time used to sail trip added
 
-        coordinate_sailing_time.append(sailing_time)
+        coordinate_sailing_time.append(round(sailing_time,3))
         tot_sailing_dist     += sailing_distance
         #check for extreme time usage
         if vessel_speed < 1:
@@ -222,7 +222,7 @@ def simulation(csv,routenumber):
 
     """
 
-    hour_intervall                  = 1                                                #at what hourly interval should we simulate?
+    hour_intervall                  = 365                                                #at what hourly interval should we simulate?
     route_travel                    = read_route(csv)
     time_of_simulation              = 17520                                             #two years in hours
     time_of_trip                    = np.zeros(int(time_of_simulation/hour_intervall))
@@ -331,7 +331,7 @@ def test_func():
     print("apparent wind angle using function from sediek",sediek)
     return 0
 
-runsimulation(4)
+runsimulation(1)
 
 
 print("Finished <3<3")

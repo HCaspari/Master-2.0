@@ -229,10 +229,14 @@ def True_wind_direction(vessel_heading,wind_speed_north,wind_speed_east):
     :param wind_speed_east: speed of wind in eastern direction (negative means west)
     :return: true wind direction [degrees]
     """
-    wind_angle = math.atan2(wind_speed_north,wind_speed_east)
-    true_wind_direction = r2d(wind_angle)-vessel_heading
+    wind_angle_rads = math.atan2(wind_speed_north,wind_speed_east)   # gives direction, 0 degrees equals east, 90 degrees = north ....
+    wind_angle_degs = r2d(wind_angle_rads)
+    true_wind_direction = wind_angle_degs-vessel_heading        #true wind direction in degrees
 
-    return true_wind_direction
+    if true_wind_direction < 0:                                 #normalizing function, negative degrees written as positiv (181 --> 359)
+        true_wind_direction += 360
+
+    return true_wind_direction #in degrees
 
 def Apparent_Wind_Speed(true_wind_speed, vessel_speed, true_wind_direction):
     """

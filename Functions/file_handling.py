@@ -106,7 +106,7 @@ def read_array_from_file(filename_func):
     readdata = pd.read_csv(filename_func)
     readdata = readdata[readdata != 0]
     data_array = []
-    print(f"im reading {filename_func} now")
+    #print(f"im reading {filename_func} now")
     for i in range(len(readdata)):
         data_array.append(round(readdata.loc[i].iat[1],3))
     #print(data_array)
@@ -129,8 +129,3 @@ def read_route(csv):
 
 filname = mac_windows_file_handle("Output_files/Bergen_Stavanger_reise")
 ARRAY = read_array_from_file(filname)
-counter = 0
-for i in range(len(ARRAY)):
-    if ARRAY[i] < 1:
-        counter += 1
-print(counter)

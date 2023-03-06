@@ -112,8 +112,9 @@ def calc_vessel_heading(pointA, pointB):
     deg2rad = math.pi / 180
     rad2deg = 180 / math.pi
     latA = pointA[0] * deg2rad
-    latB = pointB[0] * deg2rad
     lonA = pointA[1] * deg2rad
+
+    latB = pointB[0] * deg2rad
     lonB = pointB[1] * deg2rad
 
     delta_ratio = math.log(math.tan(latB/ 2 + math.pi / 4) / math.tan(latA/ 2 + math.pi / 4))
@@ -122,6 +123,46 @@ def calc_vessel_heading(pointA, pointB):
     delta_lon %= math.pi
     vessel_heading = math.atan2(delta_lon, delta_ratio) * rad2deg
     return vessel_heading #IN DEGREES
+
+def calc_vessel_heading_2(pointA, pointB):
+
+    """
+    Created by https://gist.github.com/jeromer/2005586
+    Calculates the bearing between two points.
+    The formulae used is the following:
+        θ = atan2(sin(Δlong).cos(lat2) cos(lat1).sin(lat2) − sin(lat1).cos(lat2).cos(Δlong))
+    :Parameters:
+      - `pointA: The tuple representing the latitude/longitude for the
+        first point. Latitude and longitude must be in decimal degrees
+      - `pointB: The tuple representing the latitude/longitude for the
+        second point. Latitude and longitude must be in decimal degrees
+    :Returns:
+      The bearing in degrees
+    :Returns Type:
+      float
+    """
+    pointA = tuple(pointA)
+    pointB = tuple(pointB)
+    if (type(pointA) != tuple) or (type(pointB) != tuple):
+        raise TypeError("Only tuples are supported as arguments")
+
+    lat1 = math.radians(pointA[0])
+    lat2 = math.radians(pointB[0])
+
+    diffLong = math.radians(pointB[1] - pointA[1])
+
+    x = math.sin(diffLong) * math.cos(lat2)
+    y = math.cos(lat1) * math.sin(lat2) - (math.sin(lat1) * math.cos(lat2) * math.cos(diffLong))
+
+    initial_bearing = math.atan2(x, y)
+
+    # Now we have the initial bearing but math.atan2 return values
+    # from -180° to + 180° which is not what we want for a compass bearing
+    # The solution is to normalize the initial bearing as shown below
+    initial_bearing = math.degrees(initial_bearing)
+    compass_bearing = (initial_bearing + 360) % 360
+
+    return compass_bearing
 
 def generate_intermediate_points(start_point, end_point, num_points):
     """
@@ -203,8 +244,9 @@ def createmap(trip_vector):
     :param trip_vector: A vector of coordinates over route
     :return: a map that shows given route
     """
-    middle_of_route = trip_vector[int(len(trip_vector)/2)]
-    foliummap = folium.Map(location=middle_of_route, tiles="Stamen Terrain", zoom_start=7)
+    middle_of_route = [59.6131,5.0301]
+
+    foliummap = folium.Map(location=[59.6131, 5.0301], tiles="Stamen Terrain", zoom_start=7)
     #foliummap.show_in_browser()
 
     route = trip_vector
@@ -262,6 +304,7 @@ write_to_file(intricate_Trond_aal,route_Trond_Aals_intricate)
 write_to_file(intricate_Aal_Floro,route_Aals_Floro_intricate)
 write_to_file(intricate_Floro_Brg,route_Floro_Brg_intricate)
 write_to_file(intricate_Brg_Stvg,route_Brg_Stvg_intricate)
-#createmap(intricate_Brg_Stvg)
+
+#createmap(Route_Bergen_Stvg)
 
 
