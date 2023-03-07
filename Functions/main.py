@@ -215,7 +215,7 @@ def simulation(csv,routenumber):
 
     """
 
-    hour_intervall                  = 175                                                #at what hourly interval should we simulate?
+    hour_intervall                  = 1                                                #at what hourly interval should we simulate?
     route_travel                    = read_route(csv)
     time_of_simulation              = 17520                                             #two years in hours
     time_of_trip                    = np.zeros(int(time_of_simulation/hour_intervall))
@@ -325,9 +325,9 @@ def test_func():
     return 0
 
 runsimulation(1)
-runsimulation(2)
-runsimulation(3)
-runsimulation(4)
+#runsimulation(2)
+#runsimulation(3)
+#runsimulation(4)
 
 print("Finished <3<3")
 

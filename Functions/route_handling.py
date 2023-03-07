@@ -246,7 +246,7 @@ def createmap(trip_vector):
     """
     middle_of_route = [59.6131,5.0301]
 
-    foliummap = folium.Map(location=[59.6131, 5.0301], tiles="Stamen Terrain", zoom_start=7)
+    foliummap = folium.Map(location=[59.6131, 5.0301], tiles="Stamen Terrain", zoom_start=5)
     #foliummap.show_in_browser()
 
     route = trip_vector
@@ -274,6 +274,10 @@ def distance_calc(route):
         totaldist += geodesic(start_coord,end_coord).kilometers
 
     print(f"Total distance = {totaldist}")
+#distance_between_points(Route_Trond_Aal)
+#distance_between_points(Route_Aal_Floro)
+#distance_between_points(Route_Floro_Bergen)
+##distance_between_points(Route_Bergen_Stvg)
 def distance_between_points(route):
     dist_vect = []
     for i in range(len(route)-1):
@@ -281,10 +285,6 @@ def distance_between_points(route):
         end_coord = route[i + 1]
         dist_vect.append(geodesic(start_coord,end_coord).kilometers)
     print(dist_vect)
-#distance_between_points(Route_Trond_Aal)
-#distance_between_points(Route_Aal_Floro)
-#distance_between_points(Route_Floro_Bergen)
-##distance_between_points(Route_Bergen_Stvg)
 
 #distance_calc(Route_Trond_Aal)
 #distance_calc(Route_Aal_Floro)
@@ -300,11 +300,101 @@ route_Aals_Floro_intricate  = mac_windows_file_handle("Route_data/route_Aales_Fl
 route_Floro_Brg_intricate   = mac_windows_file_handle("Route_data/route_Floro_Brg_Intricate")
 route_Brg_Stvg_intricate    = mac_windows_file_handle("Route_data/route_Brg_Stv_Intricate")
 
-write_to_file(intricate_Trond_aal,route_Trond_Aals_intricate)
-write_to_file(intricate_Aal_Floro,route_Aals_Floro_intricate)
-write_to_file(intricate_Floro_Brg,route_Floro_Brg_intricate)
-write_to_file(intricate_Brg_Stvg,route_Brg_Stvg_intricate)
+#write_to_file(intricate_Trond_aal,route_Trond_Aals_intricate)
+#write_to_file(intricate_Aal_Floro,route_Aals_Floro_intricate)
+#write_to_file(intricate_Floro_Brg,route_Floro_Brg_intricate)
+#write_to_file(intricate_Brg_Stvg,route_Brg_Stvg_intricate)
 
 #createmap(Route_Bergen_Stvg)
 
 
+
+#####
+
+#Route creation : Aalesund -- Færøyene -- Aberdeen -- Newcastle -- Amsterdam -- Esbjerg (Danmark) -- Aalesund
+#Route Coordinates:
+def auto_create_Route(start_point_coordinates,end_point_coordinates):
+    #Traveling between Copenhagen and Aalesund needs to go VIA M1_E_A and M2_E_A
+    #traveling between Færøyene and Aberdeen needs to go via Midpoint
+    route       = [start_point_coordinates,end_point_coordinates]
+    distance    = int(np.floor(geodesic(start_point_coordinates,end_point_coordinates).kilometers//7))
+    Route       = generate_intricate_route(route,distance)
+
+    #Creates a tripvector of points from start_point to end_point with stepdistance of max 7 km.
+    # (meaning weather will always be recalculated when entering new 0.125 degree lat/lon which is weather granularity
+    createmap(Route)
+    return Route
+
+#Route point coordinates:
+
+Aalesund        = (62.48342017643765, 5.922191001412515)
+Færøyene        = (62.01263234289485, -6.774748315943504)
+Midpoint_Fa_Ab  = (58.80320072664799, -1.1708712520663145)
+Aberdeen        = (57.15470822505185, -2.1185733842766115)
+Newcastle       = (54.97876964024249, -1.3553315768007936)
+Amsterdam       = (52.47169283545967, 4.537125962881187)
+Esbjerg_Danmark = (55.47341900177149, 8.301921187910168)
+Midpoint_1_E_A  = (60.44513450388027, 3.418535867789226)
+Midpoint_2_E_A  = (62.324854695720006, 5.0124722561975235)
+
+#auto_create_Route(Aalesund,Aberdeen)
+#auto_create_Route(Aberdeen,Amsterdam)
+Aberdeen_Esbjerg = auto_create_Route(Aberdeen,Esbjerg_Danmark)
+
+
+
+def create_international_routes():
+
+    #Route start and finish
+    A_F = [Aalesund,Færøyene]
+    F_M = [Færøyene,Midpoint_Fa_Ab]
+    M_A = [Midpoint_Fa_Ab,Aberdeen]
+    A_N = [Aberdeen,Newcastle]
+    N_A = [Newcastle,Amsterdam]
+    A_E = [Amsterdam,Esbjerg_Danmark]
+    E_M1    = [Esbjerg_Danmark, Midpoint_1_E_A]
+    M1_M2   = [Midpoint_1_E_A, Midpoint_2_E_A]
+    M2_A    = [Midpoint_2_E_A, Aalesund]
+
+    #Distances of routes, divded by 7, to find amount of 7 km segments route consists of
+
+    A_F_dist = geodesic(Aalesund,Færøyene).kilometers/7
+    F_M_dist = geodesic(Færøyene, Midpoint_Fa_Ab).kilometers/7
+    M_A_dist = geodesic(Midpoint_Fa_Ab, Aberdeen).kilometers/7
+    A_N_dist = geodesic(Aberdeen, Newcastle).kilometers/7
+    N_A_dist = geodesic(Newcastle, Amsterdam).kilometers/7
+    A_E_dist = geodesic(Amsterdam, Esbjerg_Danmark).kilometers/7
+    E_M1_dist   = geodesic(Esbjerg_Danmark, Midpoint_1_E_A).kilometers / 7
+    M1_M2_dist  = geodesic(Midpoint_1_E_A, Midpoint_2_E_A).kilometers / 7
+    M2_A_dist   = geodesic(Midpoint_2_E_A, Aalesund).kilometers / 7
+
+
+    #generating routes with this amount of spits:
+
+    A_F_route   = generate_intricate_route(A_F,int(np.floor(A_F_dist)))
+    F_M_route   = generate_intricate_route(F_M,int(np.floor(F_M_dist)))
+    M_A_route   = generate_intricate_route(M_A,int(np.floor(M_A_dist)))
+    A_N_route   = generate_intricate_route(A_N,int(np.floor(A_N_dist)))
+    N_A_route   = generate_intricate_route(N_A,int(np.floor(N_A_dist)))
+    A_E_route   = generate_intricate_route(A_E,int(np.floor(A_E_dist)))
+    E_M1_route  = generate_intricate_route(E_M1,int(np.floor(E_M1_dist)))
+    M1_M2_route = generate_intricate_route(M1_M2,int(np.floor(M1_M2_dist)))
+    M2_A_route  = generate_intricate_route(M2_A,int(np.floor(M2_A_dist)))
+
+    return A_F_route,F_M_route,M_A_route,A_N_route,N_A_route,A_E_route, E_M1_route, M1_M2_route, M2_A_route
+
+#A_F_route,F_M_route,M_A_route,A_N_route,N_A_route,A_E_route, E_M1_route, M1_M2_route, M2_A_route = create_international_routes()
+#createmap(A_F_route)
+#createmap(F_M_route)
+#createmap(M_A_route)
+#createmap(A_N_route)
+#createmap(N_A_route)
+#createmap(A_E_route)
+#createmap(E_M1_route)
+#createmap(M1_M2_route)
+
+#createmap(M2_A_route)
+
+for i in range(1,24,2):
+    print(geodesic(Aberdeen_Esbjerg[i],Aberdeen_Esbjerg[i+1]).kilometers)
+#    print()
