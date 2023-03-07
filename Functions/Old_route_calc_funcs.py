@@ -1,12 +1,10 @@
 
 import numpy as np
-from numpy.ma.core import MaskedConstant
-from datetime import datetime
 from plot_functions import plot_power
 from file_handling import write_to_file, read_array_from_file, read_position_vect_from_file
 from Weather_Handling import getweather, Apparent_wind_angle, Apparent_Wind_Speed
 from pathlib import PureWindowsPath, Path
-from Force_functions import Force_produced, Speed_achieved
+
 
 filename = "../env/position_array"  # file containing position array of route
 position_array = read_position_vect_from_file(filename) # reads said file

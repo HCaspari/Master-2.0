@@ -231,11 +231,11 @@ def True_wind_direction(vessel_heading,wind_speed_north,wind_speed_east):
     """
     wind_angle_rads = math.atan2(wind_speed_north,wind_speed_east)   # gives direction, 0 degrees equals east, 90 degrees = north ....
     wind_angle_degs = r2d(wind_angle_rads)
+    wind_angle_degs = (wind_angle_degs + 360) % 360             #normalizes degrees
+
     true_wind_direction = wind_angle_degs-vessel_heading        #true wind direction in degrees
 
-    if true_wind_direction < 0:                                 #normalizing function, negative degrees written as positiv (181 --> 359)
-        true_wind_direction += 360
-
+    true_wind_direction = (true_wind_direction + 360) % 360
     return true_wind_direction #in degrees
 
 def Apparent_Wind_Speed(true_wind_speed, vessel_speed, true_wind_direction):
@@ -262,8 +262,7 @@ def Apparent_wind_angle(TWS, AWS, VS):
     :return:    AWA: Apparent wind angle [degree]
     """
     AWA = math.acos((TWS ** 2 - AWS ** 2 - VS ** 2) / (-2 * AWS * VS))
-    if AWA >= 360:
-        AWA -= 360
+    AWA = (AWA + 360)%360
     return r2d(AWA)
 
 
@@ -276,11 +275,13 @@ def alpha(vessel_speed,vessel_heading, NWS,EWS):
     :param EWS: Eastern wind speed (decomposed)
     :return: Apparent wind angle in degrees
     """
-    Vsx = np.cos(vessel_heading)*vessel_speed
-    Vsy = np.sin(vessel_heading)*vessel_speed
-    Wsx = EWS
-    Wsy = NWS
-    Vawx = Vsx + Wsx
-    Vawy = Vsy + Wsy
-    alpha = math.atan2(Vawy,Vawx)
-    return r2d(alpha)
+    Vsx = np.cos(vessel_heading)*vessel_speed   #Decompose sailing speed
+    Vsy = np.sin(vessel_heading)*vessel_speed   #Decompose sailing speed
+    Wsx = EWS                                   #Decompose Wind speed
+    Wsy = NWS                                   #Decompose Wind speed
+    Vawx = Vsx + Wsx                            #Recombine speeds
+    Vawy = Vsy + Wsy                            #Recombine speeds
+    alpha_temp = r2d(math.atan2(Vawy,Vawx))          #Change to degrees, calculate angle
+    alpha      = (alpha_temp+360) % 360                   #Normalize angle between 0 and 360 degrees
+
+    return alpha

@@ -129,3 +129,39 @@ def read_route(csv):
 
 filname = mac_windows_file_handle("Output_files/Bergen_Stavanger_reise")
 ARRAY = read_array_from_file(filname)
+
+def test_read_files(routenumber):
+
+    file_speed_Trond_Aalesund = mac_windows_file_handle("Output_files/savespeed_TrondAales.csv")
+    file_TWS_Trond_Aalesund = mac_windows_file_handle("Output_files/saveTWS_TrondAales.csv")
+    file_TWD_Trond_Aalesund = mac_windows_file_handle("Output_files/saveTWD_TrondAales.csv")
+    file_speed_Aalesund_Floro = mac_windows_file_handle("Output_files/savespeed_AalesFloro.csv")
+    file_TWS_Aalesund_Floro = mac_windows_file_handle("Output_files/saveTWS_AalesFloro.csv")
+    file_TWD_Aalesund_Floro = mac_windows_file_handle("Output_files/saveTWD_AalesFloro.csv")
+    file_speed_Floro_Bergen = mac_windows_file_handle("Output_files/savespeed_FloroBergen.csv")
+    file_TWS_Floro_Bergen = mac_windows_file_handle("Output_files/saveTWS_FloroBergen.csv")
+    file_TWD_Floro_Bergen = mac_windows_file_handle("Output_files/saveTWD_FloroBergen.csv")
+    file_speed_Bergen_Stavanger = mac_windows_file_handle("Output_files/savespeed_BrgStvg.csv")
+    file_TWS_Bergen_Stavanger = mac_windows_file_handle("Output_files/saveTWS_BergenStavanger.csv")
+    file_TWD_Bergen_Stavanger = mac_windows_file_handle("Output_files/saveTWD_BergenStavanger.csv")
+
+    if routenumber == 1:
+        a = read_array_from_file(file_speed_Trond_Aalesund)
+        b = read_array_from_file(file_TWS_Trond_Aalesund)
+        c = read_array_from_file(file_TWD_Trond_Aalesund)
+        print("read_test complete (speed, TWS, TWD)", a,"\n", b,"\n",c)
+    elif routenumber == 2:
+        d = read_array_from_file(file_speed_Aalesund_Floro)
+        e = read_array_from_file(file_TWS_Aalesund_Floro)
+        f =read_array_from_file(file_TWD_Aalesund_Floro)
+        print("read_test complete, (speed, TWS, TWD)", d,"\n", e,"\n",f)
+    elif routenumber == 3:
+        g = read_array_from_file(file_speed_Floro_Bergen)
+        h = read_array_from_file(file_TWS_Floro_Bergen)
+        i = read_array_from_file(file_TWD_Floro_Bergen)
+        print("read_test complete, (speed, TWS, TWD)", g,"\n", h,"\n", i)
+    elif routenumber == 4:
+        j = read_array_from_file(file_speed_Bergen_Stavanger)
+        k = read_array_from_file(file_TWS_Bergen_Stavanger)
+        l = read_array_from_file(file_TWD_Bergen_Stavanger)
+        print("read_test complete, (speed, TWS, TWD)", j,"\n", k,"\n", l)

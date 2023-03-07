@@ -2,7 +2,7 @@ import numpy as np
 import geopy.distance #package to calculate distance between two lat/lon points
 from numpy.ma.core import MaskedConstant
 from datetime import datetime
-from file_handling import write_to_file, read_route
+from file_handling import write_to_file, read_route, test_read_files
 from Force_functions import Force_produced, Speed_achieved_old
 from Weather_Handling import getweather, r2d, True_wind_direction, True_wind_speed, Apparent_Wind_Speed, Apparent_wind_angle, alpha
 
@@ -96,20 +96,33 @@ def main(route, iteration, routenumber):
 
     """
 
+    #Read files:
+    file_speed_Trond_Aalesund = mac_windows_file_handle("Output_files/savespeed_TrondAales.csv")
+    file_TWS_Trond_Aalesund = mac_windows_file_handle("Output_files/saveTWS_TrondAales.csv")
+    file_TWD_Trond_Aalesund = mac_windows_file_handle("Output_files/saveTWD_TrondAales.csv")
+    file_speed_Aalesund_Floro = mac_windows_file_handle("Output_files/savespeed_AalesFloro.csv")
+    file_TWS_Aalesund_Floro = mac_windows_file_handle("Output_files/saveTWS_AalesFloro.csv")
+    file_TWD_Aalesund_Floro = mac_windows_file_handle("Output_files/saveTWD_AalesFloro.csv")
+    file_speed_Floro_Bergen = mac_windows_file_handle("Output_files/savespeed_FloroBergen.csv")
+    file_TWS_Floro_Bergen = mac_windows_file_handle("Output_files/saveTWS_FloroBergen.csv")
+    file_TWD_Floro_Bergen = mac_windows_file_handle("Output_files/saveTWD_FloroBergen.csv")
+    file_speed_Bergen_Stavanger = mac_windows_file_handle("Output_files/savespeed_BrgStvg.csv")
+    file_TWS_Bergen_Stavanger = mac_windows_file_handle("Output_files/saveTWS_BergenStavanger.csv")
+    file_TWD_Bergen_Stavanger = mac_windows_file_handle("Output_files/saveTWD_BergenStavanger.csv")
+    if iteration == 0:
+        test_read_files(routenumber)
+
     tot_sailing_dist                = 0
     poor_sailing_time               = 0
     poor_sailing_distance           = 0
     sailing_speed_vector            = []
     coordinate_sailing_time         = []
     apparent_wind_speed_observed    = []
-    power_Consumption_flettner      = []
     vessel_speed                    = 4 #initializing sailing speed of 4 knots (will change after one iteration)
     route_sailing_time              = iteration
-
-    alt_sailing_Speed = []
-
     true_wind_speed_vector = []
     true_wind_direction_vector = []
+
 
     for i in range(len(route)-1): #create itteration through route
         position_first      = route[i]
@@ -130,54 +143,9 @@ def main(route, iteration, routenumber):
             print("ouchie, we have a mask", i)
             return 1
 
+        #Speed and time calculations:
 
         vessel_speed    = round(Speed_achieved_old(perpendicular_force_func, forward_force_func),3)    #Sailing Speed obtained in KNOTS
-
-
-        if vessel_speed == 6:
-            print(AWS, " TWS when vessel speed is greater than 6")
-        if vessel_speed == 7:
-            print(AWS, " TWS when vessel speed is greater than 7")
-        if vessel_speed == 8:
-            print(AWS, " TWS when vessel speed is greater than 8")
-
-        sailing_speed_vector.append(vessel_speed)
-
-        if routenumber == 1:
-            if i == 0:
-                file_speed_Trond_Aalesund = mac_windows_file_handle("Output_files/savespeed_TrondAales.csv")
-                file_TWS_Trond_Aalesund = mac_windows_file_handle("Output_files/saveTWS_TrondAales.csv")
-                file_TWD_Trond_Aalesund = mac_windows_file_handle("Output_files/saveTWD_TrondAales.csv")
-            write_to_file(sailing_speed_vector, file_speed_Trond_Aalesund)
-            write_to_file(true_wind_speed_vector,file_TWS_Trond_Aalesund)
-            write_to_file(true_wind_direction_vector,file_TWD_Trond_Aalesund)
-
-        elif routenumber == 2:
-            if i == 0:
-                file_speed_Aalesund_Floro = mac_windows_file_handle("Output_files/savespeed_AalesFloro.csv")
-                file_TWS_Aalesund_Floro = mac_windows_file_handle("Output_files/saveTWS_AalesFloro.csv")
-                file_TWD_Aalesund_Floro = mac_windows_file_handle("Output_files/saveTWD_AalesFloro.csv")
-            write_to_file(sailing_speed_vector, file_speed_Aalesund_Floro)
-            write_to_file(true_wind_speed_vector,file_TWS_Aalesund_Floro)
-            write_to_file(true_wind_direction_vector,file_TWD_Aalesund_Floro)
-
-        elif routenumber == 3:
-            if i == 0:
-                file_speed_Floro_Bergen = mac_windows_file_handle("Output_files/savespeed_FloroBergen.csv")
-                file_TWS_Floro_Bergen = mac_windows_file_handle("Output_files/saveTWS_FloroBergen.csv")
-                file_TWD_Floro_Bergen = mac_windows_file_handle("Output_files/saveTWD_FloroBergen.csv")
-            write_to_file(sailing_speed_vector, file_speed_Floro_Bergen)
-            write_to_file(true_wind_speed_vector,file_TWS_Floro_Bergen)
-            write_to_file(true_wind_direction_vector,file_TWD_Floro_Bergen)
-
-        elif routenumber == 4:
-            if i == 0:
-                file_speed_Bergen_Stavanger = mac_windows_file_handle("Output_files/savespeed_BrgStvg.csv")
-                file_TWS_Bergen_Stavanger = mac_windows_file_handle("Output_files/saveTWS_BergenStavanger.csv")
-                file_TWD_Bergen_Stavanger = mac_windows_file_handle("Output_files/saveTWD_BergenStavanger.csv")
-            write_to_file(sailing_speed_vector, file_speed_Bergen_Stavanger)
-            write_to_file(true_wind_speed_vector,file_TWS_Bergen_Stavanger)
-            write_to_file(true_wind_direction_vector,file_TWD_Bergen_Stavanger)
 
         if vessel_speed == 0:
             sailing_time = 1                                           #If ship experiences no wind, it waits an hour before attempting to sail with new wind
@@ -185,17 +153,42 @@ def main(route, iteration, routenumber):
         else:
             sailing_time     = sailing_distance/vessel_speed           #time used to sail trip added
 
-        coordinate_sailing_time.append(round(sailing_time,3))
-        tot_sailing_dist     += sailing_distance
-        #check for extreme time usage
-        if vessel_speed < 1:
+        sailing_speed_vector.append(vessel_speed)
 
+        coordinate_sailing_time.append(round(sailing_time, 3))
+        tot_sailing_dist += sailing_distance
+
+        # check for extreme time usage
+        if vessel_speed < 1:
             poor_sailing_time += sailing_time
             poor_sailing_distance += sailing_distance
 
         route_sailing_time += sailing_time
         apparent_wind_speed_observed.append(AWS)
-    total_time_sailed_route = sum(coordinate_sailing_time)
+        total_time_sailed_route = sum(coordinate_sailing_time)
+
+
+        if routenumber == 1:
+            write_to_file(sailing_speed_vector, file_speed_Trond_Aalesund)
+            write_to_file(true_wind_speed_vector,file_TWS_Trond_Aalesund)
+            write_to_file(true_wind_direction_vector,file_TWD_Trond_Aalesund)
+
+        elif routenumber == 2:
+            write_to_file(sailing_speed_vector, file_speed_Aalesund_Floro)
+            write_to_file(true_wind_speed_vector,file_TWS_Aalesund_Floro)
+            write_to_file(true_wind_direction_vector,file_TWD_Aalesund_Floro)
+
+        elif routenumber == 3:
+            write_to_file(sailing_speed_vector, file_speed_Floro_Bergen)
+            write_to_file(true_wind_speed_vector,file_TWS_Floro_Bergen)
+            write_to_file(true_wind_direction_vector,file_TWD_Floro_Bergen)
+
+        elif routenumber == 4:
+            write_to_file(sailing_speed_vector, file_speed_Bergen_Stavanger)
+            write_to_file(true_wind_speed_vector,file_TWS_Bergen_Stavanger)
+            write_to_file(true_wind_direction_vector,file_TWD_Bergen_Stavanger)
+
+
     return total_time_sailed_route,tot_sailing_dist, poor_sailing_time, poor_sailing_distance, sailing_speed_vector, TWS, AWA
 
 
@@ -222,7 +215,7 @@ def simulation(csv,routenumber):
 
     """
 
-    hour_intervall                  = 365                                                #at what hourly interval should we simulate?
+    hour_intervall                  = 175                                                #at what hourly interval should we simulate?
     route_travel                    = read_route(csv)
     time_of_simulation              = 17520                                             #two years in hours
     time_of_trip                    = np.zeros(int(time_of_simulation/hour_intervall))
@@ -238,7 +231,7 @@ def simulation(csv,routenumber):
         poor_sailing_time[int(iteration)]         = poor_sailing_time_1
         poor_sailing_distance[int(iteration)]     = poor_sailing_distance_1
         sailing_speed_simulation_vector[iteration] = np.average(sailing_speed_vector)
-        if iteration%50 == 0 and iteration > 0:
+        if iteration%100 == 0 and iteration > 0:
             poor_sailing_speed = 0
             if poor_sailing_time_1 > 0:
                 poor_sailing_speed = poor_sailing_distance_1 / poor_sailing_time_1
@@ -332,7 +325,9 @@ def test_func():
     return 0
 
 runsimulation(1)
-
+runsimulation(2)
+runsimulation(3)
+runsimulation(4)
 
 print("Finished <3<3")
 

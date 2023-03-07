@@ -133,9 +133,19 @@ def Force_produced(AWS, AWD):
     :param AWD: Apparent wind direction (in degrees)
     :return: forward and perpendicular force produced by flettners (in kN)
     """
+    ### CREATE FUNCTION FOR CL TO CHANGE WITH SPINRATIO ACCORDING TO GRAPH IN
 
-    lift = 0.5 * rho_air * A_rotor * AWS ** 2 * Cl_flettner                                 #lift force from traut
-    drag = 0.5 * rho_air * A_rotor * AWS ** 2 * Cd_flettner                                 #drag force from traut
+    Cl_flettner_correction_From_Spin_Ratio = [(0,0),(1,2.5),(2,4.8),(3,8.5),(4,11),(5,12),(6,13)]
+    SR = int(round(3 * np.pi * 5 / (2 * AWS),0))
+
+    if SR > 6:
+        Cl_flettner_From_Spin_Ratio = 13
+    else:
+        Cl_flettner_From_Spin_Ratio = Cl_flettner_correction_From_Spin_Ratio[SR][0]
+
+
+    lift = 0.5 * rho_air * A_rotor * AWS ** 2 * Cl_flettner_From_Spin_Ratio  #lift force from traut
+    drag = 0.5 * rho_air * A_rotor * AWS ** 2 * Cd_flettner                #drag force from traut
     #P_input_fletner = 0.5 * rho_air * A * TWS ** 3 * Cm * alpha_const              #Input to flettner is energy to spin rotors
     if 0 <= AWD <= 90 or 270 <= AWD <= 360:                                  #drag is set to negative if the wind is coming ahead, and positive if not
         drag *= -1
