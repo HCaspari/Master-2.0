@@ -67,7 +67,7 @@ Cl  = 12.5
 Cd  = 0.2
 Cm  = 0.2
 alpha = 3.5
-Trondheim_location = 63.437686821303096, 10.402184694640052
+Trondheim = 63.437686821303096, 10.402184694640052
 Aalesund_location  = 62.93245830958637, 6.3481997169859055
 Trond_Aalesund      = mac_windows_file_handle("Route_data/route_Trond_Aales_Intricate.csv")
 Aalesund_Floro      = mac_windows_file_handle("Route_data/route_Aales_Floro_Intricate.csv")
@@ -313,21 +313,65 @@ route_Brg_Stvg_intricate    = mac_windows_file_handle("Route_data/route_Brg_Stv_
 
 #Route creation : Aalesund -- Færøyene -- Aberdeen -- Newcastle -- Amsterdam -- Esbjerg (Danmark) -- Aalesund
 #Route Coordinates:
-def auto_create_Route(start_point_coordinates,end_point_coordinates):
-    #Traveling between Copenhagen and Aalesund needs to go VIA M1_E_A and M2_E_A
-    #traveling between Færøyene and Aberdeen needs to go via Midpoint
-    route       = [start_point_coordinates,end_point_coordinates]
-    distance    = int(np.floor(geodesic(start_point_coordinates,end_point_coordinates).kilometers//7))
-    Route       = generate_intricate_route(route,distance)
+def auto_create_Route(start_point_coordinates,end_point_coordinates,midpoint1 = () ,midpoint2 = ()):
+
+    #if midpoints do not exist, create direct route
+    if len(midpoint1) == 0:
+        route = [start_point_coordinates, end_point_coordinates]
+        distance = int(np.floor(geodesic(start_point_coordinates, end_point_coordinates).kilometers // 7))
+        Route = generate_intricate_route(route, distance)
+        createmap(Route)
+        return Route
+
+    # if midpoint 1 exists, and midpoint2 does not, create indirect route
+    elif len(midpoint1) == 2 and len(midpoint2) != 2:
+
+        route_step_1    = [start_point_coordinates, midpoint1] #first segment of 1 step route
+        route_step_2    = [midpoint1,end_point_coordinates]    #second segment of 1 step route
+
+        distance_step_1 = geodesic(start_point_coordinates, midpoint1).kilometers #distance of first step
+        distance_step_2 = geodesic(midpoint1, end_point_coordinates).kilometers   #distance of second step
+
+        distance_tot    = int(np.floor((distance_step_1+distance_step_2)//7))          #distance div by 7
+
+        Route1 = generate_intricate_route(route_step_1, distance_tot)             #route part 1
+        Route2 = generate_intricate_route(route_step_2, distance_tot)             #route part 2
+
+        Route  = Route1 + Route2
+        createmap(Route)
+        return Route
+
+    #if midpoint 1 and 2 exists, create indirect, 3 point route
+    elif len(midpoint1) == 2 and len(midpoint2) == 2:
+        route_step_1 = [start_point_coordinates, midpoint1]  # first segment of 1 step route
+        route_step_2 = [midpoint1, midpoint2]  # second segment of 1 step route
+        route_step_3 = [midpoint2, end_point_coordinates]  # second segment of 1 step route
+
+        distance_step_1 = geodesic(start_point_coordinates, midpoint1).kilometers  # distance of first step
+        distance_step_2 = geodesic(midpoint1, midpoint2).kilometers  # distance of second step
+        distance_step_3 = geodesic(midpoint2, end_point_coordinates).kilometers  # distance of second step
+
+        distance_tot = int(np.floor((distance_step_1 + distance_step_2 + distance_step_3) // 7))  # distance div by 7
+
+        Route1 = generate_intricate_route(route_step_1, distance_tot)  # route part 1
+        Route2 = generate_intricate_route(route_step_2, distance_tot)  # route part 2
+        Route3 = generate_intricate_route(route_step_3, distance_tot)  # route part 3
+
+        Route = Route1 + Route2 + Route3
+        createmap(Route)
+        return Route
 
     #Creates a tripvector of points from start_point to end_point with stepdistance of max 7 km.
     # (meaning weather will always be recalculated when entering new 0.125 degree lat/lon which is weather granularity
-    createmap(Route)
-    return Route
+    print("no route found")
+    return 1
 
 #Route point coordinates:
 
 Aalesund        = (62.48342017643765, 5.922191001412515)
+Stavanger       = (58.92502271580142, 5.580428183923716)
+Bergen          = (60.134509001387705, 4.958929708820197)
+Mid_Danmark_stvg= (56.903533762773016, 6.192339157420342)
 Færøyene        = (62.01263234289485, -6.774748315943504)
 Midpoint_Fa_Ab  = (58.80320072664799, -1.1708712520663145)
 Aberdeen        = (57.15470822505185, -2.1185733842766115)
@@ -339,9 +383,15 @@ Midpoint_2_E_A  = (62.324854695720006, 5.0124722561975235)
 
 #auto_create_Route(Aalesund,Aberdeen)
 #auto_create_Route(Aberdeen,Amsterdam)
-Aberdeen_Esbjerg = auto_create_Route(Aberdeen,Esbjerg_Danmark)
+#Aberdeen_Esbjerg       = auto_create_Route(Aberdeen,Esbjerg_Danmark)
+#Mid_stav_stavanger     = auto_create_Route(Mid_Danmark_stvg,Stavanger)
+#Stavanger_Bergen        = auto_create_Route(Stavanger,Bergen)
 
+#Denmark_Stavanger       = auto_create_Route(Esbjerg_Danmark,Stavanger)
+#Dan_Mid_Stg             = auto_create_Route(Esbjerg_Danmark,Stavanger,Mid_Danmark_stvg)
 
+Dan_mid1_mid2_Aal        = auto_create_Route(Esbjerg_Danmark,Midpoint_1_E_A,Midpoint_2_E_A,Aalesund)
+#Something wrong here
 
 def create_international_routes():
 
@@ -394,7 +444,3 @@ def create_international_routes():
 #createmap(M1_M2_route)
 
 #createmap(M2_A_route)
-
-for i in range(1,24,2):
-    print(geodesic(Aberdeen_Esbjerg[i],Aberdeen_Esbjerg[i+1]).kilometers)
-#    print()
