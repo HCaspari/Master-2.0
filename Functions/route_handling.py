@@ -390,7 +390,7 @@ Midpoint_2_E_A  = (62.324854695720006, 5.0124722561975235)
 #Denmark_Stavanger       = auto_create_Route(Esbjerg_Danmark,Stavanger)
 #Dan_Mid_Stg             = auto_create_Route(Esbjerg_Danmark,Stavanger,Mid_Danmark_stvg)
 
-Dan_mid1_mid2_Aal        = auto_create_Route(Esbjerg_Danmark,Midpoint_1_E_A,Midpoint_2_E_A,Aalesund)
+#Dan_mid1_mid2_Aal        = auto_create_Route(Esbjerg_Danmark,Midpoint_1_E_A,Midpoint_2_E_A,Aalesund)
 #Something wrong here
 
 def create_international_routes():

@@ -285,3 +285,10 @@ def alpha(vessel_speed,vessel_heading, NWS,EWS):
     alpha      = (alpha_temp+360) % 360                   #Normalize angle between 0 and 360 degrees
 
     return alpha
+
+
+def add_hours_to_date(hours):
+    date_start = datetime(2020,7,1,0,0,0)
+    # add the specified number of hours to the input date
+    new_datetime = date_start + timedelta(hours=hours)
+    return new_datetime
