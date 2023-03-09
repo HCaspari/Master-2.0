@@ -1,8 +1,9 @@
 import numpy as np
 import geopy.distance #package to calculate distance between two lat/lon points
+import pandas as pd
 from numpy.ma.core import MaskedConstant
 from datetime import datetime
-from file_handling import write_to_file, read_route, test_read_files
+from file_handling import write_to_file, read_route, test_read_files, write_to_file_2
 from Force_functions import Force_produced, Speed_achieved_old
 from Weather_Handling import getweather, r2d, True_wind_direction, True_wind_speed, Apparent_Wind_Speed, Apparent_wind_angle, alpha, add_hours_to_date
 
@@ -109,7 +110,7 @@ def main(route, iteration, date_of_simulation):
     true_wind_speed_vector          = []
     true_wind_direction_vector      = []
 
-    np.append(tot_sailing_dist,[1])
+    #np.append(tot_sailing_dist,[1])
 
     for i in range(len(route)-1): #create itteration through route
         position_first      = route[i]
@@ -148,6 +149,7 @@ def main(route, iteration, date_of_simulation):
         true_wind_speed_vector.append(TWS)
         true_wind_direction_vector.append(TWD)
         apparent_wind_speed_observed.append(AWS)
+        tot_sailing_dist += sailing_distance
 
         route_sailing_time += sailing_time                          #Sailing time of total route
         if len(coordinate_sailing_time) != 0:
@@ -162,8 +164,6 @@ def main(route, iteration, date_of_simulation):
     #route_sailing_time              = np.array(route_sailing_time)
     #coordinate_sailing_time         = np.array(coordinate_sailing_time)
 
-
-    print("your here")
     return total_time_sailed_route,tot_sailing_dist, poor_sailing_time, poor_sailing_distance, sailing_speed_vector, true_wind_speed_vector, true_wind_direction_vector, route_sailing_time, coordinate_sailing_time
 
 
@@ -191,31 +191,40 @@ def simulation(csv,routenumber):
 
     """
 
+    starttime = datetime(2020,7,1,00,00,00)
 
 
-
-    hour_intervall                  = 1                                                #at what hourly interval should we simulate?
+    hour_intervall                  = 1                                               #at what hourly interval should we simulate?
     route_travel                    = read_route(csv)
     time_of_simulation              = 17520                                             #two years in hours
     time_of_trip                    = np.zeros(int(time_of_simulation/hour_intervall))
     tot_sailing_dist                = np.zeros(int(time_of_simulation/hour_intervall))
     poor_sailing_time               = np.zeros(int(time_of_simulation/hour_intervall))
     poor_sailing_distance           = np.zeros(int(time_of_simulation/hour_intervall))
-    VS_simulation_vector = np.zeros(int(time_of_simulation/hour_intervall))
-    TWS_simulation_vector           = np.zeros(int(time_of_simulation/hour_intervall))
-    TWD_simulation_vector           = np.zeros(int(time_of_simulation/hour_intervall))
+    #VS_simulation_vector            = np.zeros(int(time_of_simulation/hour_intervall), dtype=object)
+    datestamp_vect                  = np.zeros(int(time_of_simulation/hour_intervall), dtype=object)
+    VS_simulation_vector            = []
+    TWS_simulation_vector           = []
+    TWD_simulation_vector           = []
     date_of_simulation              = add_hours_to_date(hour_intervall)
     for iteration in range(0,int(time_of_simulation/hour_intervall)) : #repeating simulation for each hour_intervall through a year
 
         time_of_trip_1,tot_sailing_dist_1, poor_sailing_time_1, poor_sailing_distance_1, sailing_speed_vector, TWS_vector, TWD_vector, route_sailing_time, coordinate_sailing_time = main(route_travel,iteration, date_of_simulation)
-        print(type(sailing_speed_vector))
-        time_of_trip[int(iteration)]              = time_of_trip_1
-        tot_sailing_dist[int(iteration)]          = tot_sailing_dist_1
-        poor_sailing_time[int(iteration)]         = poor_sailing_time_1
-        poor_sailing_distance[int(iteration)]     = poor_sailing_distance_1
-        VS_simulation_vector[int(iteration)]      = sailing_speed_vector
-        TWS_simulation_vector[int(iteration)]     = TWS_vector
-        TWD_simulation_vector[int(iteration)]     = TWD_vector
+
+        #Adding timestamp to first column
+        datestamp = str(add_hours_to_date(iteration))
+
+
+        #adding data to second column
+        datestamp_vect[int(iteration)]          = datestamp
+        time_of_trip[int(iteration)]            = time_of_trip_1
+        tot_sailing_dist[int(iteration)]        = tot_sailing_dist_1
+        poor_sailing_time[int(iteration)]       = poor_sailing_time_1
+        poor_sailing_distance[int(iteration)]   = poor_sailing_distance_1
+        VS_simulation_vector.extend(sailing_speed_vector)
+        TWS_simulation_vector.extend(TWS_vector)
+        TWD_simulation_vector.extend(TWD_vector)
+
         if iteration%100 == 0 and iteration > 0:
             poor_sailing_speed = 0
             if poor_sailing_time_1 > 0:
@@ -227,8 +236,11 @@ def simulation(csv,routenumber):
                   f"at an average speed of {poor_sailing_speed} knots")
             print(f"The wind at this point in time was measured to be {TWS_simulation_vector[iteration]} with an AWA of {TWD_simulation_vector[iteration]}")
             print(f"{datetime.now()},iteration is {iteration}")
+
+
+
     poor_sailing_speed = sum(poor_sailing_distance)/(sum(poor_sailing_time))
-    print(f"Average speed sailing {csv} over {iteration} iterations is {np.average(VS_simulation_vector)}")
+    print(f"Average speed sailing {csv} over {iteration} iterations is {np.average(VS_simulation_vector[0])}")
     print(f"Throughout all iterations, the vessel sails less than one knot for an average of {np.average(poor_sailing_time)} hours\n"
           f"this iteration is used to sail on average {np.average(poor_sailing_distance)} nautical miles\n"
           f"at an average speed of {poor_sailing_speed} knots")
@@ -249,6 +261,9 @@ def simulation(csv,routenumber):
     file_TWD_Bergen_Stavanger = mac_windows_file_handle("Output_files/saveTWD_BergenStavanger.csv")
 
     #Write to files
+
+    #LAG EN LANG VECTOR SOM BARE INNEHOLDER ALL SEILEDATA FRA HELE RUTEN, SKRIV DET TIL EN FIL
+
 
 
     if routenumber == 1:
@@ -340,10 +355,10 @@ def test_func():
     print("apparent wind angle using function from sediek",sediek)
     return 0
 
-runsimulation(1)
+#runsimulation(1)
 #runsimulation(2)
-#runsimulation(3)
-#runsimulation(4)
+runsimulation(3)
+runsimulation(4)
 
 print("Finished <3<3")
 

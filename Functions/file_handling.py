@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import datetime
 from route_handling import mac_windows_file_handle
 
 
@@ -42,6 +43,19 @@ def write_to_file(data,filename_func):
     """
     pd.DataFrame(data).to_csv(filename_func)
     return 0
+
+
+def write_to_file_2(datatype, data, filename_func):
+    """
+    :param data: data that is to be written to a file
+    :param filename_func:  name of file that data is to be written to
+    :return: 0
+    """
+
+    df = pd.DataFrame({datatype: data})
+    df.to_csv(filename_func)
+    return 0
+
 
 #reads columns of dataframe to find distances, latitudes, longditudes of trip
 def read_cols(filename_ais_data):
@@ -165,3 +179,47 @@ def test_read_files(routenumber):
         k = read_array_from_file(file_TWS_Bergen_Stavanger)
         l = read_array_from_file(file_TWD_Bergen_Stavanger)
         print("read_test complete, (speed, TWS, TWD)", j,"\n", k,"\n", l)
+
+    return 0
+
+
+def create_array_with_datetime():
+    # define a numpy array
+    data = np.array([[1, 2], [3, 4], [5, 6]])
+
+    # create a datetime object for today's date and time
+    today = datetime.datetime.now()
+
+    # create a new array with an extra column for the datetime
+    dt_data = np.zeros((data.shape[0], data.shape[1] + 1), dtype=object)
+
+    # set the original data in the new array
+    dt_data[:, :-1] = data
+
+    # set the datetime in the last column of the new array
+    dt_data[:, -1] = today
+
+    # create a vector of data
+    vector = np.array([7, 8, 9])
+
+    # add the vector as a column to the right of the datetime array
+    final_data = np.concatenate((dt_data, np.expand_dims(vector, axis=1)), axis=1)
+
+    # print the final array
+    print(final_data)
+
+    return 0
+
+#In this example, we first define a numpy array data with shape (3,2).
+# Then, we create a datetime object for today's date and time using the
+# datetime.datetime.now() function.
+
+#Next, we create a new numpy array dt_data with an extra column to hold
+# the datetime. We set the original data in the first columns of the new
+# array and set the datetime in the last column of the new array.
+
+#Then, we create a vector of data vector with shape (3,). We add this
+# vector as a column to the right of the datetime array using the
+# np.concatenate() function. Finally, we print the final array with
+# shape (3,4) that has the original data in the first two columns,
+# the datetime in the third column, and the vector data in the fourth column.

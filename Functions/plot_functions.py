@@ -53,7 +53,7 @@ def plot_power(title, y_axis, x_label, y_label):
 
 
 #This function will output a histogram that show the speed distribution for a given route
-def historgram(filename, title):
+def histogram(filename, title):
     """
     :param filename: name of output file containing data to plot
     :param title: title of histogram
@@ -72,8 +72,10 @@ Aalesund_Floro      = "Ålesund Florø"
 Floro_Bergen        = "Florø Bergen"
 Bergen_Stavanger    = "Bergen Stavanger"
 vector = []
+Test = "Test"
 
-#historgram(mac_windows_file_handle('Output_files/Trondheim_Aalesund_reise', Trond_Aalesund))
-#historgram(mac_windows_file_handle('Output_files/Aalesund_Floro_reise', Aalesund_Floro))
-#historgram(mac_windows_file_handle('Output_files/Floro_Bergen_reise', Floro_Bergen))
-#historgram(mac_windows_file_handle('Output_files/savespeed_TrondAales.csv'), Trond_Aalesund)
+#histogram(mac_windows_file_handle('Output_files/Trondheim_Aalesund_reise', Trond_Aalesund))
+#histogram(mac_windows_file_handle('Output_files/Aalesund_Floro_reise', Aalesund_Floro))
+#histogram(mac_windows_file_handle('Output_files/Floro_Bergen_reise', Floro_Bergen))
+#histogram(mac_windows_file_handle('Output_files/savespeed_TrondAales.csv'), Trond_Aalesund)
+histogram(mac_windows_file_handle("Output_files/savespeed_TrondAales.csv"),Test)
