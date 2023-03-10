@@ -182,19 +182,16 @@ def main(route, iteration, date_of_simulation):
 #main = time_of_trip,tot_sailing_dist, poor_sailing_time, poor_sailing_distance
 def simulation(csv,routenumber):
     """
-
     :param csv: A csv
     :param routenumber: which route im using
     :return:    time_of_trip
                 tot_sailing_dist
                 VS_simulation_vector
-
     """
 
     starttime = datetime(2020,7,1,00,00,00)
 
-
-    hour_intervall                  = 1                                               #at what hourly interval should we simulate?
+    hour_intervall                  = 1                                                 #at what hourly interval should we simulate?
     route_travel                    = read_route(csv)
     time_of_simulation              = 17520                                             #two years in hours
     time_of_trip                    = np.zeros(int(time_of_simulation/hour_intervall))
@@ -247,45 +244,53 @@ def simulation(csv,routenumber):
 
 
     #Read files:
-    file_speed_Trond_Aalesund = mac_windows_file_handle("Output_files/savespeed_TrondAales.csv")
-    file_TWS_Trond_Aalesund = mac_windows_file_handle("Output_files/saveTWS_TrondAales.csv")
-    file_TWD_Trond_Aalesund = mac_windows_file_handle("Output_files/saveTWD_TrondAales.csv")
-    file_speed_Aalesund_Floro = mac_windows_file_handle("Output_files/savespeed_AalesFloro.csv")
-    file_TWS_Aalesund_Floro = mac_windows_file_handle("Output_files/saveTWS_AalesFloro.csv")
-    file_TWD_Aalesund_Floro = mac_windows_file_handle("Output_files/saveTWD_AalesFloro.csv")
-    file_speed_Floro_Bergen = mac_windows_file_handle("Output_files/savespeed_FloroBergen.csv")
-    file_TWS_Floro_Bergen = mac_windows_file_handle("Output_files/saveTWS_FloroBergen.csv")
-    file_TWD_Floro_Bergen = mac_windows_file_handle("Output_files/saveTWD_FloroBergen.csv")
+    #Ålesund
+    file_speed_Trond_Aalesund   = mac_windows_file_handle("Output_files/savespeed_TrondAales.csv")
+    file_TWS_Trond_Aalesund     = mac_windows_file_handle("Output_files/saveTWS_TrondAales.csv")
+    file_TWD_Trond_Aalesund     = mac_windows_file_handle("Output_files/saveTWD_TrondAales.csv")
+    datestamp_file_1            = mac_windows_file_handle("Output_files/datestamp1.csv")
+    #floro
+    file_speed_Aalesund_Floro   = mac_windows_file_handle("Output_files/savespeed_AalesFloro.csv")
+    file_TWS_Aalesund_Floro     = mac_windows_file_handle("Output_files/saveTWS_AalesFloro.csv")
+    file_TWD_Aalesund_Floro     = mac_windows_file_handle("Output_files/saveTWD_AalesFloro.csv")
+    datestamp_file_2            = mac_windows_file_handle("Output_files/datestamp2.csv")
+    #bergen
+    file_speed_Floro_Bergen     = mac_windows_file_handle("Output_files/savespeed_FloroBergen.csv")
+    file_TWS_Floro_Bergen       = mac_windows_file_handle("Output_files/saveTWS_FloroBergen.csv")
+    file_TWD_Floro_Bergen       = mac_windows_file_handle("Output_files/saveTWD_FloroBergen.csv")
+    datestamp_file_3            = mac_windows_file_handle("Output_files/datestamp3.csv")
+    #stavanger
     file_speed_Bergen_Stavanger = mac_windows_file_handle("Output_files/savespeed_BrgStvg.csv")
-    file_TWS_Bergen_Stavanger = mac_windows_file_handle("Output_files/saveTWS_BergenStavanger.csv")
-    file_TWD_Bergen_Stavanger = mac_windows_file_handle("Output_files/saveTWD_BergenStavanger.csv")
+    file_TWS_Bergen_Stavanger   = mac_windows_file_handle("Output_files/saveTWS_BergenStavanger.csv")
+    file_TWD_Bergen_Stavanger   = mac_windows_file_handle("Output_files/saveTWD_BergenStavanger.csv")
+    datestamp_file_4            = mac_windows_file_handle("Output_files/datestamp4.csv")
+
 
     #Write to files
 
-    #LAG EN LANG VECTOR SOM BARE INNEHOLDER ALL SEILEDATA FRA HELE RUTEN, SKRIV DET TIL EN FIL
-
-
-
     if routenumber == 1:
-        write_to_file(VS_simulation_vector, file_speed_Trond_Aalesund)
-        write_to_file(TWS_simulation_vector,file_TWS_Trond_Aalesund)
-        write_to_file(TWD_simulation_vector,file_TWD_Trond_Aalesund)
+        write_to_file(VS_simulation_vector, file_speed_Trond_Aalesund)  #VS vector file
+        write_to_file(TWS_simulation_vector,file_TWS_Trond_Aalesund)    #TWS vector file
+        write_to_file(TWD_simulation_vector,file_TWD_Trond_Aalesund)    #TWD vector file
+        write_to_file(datestamp_vect, datestamp_file_1)                 #Datestamp file
 
     elif routenumber == 2:
-        write_to_file(VS_simulation_vector, file_speed_Aalesund_Floro)
-        write_to_file(TWS_simulation_vector,file_TWS_Aalesund_Floro)
-        write_to_file(TWD_simulation_vector,file_TWD_Aalesund_Floro)
+        write_to_file(VS_simulation_vector, file_speed_Aalesund_Floro)  #VS vector file
+        write_to_file(TWS_simulation_vector,file_TWS_Aalesund_Floro)    #TWS vector file
+        write_to_file(TWD_simulation_vector,file_TWD_Aalesund_Floro)    #TWD vector file
+        write_to_file(datestamp_vect, datestamp_file_2)                 #Datestamp file
 
     elif routenumber == 3:
-        write_to_file(VS_simulation_vector, file_speed_Floro_Bergen)
-        write_to_file(TWS_simulation_vector,file_TWS_Floro_Bergen)
-        write_to_file(TWD_simulation_vector,file_TWD_Floro_Bergen)
+        write_to_file(VS_simulation_vector, file_speed_Floro_Bergen)    #VS vector file
+        write_to_file(TWS_simulation_vector,file_TWS_Floro_Bergen)      #TWS vector file
+        write_to_file(TWD_simulation_vector,file_TWD_Floro_Bergen)      #TWD vector file
+        write_to_file(datestamp_vect, datestamp_file_3)                 #Datestamp file
 
     elif routenumber == 4:
-        write_to_file(VS_simulation_vector, file_speed_Bergen_Stavanger)
-        write_to_file(TWS_simulation_vector,file_TWS_Bergen_Stavanger)
-        write_to_file(TWD_simulation_vector,file_TWD_Bergen_Stavanger)
-
+        write_to_file(VS_simulation_vector,file_speed_Bergen_Stavanger) #VS vector file
+        write_to_file(TWS_simulation_vector,file_TWS_Bergen_Stavanger)  #TWS vector file
+        write_to_file(TWD_simulation_vector,file_TWD_Bergen_Stavanger)  #TWD vector file
+        write_to_file(datestamp_vect, datestamp_file_4)                 #Datestamp file
 
     return time_of_trip,tot_sailing_dist,VS_simulation_vector
 
