@@ -69,10 +69,10 @@ Cm  = 0.2
 alpha = 3.5
 Trondheim = 63.437686821303096, 10.402184694640052
 Aalesund_location  = 62.93245830958637, 6.3481997169859055
-Trond_Aalesund      = mac_windows_file_handle("Route_data/route_Trond_Aales_Intricate.csv")
-Aalesund_Floro      = mac_windows_file_handle("Route_data/route_Aales_Floro_Intricate.csv")
-Floro_Bergen        = mac_windows_file_handle("Route_data/route_Floro_Brg_Intricate.csv")
-Bergen_Stavanger    = mac_windows_file_handle("Route_data/route_Brg_Stv_Intricate.csv")
+Trond_Aalesund      = mac_windows_file_handle("Route_data/Trondheim_Ålesund_Rute/Route_Trond_Aales.csv")
+Aalesund_Floro      = mac_windows_file_handle("Route_data/Ålsund_Florø_Rute/Route_Ålesund_Florø.csv")
+Floro_Bergen        = mac_windows_file_handle("Route_data/Florø_Bergen_Rute/Route_Floro_Bergen.csv")
+Bergen_Stavanger    = mac_windows_file_handle("Route_data/Bergen_Stavanger_Rute/Route_Bergen_Stavanger.csv")
 
 Route_Trond_Aal     = read_position_vect_from_file(Trond_Aalesund)
 Route_Aal_Floro     = read_position_vect_from_file(Aalesund_Floro)
@@ -299,6 +299,7 @@ route_Trond_Aals_intricate  = mac_windows_file_handle("Route_data/route_Trond_Aa
 route_Aals_Floro_intricate  = mac_windows_file_handle("Route_data/route_Aales_Floro_Intricate")
 route_Floro_Brg_intricate   = mac_windows_file_handle("Route_data/route_Floro_Brg_Intricate")
 route_Brg_Stvg_intricate    = mac_windows_file_handle("Route_data/route_Brg_Stv_Intricate")
+route_Stvg_Dk_intricate     = mac_windows_file_handle("Route_data/Danmark_Stavanger_Route/Route_Danmark_Stavanger.csv")
 
 #write_to_file(intricate_Trond_aal,route_Trond_Aals_intricate)
 #write_to_file(intricate_Aal_Floro,route_Aals_Floro_intricate)
@@ -313,15 +314,14 @@ route_Brg_Stvg_intricate    = mac_windows_file_handle("Route_data/route_Brg_Stv_
 
 #Route creation : Aalesund -- Færøyene -- Aberdeen -- Newcastle -- Amsterdam -- Esbjerg (Danmark) -- Aalesund
 #Route Coordinates:
-def auto_create_Route(start_point_coordinates,end_point_coordinates,midpoint1 = () ,midpoint2 = ()):
+def auto_create_Route(start_point_coordinates, end_point_coordinates, midpoint1 = (), midpoint2 = ()):
 
     #if midpoints do not exist, create direct route
     if len(midpoint1) == 0:
         route = [start_point_coordinates, end_point_coordinates]
         distance = int(np.floor(geodesic(start_point_coordinates, end_point_coordinates).kilometers // 7))
         Route = generate_intricate_route(route, distance)
-        createmap(Route)
-        return Route
+        #createmap(Route)
 
     # if midpoint 1 exists, and midpoint2 does not, create indirect route
     elif len(midpoint1) == 2 and len(midpoint2) != 2:
@@ -338,8 +338,7 @@ def auto_create_Route(start_point_coordinates,end_point_coordinates,midpoint1 = 
         Route2 = generate_intricate_route(route_step_2, distance_tot)             #route part 2
 
         Route  = Route1 + Route2
-        createmap(Route)
-        return Route
+        #createmap(Route)
 
     #if midpoint 1 and 2 exists, create indirect, 3 point route
     elif len(midpoint1) == 2 and len(midpoint2) == 2:
@@ -358,40 +357,41 @@ def auto_create_Route(start_point_coordinates,end_point_coordinates,midpoint1 = 
         Route3 = generate_intricate_route(route_step_3, distance_tot)  # route part 3
 
         Route = Route1 + Route2 + Route3
-        createmap(Route)
-        return Route
+        #createmap(Route)
 
     #Creates a tripvector of points from start_point to end_point with stepdistance of max 7 km.
     # (meaning weather will always be recalculated when entering new 0.125 degree lat/lon which is weather granularity
-    print("no route found")
-    return 1
+    #print("no route found")
+    return Route
 
 #Route point coordinates:
 
 Aalesund        = (62.48342017643765, 5.922191001412515)
 Stavanger       = (58.92502271580142, 5.580428183923716)
 Bergen          = (60.134509001387705, 4.958929708820197)
-Mid_Danmark_stvg= (56.903533762773016, 6.192339157420342)
+Mid_Danmark_stvg= (58.534289780314545, 5.195293578632795)
 Færøyene        = (62.01263234289485, -6.774748315943504)
 Midpoint_Fa_Ab  = (58.80320072664799, -1.1708712520663145)
 Aberdeen        = (57.15470822505185, -2.1185733842766115)
 Newcastle       = (54.97876964024249, -1.3553315768007936)
 Amsterdam       = (52.47169283545967, 4.537125962881187)
-Esbjerg_Danmark = (55.47341900177149, 8.301921187910168)
-Midpoint_1_E_A  = (60.44513450388027, 3.418535867789226)
-Midpoint_2_E_A  = (62.324854695720006, 5.0124722561975235)
+Danmark         = (55.47341900177149, 8.301921187910168)
+Midpoint_1_Dan_Aal  = (60.44513450388027, 3.418535867789226)
+Midpoint_2_Dan_Aal  = (62.324854695720006, 5.0124722561975235)
 
-#auto_create_Route(Aalesund,Aberdeen)
-#auto_create_Route(Aberdeen,Amsterdam)
-#Aberdeen_Esbjerg       = auto_create_Route(Aberdeen,Esbjerg_Danmark)
-#Mid_stav_stavanger     = auto_create_Route(Mid_Danmark_stvg,Stavanger)
-#Stavanger_Bergen        = auto_create_Route(Stavanger,Bergen)
 
-#Denmark_Stavanger       = auto_create_Route(Esbjerg_Danmark,Stavanger)
-#Dan_Mid_Stg             = auto_create_Route(Esbjerg_Danmark,Stavanger,Mid_Danmark_stvg)
+###
+#to create route:
+#1. Create empty route file .csv
+#2. Create empty files for storing Sailing speed, TWD, and TWS
+#3. See if intermediate points are needed
+#4. run route_start_end = auto_create_route(Startcoordinate, endcoordinate, optional midcoordinate 1, optional midcoordinate 2)
+#5. run write_to_file(route_start_end), this writes route coordinates to file
+#6. run main(routename, simulation count)
 
-#Dan_mid1_mid2_Aal        = auto_create_Route(Esbjerg_Danmark,Midpoint_1_E_A,Midpoint_2_E_A,Aalesund)
-#Something wrong here
+route_Aber_fær = auto_create_Route(Aberdeen,Færøyene,Midpoint_Fa_Ab)
+write_to_file(route_Aber_fær,)
+
 
 def create_international_routes():
 
@@ -401,10 +401,10 @@ def create_international_routes():
     M_A = [Midpoint_Fa_Ab,Aberdeen]
     A_N = [Aberdeen,Newcastle]
     N_A = [Newcastle,Amsterdam]
-    A_E = [Amsterdam,Esbjerg_Danmark]
-    E_M1    = [Esbjerg_Danmark, Midpoint_1_E_A]
-    M1_M2   = [Midpoint_1_E_A, Midpoint_2_E_A]
-    M2_A    = [Midpoint_2_E_A, Aalesund]
+    A_E = [Amsterdam, Danmark]
+    E_M1    = [Danmark, Midpoint_1_Dan_Aal]
+    M1_M2   = [Midpoint_1_Dan_Aal, Midpoint_2_Dan_Aal]
+    M2_A    = [Midpoint_2_Dan_Aal, Aalesund]
 
     #Distances of routes, divded by 7, to find amount of 7 km segments route consists of
 
@@ -413,10 +413,10 @@ def create_international_routes():
     M_A_dist = geodesic(Midpoint_Fa_Ab, Aberdeen).kilometers/7
     A_N_dist = geodesic(Aberdeen, Newcastle).kilometers/7
     N_A_dist = geodesic(Newcastle, Amsterdam).kilometers/7
-    A_E_dist = geodesic(Amsterdam, Esbjerg_Danmark).kilometers/7
-    E_M1_dist   = geodesic(Esbjerg_Danmark, Midpoint_1_E_A).kilometers / 7
-    M1_M2_dist  = geodesic(Midpoint_1_E_A, Midpoint_2_E_A).kilometers / 7
-    M2_A_dist   = geodesic(Midpoint_2_E_A, Aalesund).kilometers / 7
+    A_E_dist = geodesic(Amsterdam, Danmark).kilometers / 7
+    E_M1_dist   = geodesic(Danmark, Midpoint_1_Dan_Aal).kilometers / 7
+    M1_M2_dist  = geodesic(Midpoint_1_Dan_Aal, Midpoint_2_Dan_Aal).kilometers / 7
+    M2_A_dist   = geodesic(Midpoint_2_Dan_Aal, Aalesund).kilometers / 7
 
 
     #generating routes with this amount of spits:

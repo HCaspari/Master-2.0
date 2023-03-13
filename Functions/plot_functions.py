@@ -61,7 +61,11 @@ def histogram(filename, title):
     """
     columns = ['number', 'speed']
     df1 = pd.read_csv(filename,header = None, names=columns)
-    plt.hist(df1['speed'], edgecolor='black', range=[0,15], bins=15)
+    #speeds_observed = []
+    #speeds_observed.append(df1["speed"].value_counts())
+    #print(speeds_observed)
+
+    plt.hist(df1['speed'], edgecolor='black', range=[0,8], bins=8)
     plt.title(title)
     plt.xlabel('Speed [Knots]')
     plt.ylabel('Occurences')
@@ -76,6 +80,6 @@ Test = "Test"
 
 #histogram(mac_windows_file_handle('Output_files/Trondheim_Aalesund_reise', Trond_Aalesund))
 #histogram(mac_windows_file_handle('Output_files/Aalesund_Floro_reise', Aalesund_Floro))
-#histogram(mac_windows_file_handle('Output_files/Floro_Bergen_reise', Floro_Bergen))
+histogram(mac_windows_file_handle('Output_files/Florø_Bergen/savespeed_FloroBergen.csv'), Floro_Bergen)
 #histogram(mac_windows_file_handle('Output_files/savespeed_TrondAales.csv'), Trond_Aalesund)
-histogram(mac_windows_file_handle("Output_files/savespeed_TrondAales.csv"),Test)
+#histogram(mac_windows_file_handle("Output_files/savespeed_TrondAales.csv"),Test)

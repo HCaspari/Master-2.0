@@ -308,10 +308,10 @@ def runsimulation(route):
         :return: saved files with simulation results
         """
 
-    Trond_aalesund      = mac_windows_file_handle("Route_data/route_Trond_Aales_Intricate.csv")
-    Aalesund_Floro      = mac_windows_file_handle("Route_data/route_Aales_Floro_Intricate.csv")
-    Floro_Bergen        = mac_windows_file_handle("Route_data/route_Floro_Brg_Intricate.csv")
-    Bergen_Stavanger    = mac_windows_file_handle("Route_data/route_Brg_Stv_Intricate.csv")
+    Trond_aalesund      = mac_windows_file_handle("Route_data/Route_Trond_Aales.csv")
+    Aalesund_Floro      = mac_windows_file_handle("Route_data/Route_Ålesund_Florø.csv")
+    Floro_Bergen        = mac_windows_file_handle("Route_data/Route_Floro_Bergen.csv")
+    Bergen_Stavanger    = mac_windows_file_handle("Route_data/Route_Bergen_Stavanger.csv")
 
     if route == 1:
         print("Running simulation for route Trondheim Aalesund now")

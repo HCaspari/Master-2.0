@@ -36,3 +36,11 @@ Functions/__pycache__/plot_functions.cpython-39.pyc
 *.pyc
 Functions/__pycache__/Force_functions.cpython-39.pyc
 *.pyc
+Functions/__pycache__/file_handling.cpython-39.pyc
+Functions/__pycache__/Force_functions.cpython-39.pyc
+Functions/__pycache__/route_handling.cpython-39.pyc
+Functions/__pycache__/Weather_Handling.cpython-39.pyc
+/Weather_Data/NW_01.07.2020_01.07.2021.nc
+/Weather_Data/NW_01.07.2021_01.07.2022.nc
+/Weather_Data/EW_01.07.2021_01.07.2022.nc
+/Weather_Data/EW_01.07.2020_01.07.2021.nc
