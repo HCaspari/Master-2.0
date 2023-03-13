@@ -141,8 +141,7 @@ def read_route(csv):
     positions = np.asarray(positions)
     return positions
 
-filname = mac_windows_file_handle("Output_files/Bergen_Stavanger_reise")
-ARRAY = read_array_from_file(filname)
+
 
 def test_read_files(routenumber):
 

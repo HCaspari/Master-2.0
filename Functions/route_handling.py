@@ -315,7 +315,7 @@ route_Stvg_Dk_intricate     = mac_windows_file_handle("Route_data/Danmark_Stavan
 #Route creation : Aalesund -- Færøyene -- Aberdeen -- Newcastle -- Amsterdam -- Esbjerg (Danmark) -- Aalesund
 #Route Coordinates:
 def auto_create_Route(start_point_coordinates, end_point_coordinates, midpoint1 = (), midpoint2 = ()):
-
+    Route = [0]
     #if midpoints do not exist, create direct route
     if len(midpoint1) == 0:
         route = [start_point_coordinates, end_point_coordinates]
@@ -389,9 +389,45 @@ Midpoint_2_Dan_Aal  = (62.324854695720006, 5.0124722561975235)
 #5. run write_to_file(route_start_end), this writes route coordinates to file
 #6. run main(routename, simulation count)
 
-route_Aber_fær = auto_create_Route(Aberdeen,Færøyene,Midpoint_Fa_Ab)
-write_to_file(route_Aber_fær,)
+def create_routes():
 
+    route_DK_Stav   = auto_create_Route(Danmark,Stavanger,Mid_Danmark_stvg)
+    route_Amst_New  = auto_create_Route(Amsterdam,Newcastle)
+    route_Dk_Amst   = auto_create_Route(Danmark,Amsterdam)
+    route_New_Aber  = auto_create_Route(Newcastle,Aberdeen)
+    route_Aber_Faer  = auto_create_Route(Aberdeen,Færøyene,Midpoint_Fa_Ab)
+    route_Faer_Aales  = auto_create_Route(Færøyene,Aalesund)
+    route_Aales_Dk   = auto_create_Route(Aalesund,Danmark, Midpoint_2_Dan_Aal, Midpoint_1_Dan_Aal)
+
+    filename_DK_Stav    = mac_windows_file_handle("Route_data/Danmark_Stavanger_Route/Route_Danmark_Stavanger.csv")
+    filename_Amst_New   = mac_windows_file_handle("Route_data/Amsterdam_Newcastle_Route/Route_Amsterdam_Newcastle.csv")
+    filename_Dk_Amst    = mac_windows_file_handle("Route_data/Danmark_Amsterdam_Route/Route_Danmark_Amsterdam.csv")
+    filename_Faer_Aal     = mac_windows_file_handle("Route_data/Færøyene_Ålesund_Route/Route_Færøyene_Ålesund.csv")
+    filename_New_Aber   = mac_windows_file_handle("Route_data/Newcastle_Aberdeen_Route/Route_Newcastle_Aberdeen.csv")
+    filename_Aal_Dk      = mac_windows_file_handle("Route_data/Ålesund_Danmark_Route/Route_Ålesund_Florø.csv")
+    filename_Aber_Faer   = mac_windows_file_handle("Route_data/Aberdeen_Færøyene_Route/Route_Aberdeen_Færøyene.csv")
+
+    write_to_file(route_Aber_Faer,filename_Aber_Faer)
+    write_to_file(route_DK_Stav,filename_DK_Stav)
+    write_to_file(route_Amst_New,filename_Amst_New)
+    write_to_file(route_Dk_Amst,filename_Dk_Amst)
+    write_to_file(route_New_Aber,filename_New_Aber)
+    write_to_file(route_Faer_Aales,filename_Faer_Aal)
+    write_to_file(route_Aales_Dk,filename_Aal_Dk)
+
+    return route_Aber_Faer,route_Faer_Aales,route_Aales_Dk,route_Dk_Amst,route_DK_Stav,route_New_Aber,route_Amst_New
+
+#route_Aber_Faer,route_Faer_Aales,route_Aales_Dk,route_Dk_Amst,route_DK_Stav,route_New_Aber,route_Amst_New = create_routes()
+route_New_Faer = auto_create_Route(Newcastle,Færøyene,Midpoint_Fa_Ab)
+
+#createmap(route_Aales_Dk)
+#createmap(route_Faer_Aales)
+#createmap(route_Aales_Dk)
+#createmap(route_Dk_Amst)
+#createmap(route_DK_Stav)
+#createmap(route_New_Aber)
+#createmap(route_Amst_New)
+#createmap(route_New_Faer)
 
 def create_international_routes():
 

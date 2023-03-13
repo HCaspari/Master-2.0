@@ -180,10 +180,20 @@ def main(route, iteration, date_of_simulation):
 
 
 #main = time_of_trip,tot_sailing_dist, poor_sailing_time, poor_sailing_distance
-def simulation(csv,routenumber):
+def simulation(csv,routenumber,interval):
     """
     :param csv: A csv
-    :param routenumber: which route im using
+    :param routenumber: 1 runs Trondheim Ålesund
+                        2 runs Ålesund Florø
+                        3 runs Florø Bergen
+                        4 runs Bergen Stavanger
+                        5 runs Aberdeen Færøyene
+                        6 runs Amsterdam Newcastle
+                        7 runs Danmark AMsterdam
+                        8 runs Færøyene Ålesund
+                        9 runs Newcastle Aberdeen
+                        10 runs Ålesund Danmark
+    :param interval: What intervall to write files
     :return:    time_of_trip
                 tot_sailing_dist
                 VS_simulation_vector
@@ -191,7 +201,7 @@ def simulation(csv,routenumber):
 
     starttime = datetime(2020,7,1,00,00,00)
 
-    hour_intervall                  = 1                                                 #at what hourly interval should we simulate?
+    hour_intervall                  = interval                                                 #at what hourly interval should we simulate?
     route_travel                    = read_route(csv)
     time_of_simulation              = 17520                                             #two years in hours
     time_of_trip                    = np.zeros(int(time_of_simulation/hour_intervall))
@@ -244,26 +254,70 @@ def simulation(csv,routenumber):
 
 
     #Read files:
-    #Ålesund
+    #Trond_Ålesund
     file_speed_Trond_Aalesund   = mac_windows_file_handle("Output_files/savespeed_TrondAales.csv")
     file_TWS_Trond_Aalesund     = mac_windows_file_handle("Output_files/saveTWS_TrondAales.csv")
     file_TWD_Trond_Aalesund     = mac_windows_file_handle("Output_files/saveTWD_TrondAales.csv")
     datestamp_file_1            = mac_windows_file_handle("Output_files/datestamp1.csv")
-    #floro
+
+    #Ålesund_floro
     file_speed_Aalesund_Floro   = mac_windows_file_handle("Output_files/savespeed_AalesFloro.csv")
     file_TWS_Aalesund_Floro     = mac_windows_file_handle("Output_files/saveTWS_AalesFloro.csv")
     file_TWD_Aalesund_Floro     = mac_windows_file_handle("Output_files/saveTWD_AalesFloro.csv")
     datestamp_file_2            = mac_windows_file_handle("Output_files/datestamp2.csv")
-    #bergen
+
+    #Floro_bergen
     file_speed_Floro_Bergen     = mac_windows_file_handle("Output_files/savespeed_FloroBergen.csv")
     file_TWS_Floro_Bergen       = mac_windows_file_handle("Output_files/saveTWS_FloroBergen.csv")
     file_TWD_Floro_Bergen       = mac_windows_file_handle("Output_files/saveTWD_FloroBergen.csv")
     datestamp_file_3            = mac_windows_file_handle("Output_files/datestamp3.csv")
-    #stavanger
+
+    #Bergen_stavanger
     file_speed_Bergen_Stavanger = mac_windows_file_handle("Output_files/savespeed_BrgStvg.csv")
     file_TWS_Bergen_Stavanger   = mac_windows_file_handle("Output_files/saveTWS_BergenStavanger.csv")
     file_TWD_Bergen_Stavanger   = mac_windows_file_handle("Output_files/saveTWD_BergenStavanger.csv")
     datestamp_file_4            = mac_windows_file_handle("Output_files/datestamp4.csv")
+
+    #Aberdeen_Færøyene
+    file_speed_Aber_Faer    = mac_windows_file_handle("Output_files/savespeed_BrgStvg.csv")
+    file_TWS_Aber_Faer      = mac_windows_file_handle("Output_files/saveTWS_BergenStavanger.csv")
+    file_TWD_Aber_Faer      = mac_windows_file_handle("Output_files/saveTWD_BergenStavanger.csv")
+    datestamp_file_5        = mac_windows_file_handle("Output_files/datestamp4.csv")
+
+    #Amsterdam Newcastle
+    file_speed_Amst_New = mac_windows_file_handle("Output_files/savespeed_BrgStvg.csv")
+    file_TWS_Amst_New   = mac_windows_file_handle("Output_files/saveTWS_BergenStavanger.csv")
+    file_TWD_Amst_New    = mac_windows_file_handle("Output_files/saveTWD_BergenStavanger.csv")
+    datestamp_file_6    = mac_windows_file_handle("Output_files/datestamp4.csv")
+
+    #Danmark Amsterdam
+    file_speed_Dk_Amst  = mac_windows_file_handle("Output_files/savespeed_BrgStvg.csv")
+    file_TWS_Dk_Amst    = mac_windows_file_handle("Output_files/saveTWS_BergenStavanger.csv")
+    file_TWD_Dk_Amst    = mac_windows_file_handle("Output_files/saveTWD_BergenStavanger.csv")
+    datestamp_file_7    = mac_windows_file_handle("Output_files/datestamp4.csv")
+
+    #Færøyene Ålesund
+
+    file_speed_Faer_Aal = mac_windows_file_handle("Output_files/savespeed_BrgStvg.csv")
+    file_TWS_Faer_Aal   = mac_windows_file_handle("Output_files/saveTWS_BergenStavanger.csv")
+    file_TWD_Faer_Aal   = mac_windows_file_handle("Output_files/saveTWD_BergenStavanger.csv")
+    datestamp_file_8    = mac_windows_file_handle("Output_files/datestamp4.csv")
+
+    #Newcastle Aberdeen
+
+    file_speed_New_Aber = mac_windows_file_handle("Output_files/savespeed_BrgStvg.csv")
+    file_TWS_New_Aber   = mac_windows_file_handle("Output_files/saveTWS_BergenStavanger.csv")
+    file_TWD_New_Aber   = mac_windows_file_handle("Output_files/saveTWD_BergenStavanger.csv")
+    datestamp_file_9    = mac_windows_file_handle("Output_files/datestamp4.csv")
+
+    #Ålesund Danmark
+
+    file_speed_Aal_Dk   = mac_windows_file_handle("Output_files/savespeed_BrgStvg.csv")
+    file_TWS_Aal_Dk     = mac_windows_file_handle("Output_files/saveTWS_BergenStavanger.csv")
+    file_TWD_Aal_Dk     = mac_windows_file_handle("Output_files/saveTWD_BergenStavanger.csv")
+    datestamp_file_10   = mac_windows_file_handle("Output_files/datestamp4.csv")
+
+
 
 
     #Write to files
@@ -291,51 +345,113 @@ def simulation(csv,routenumber):
         write_to_file(TWS_simulation_vector,file_TWS_Bergen_Stavanger)  #TWS vector file
         write_to_file(TWD_simulation_vector,file_TWD_Bergen_Stavanger)  #TWD vector file
         write_to_file(datestamp_vect, datestamp_file_4)                 #Datestamp file
+    elif routenumber == 5:
+        write_to_file(VS_simulation_vector,file_speed_Aber_Faer) #VS vector file
+        write_to_file(TWS_simulation_vector,file_TWS_Aber_Faer)  #TWS vector file
+        write_to_file(TWD_simulation_vector,file_TWD_Aber_Faer)  #TWD vector file
+        write_to_file(datestamp_vect, datestamp_file_5)          #Datestamp file
+    elif routenumber == 6:
+        write_to_file(VS_simulation_vector,file_speed_Amst_New) #VS vector file
+        write_to_file(TWS_simulation_vector,file_TWS_Amst_New)  #TWS vector file
+        write_to_file(TWD_simulation_vector,file_TWD_Amst_New)  #TWD vector file
+        write_to_file(datestamp_vect, datestamp_file_6)         #Datestamp file
+    elif routenumber == 7:
+        write_to_file(VS_simulation_vector,file_speed_Dk_Amst) #VS vector file
+        write_to_file(TWS_simulation_vector,file_TWS_Dk_Amst)  #TWS vector file
+        write_to_file(TWD_simulation_vector,file_TWD_Dk_Amst)  #TWD vector file
+        write_to_file(datestamp_vect, datestamp_file_7)        #Datestamp file
+    elif routenumber == 8:
+        write_to_file(VS_simulation_vector,file_speed_Faer_Aal) #VS vector file
+        write_to_file(TWS_simulation_vector,file_TWS_Faer_Aal)  #TWS vector file
+        write_to_file(TWD_simulation_vector,file_TWD_Faer_Aal)  #TWD vector file
+        write_to_file(datestamp_vect, datestamp_file_8)         #Datestamp file
+    elif routenumber == 9:
+        write_to_file(VS_simulation_vector,file_speed_New_Aber) #VS vector file
+        write_to_file(TWS_simulation_vector,file_TWS_New_Aber)  #TWS vector file
+        write_to_file(TWD_simulation_vector,file_TWD_New_Aber)  #TWD vector file
+        write_to_file(datestamp_vect, datestamp_file_9)         #Datestamp file
+    elif routenumber == 10:
+        write_to_file(VS_simulation_vector,file_speed_Aal_Dk) #VS vector file
+        write_to_file(TWS_simulation_vector,file_TWS_Aal_Dk)  #TWS vector file
+        write_to_file(TWD_simulation_vector,file_TWD_Aal_Dk)  #TWD vector file
+        write_to_file(datestamp_vect, datestamp_file_10)       #Datestamp file
 
-    return time_of_trip,tot_sailing_dist,VS_simulation_vector
+    return 0
 
 
 
 #change to simulation(route) so that you dont need to hardcode
 
 
-def runsimulation(route):
+def runsimulation(route, interval):
     """
         :param route:   1 runs Trondheim Ålesund
                         2 runs Ålesund Florø
                         3 runs Florø Bergen
                         4 runs Bergen Stavanger
+                        5 runs Aberdeen Færøyene
+                        6 runs Amsterdam Newcastle
+                        7 runs Danmark AMsterdam
+                        8 runs Færøyene Ålesund
+                        9 runs Newcastle Aberdeen
+                        10 runs Ålesund Danmark
+        :param interval: At what time interval do we run simulation
         :return: saved files with simulation results
         """
 
-    Trond_aalesund      = mac_windows_file_handle("Route_data/Route_Trond_Aales.csv")
-    Aalesund_Floro      = mac_windows_file_handle("Route_data/Route_Ålesund_Florø.csv")
-    Floro_Bergen        = mac_windows_file_handle("Route_data/Route_Floro_Bergen.csv")
-    Bergen_Stavanger    = mac_windows_file_handle("Route_data/Route_Bergen_Stavanger.csv")
+    Trond_aalesund      = mac_windows_file_handle("Route_data/Trondheim_Ålesund_Rute/Route_Trond_Aales.csv")
+    Aalesund_Floro      = mac_windows_file_handle("Route_data/Ålsund_Florø_Rute/Route_Ålesund_Florø.csv")
+    Floro_Bergen        = mac_windows_file_handle("Route_data/Florø_Bergen_Rute/Route_Floro_Bergen.csv")
+    Bergen_Stavanger    = mac_windows_file_handle("Route_data/Bergen_Stavanger_Rute/Route_Bergen_Stavanger.csv")
+    Aberdeen_Faer       = mac_windows_file_handle("Route_data/Aberdeen_Færøyene_Route/Route_Aberdeen_Færøyene.csv")
+    Amst_New            = mac_windows_file_handle("Route_data/Amsterdam_Newcastle_Route/Route_Amsterdam_Newcastle.csv")
+    DK_Amst             = mac_windows_file_handle("Route_data/Danmark_Amsterdam_Route/Route_Danmark_Amsterdam.csv")
+    Faer_Aale           = mac_windows_file_handle("Route_data/Færøyene_Ålesund_Route/Route_Færøyene_Ålesund.csv")
+    New_Aber            = mac_windows_file_handle("Route_data/Newcastle_Aberdeen_Route/Route_Newcastle_Aberdeen.csv")
+    Aale_DK             = mac_windows_file_handle("Route_data/Ålesund_Danmark_Route/Route_Ålesund_DK.csv")
+
+
 
     if route == 1:
         print("Running simulation for route Trondheim Aalesund now")
-        Trip_time_vector_TA, Tot_sailing_distance_vector_TA, sailing_speed_simulation_vector_TA = simulation(Trond_aalesund,route)
-        sailing_speed_trond_aalesund_fil    = mac_windows_file_handle("Output_files/Trondheim_Aalesund_reise")
-        write_to_file(sailing_speed_simulation_vector_TA, sailing_speed_trond_aalesund_fil)
+        simulation(Trond_aalesund,route,interval)
 
     if route == 2:
         print("Running simulation for route Ålesund Florø now")
-        Trip_time_vector_AF, Tot_sailing_distance_vector_AF, sailing_speed_simulation_vector_AF = simulation(Aalesund_Floro,route)
-        sailing_speed_Aalesund_Floro_fil    = mac_windows_file_handle("Output_files/Aalesund_Floro_reise")
-        write_to_file(sailing_speed_simulation_vector_AF, sailing_speed_Aalesund_Floro_fil)
+        simulation(Aalesund_Floro,route,interval)
 
     if route == 3:
         print("Running simulation for route Florø Bergen now")
-        Trip_time_vector_FB, Tot_sailing_distance_vector_FB, sailing_speed_simulation_vector_FB = simulation(Floro_Bergen,route)
-        sailing_speed_Floro_Bergen_fil      = mac_windows_file_handle("Output_files/Floro_Bergen_reise")
-        write_to_file(sailing_speed_simulation_vector_FB, sailing_speed_Floro_Bergen_fil)
+        simulation(Floro_Bergen,route,interval)
 
     if route == 4:
         print("Running simulation for route Bergen Stavanger now")
-        Trip_time_vector_BS, Tot_sailing_distance_vector_BS, sailing_speed_simulation_vector_BS = simulation(Bergen_Stavanger,route)
-        sailing_speed_Bergen_Stavanger_fil  = mac_windows_file_handle("Output_files/Bergen_Stavanger_reise")
-        write_to_file(sailing_speed_simulation_vector_BS, sailing_speed_Bergen_Stavanger_fil)
+        simulation(Bergen_Stavanger,route,interval)
+
+    if route == 5:
+        print("Running simulation for route Aberdeen_Faerøyene now")
+        simulation(Aberdeen_Faer, route,interval)
+
+    if route == 6:
+        print("Running simulation for route Amsterdam_Newcastle now")
+        simulation(Amst_New, route,interval)
+
+    if route == 7:
+        print("Running simulation for route Danmark_Amsterdam now")
+        simulation(DK_Amst, route,interval)
+
+    if route == 8:
+        print("Running simulation for route Færøyene_Ålesund now")
+        simulation(Faer_Aale, route,interval)
+
+    if route == 9:
+        print("Running simulation for route Newcastle_Aberdeen now")
+        simulation(New_Aber, route,interval)
+
+    if route == 10:
+        print("Running simulation for route Ålesund_Danmark now")
+        simulation(Aale_DK, route,interval)
+
 
     return 0
 
@@ -360,10 +476,12 @@ def test_func():
     print("apparent wind angle using function from sediek",sediek)
     return 0
 
-#runsimulation(1)
-#runsimulation(2)
-runsimulation(3)
-runsimulation(4)
+#runsimulation(1,100)
+#runsimulation(2,100)
+#runsimulation(3,1000)
+#runsimulation(4,1000)
+runsimulation(10,1000)
+#    Gotta read new weatherfiles <3
 
 print("Finished <3<3")
 

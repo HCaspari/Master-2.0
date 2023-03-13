@@ -80,6 +80,6 @@ Test = "Test"
 
 #histogram(mac_windows_file_handle('Output_files/Trondheim_Aalesund_reise', Trond_Aalesund))
 #histogram(mac_windows_file_handle('Output_files/Aalesund_Floro_reise', Aalesund_Floro))
-histogram(mac_windows_file_handle('Output_files/Florø_Bergen/savespeed_FloroBergen.csv'), Floro_Bergen)
+#histogram(mac_windows_file_handle('Output_files/Florø_Bergen/savespeed_FloroBergen.csv'), Floro_Bergen)
 #histogram(mac_windows_file_handle('Output_files/savespeed_TrondAales.csv'), Trond_Aalesund)
 #histogram(mac_windows_file_handle("Output_files/savespeed_TrondAales.csv"),Test)
