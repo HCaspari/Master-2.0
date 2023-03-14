@@ -318,7 +318,12 @@ def simulation(csv,routenumber,interval):
     file_TWD_Aal_Dk     = mac_windows_file_handle("Output_files/saveTWD_BergenStavanger.csv")
     datestamp_file_10   = mac_windows_file_handle("Output_files/datestamp4.csv")
 
+    #Floro port
 
+    file_speed_Floro_port   = mac_windows_file_handle("Output_files/savespeed_BrgStvg.csv")
+    file_TWS_Floro_port     = mac_windows_file_handle("Output_files/saveTWS_BergenStavanger.csv")
+    file_TWD_Floro_port     = mac_windows_file_handle("Output_files/saveTWD_BergenStavanger.csv")
+    datestamp_file_11       = mac_windows_file_handle("Output_files/datestamp4.csv")
 
 
     #Write to files
@@ -377,6 +382,13 @@ def simulation(csv,routenumber,interval):
         write_to_file(TWD_simulation_vector,file_TWD_Aal_Dk)  #TWD vector file
         write_to_file(datestamp_vect, datestamp_file_10)       #Datestamp file
 
+    elif routenumber == 11:
+        write_to_file(VS_simulation_vector,file_speed_Floro_port) #VS vector file
+        write_to_file(TWS_simulation_vector,file_TWS_Floro_port)  #TWS vector file
+        write_to_file(TWD_simulation_vector,file_TWD_Floro_port)  #TWD vector file
+        write_to_file(datestamp_vect, datestamp_file_11)          #Datestamp file
+
+
     return 0
 
 
@@ -410,7 +422,7 @@ def runsimulation(route, interval):
     Faer_Aale           = mac_windows_file_handle("Route_data/Færøyene_Ålesund_Route/Route_Færøyene_Ålesund.csv")
     New_Aber            = mac_windows_file_handle("Route_data/Newcastle_Aberdeen_Route/Route_Newcastle_Aberdeen.csv")
     Aale_DK             = mac_windows_file_handle("Route_data/Ålesund_Danmark_Route/Route_Ålesund_DK.csv")
-
+    Floro_port          = mac_windows_file_handle("Route_data/Floro_port/Floro_port.csv")
 
 
     if route == 1:
@@ -452,6 +464,10 @@ def runsimulation(route, interval):
     if route == 10:
         print("Running simulation for route Ålesund_Danmark now")
         simulation(Aale_DK, route,interval)
+    
+    if route == 11:
+        print("Running simulation for route Ålesund_Danmark now")
+        simulation(Floro_port, interval)
 
 
     return 0
@@ -480,7 +496,7 @@ def test_func():
 #runsimulation(1,100)
 #runsimulation(2,100)
 #runsimulation(3,1000)
-runsimulation(4,100)
+runsimulation(11,100)
 #runsimulation(10,1000)
 #    Gotta read new weatherfiles <3
 
