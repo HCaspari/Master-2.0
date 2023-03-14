@@ -136,7 +136,10 @@ def Force_produced(AWS, AWD):
     ### CREATE FUNCTION FOR CL TO CHANGE WITH SPINRATIO ACCORDING TO GRAPH IN
 
     Cl_flettner_correction_From_Spin_Ratio = [(0,0),(1,2.5),(2,4.8),(3,8.5),(4,11),(5,12),(6,13)]
-    SR = int(round(3 * np.pi * 5 / (2 * AWS),0))
+    if AWS > 0:
+        SR = int(round(3 * np.pi * 5 / (2 * AWS),0))
+    else:
+        SR = 7
 
     if SR > 6:
         Cl_flettner_From_Spin_Ratio = 13

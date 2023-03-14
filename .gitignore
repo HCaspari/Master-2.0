@@ -50,3 +50,47 @@ Output_files/Trondheim_Ålesund/saveTWD_TrondAales.csv
 Output_files/Trondheim_Ålesund/saveTWS_TrondAales.csv
 Output_files/Trondheim_Ålesund/Trondheim_Aalesund_reise
 Output_files/Trondheim_Ålesund/Trondheim_Aalesund_reise_2
+__MACOSX/._Output_files
+__MACOSX/Output_files/._.DS_Store
+__MACOSX/Output_files/._Bergen_Stavanger
+__MACOSX/Output_files/._Danmark_Stavanger
+__MACOSX/Output_files/._Datestamps
+__MACOSX/Output_files/._Ferdige Resultater Pr. Time
+__MACOSX/Output_files/._Ålesund_Florø
+__MACOSX/Output_files/._Ålesund_Florø
+__MACOSX/Output_files/Bergen_Stavanger/._Bergen_Stavanger_reise
+__MACOSX/Output_files/Bergen_Stavanger/._savespeed_BrgStvg.csv
+__MACOSX/Output_files/Bergen_Stavanger/._saveTWD_BergenStavanger.csv
+__MACOSX/Output_files/Bergen_Stavanger/._saveTWS_BergenStavanger.csv
+__MACOSX/Output_files/Danmark_Stavanger/._SS_Danmark_Stavanger.csv
+__MACOSX/Output_files/Danmark_Stavanger/._TWD_Danmark_Stavanger.csv
+__MACOSX/Output_files/Danmark_Stavanger/._TWS_Danmark_Stavanger.csv
+__MACOSX/Output_files/Datestamps/._datestamp1.csv
+__MACOSX/Output_files/Datestamps/._datestamp2.csv
+__MACOSX/Output_files/Datestamps/._datestamp3.csv
+__MACOSX/Output_files/Florø_Bergen/._Floro_Bergen_reise
+__MACOSX/Output_files/Florø_Bergen/._savespeed_FloroBergen.csv
+__MACOSX/Output_files/Florø_Bergen/._saveTWD_FloroBergen.csv
+__MACOSX/Output_files/Florø_Bergen/._saveTWS_FloroBergen.csv
+__MACOSX/Output_files/Datestamps/._datestamp4.csv
+__MACOSX/Output_files/Trondheim_Ålesund/._.DS_Store
+__MACOSX/Output_files/Trondheim_Ålesund/._.DS_Store
+__MACOSX/Output_files/._Florø_Bergen
+env/teststuff/createcs.py
+Functions/__pycache__/file_handling.cpython-39.pyc
+*.pyc
+Functions/__pycache__/route_handling.cpython-39.pyc
+Functions/__pycache__/Weather_Handling.cpython-39.pyc
+teststuff/createcs.py
+Output_files/Ferdige Resultater Pr. Time/savespeed_AalesFloro-per_time.csv
+Output_files/Ferdige Resultater Pr. Time/savespeed_TrondAales-per_time.csv
+Output_files/Ferdige Resultater Pr. Time/saveTWD_AalesFloro-per_time.csv
+Output_files/Ferdige Resultater Pr. Time/saveTWD_TrondAales-per_time.csv
+Output_files/Ferdige Resultater Pr. Time/saveTWD_TrondAales-per_time.csv
+Output_files/Ferdige Resultater Pr. Time/saveTWS_AalesFloro-per_time.csv
+Output_files/Ferdige Resultater Pr. Time/saveTWS_TrondAales-per_time.csv
+Output_files/Trondheim_Ålesund/saveTWD_TrondAales.csv
+Output_files/Trondheim_Ålesund/saveTWS_TrondAales.csv
+Output_files/Trondheim_Ålesund/saveTWD_TrondAales.csv
+Output_files/Trondheim_Ålesund/savespeed_TrondAales.csv
+Output_files/Trondheim_Ålesund/saveTWD_TrondAales.csv

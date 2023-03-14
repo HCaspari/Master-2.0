@@ -200,7 +200,7 @@ def simulation(csv,routenumber,interval):
     """
 
     starttime = datetime(2020,7,1,00,00,00)
-
+    iteration                       = 0
     hour_intervall                  = interval                                                 #at what hourly interval should we simulate?
     route_travel                    = read_route(csv)
     time_of_simulation              = 17520                                             #two years in hours
@@ -232,7 +232,7 @@ def simulation(csv,routenumber,interval):
         TWS_simulation_vector.extend(TWS_vector)
         TWD_simulation_vector.extend(TWD_vector)
 
-        if iteration%100 == 0 and iteration > 0:
+        if iteration%100 == 0 and iteration != 0 or iteration == 1:
             poor_sailing_speed = 0
             if poor_sailing_time_1 > 0:
                 poor_sailing_speed = poor_sailing_distance_1 / poor_sailing_time_1
@@ -243,6 +243,7 @@ def simulation(csv,routenumber,interval):
                   f"at an average speed of {poor_sailing_speed} knots")
             print(f"The wind at this point in time was measured to be {TWS_simulation_vector[iteration]} with an AWA of {TWD_simulation_vector[iteration]}")
             print(f"{datetime.now()},iteration is {iteration}")
+            print(f"the datestamp of this point along rute: {datestamp}")
 
 
 
@@ -479,8 +480,8 @@ def test_func():
 #runsimulation(1,100)
 #runsimulation(2,100)
 #runsimulation(3,1000)
-#runsimulation(4,1000)
-runsimulation(10,1000)
+runsimulation(4,100)
+#runsimulation(10,1000)
 #    Gotta read new weatherfiles <3
 
 print("Finished <3<3")

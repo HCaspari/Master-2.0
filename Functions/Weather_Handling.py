@@ -37,11 +37,17 @@ alpha = 3.5
 #datafiles
 
 
-NW_file = mac_windows_file_handle("Weather_Data/NW_01_07_2020__01_07_2022.nc") #Keys =['northward_wind', 'time', 'lat', 'lon']
-EW_file = mac_windows_file_handle("Weather_Data/EW_01_07_2020__01_07_2022.nc")  #Keys =['eastward_wind', 'time', 'lat', 'lon']
+#NW_file = mac_windows_file_handle("Weather_Data/NW_01_07_2020__01_07_2022.nc") #Keys =['northward_wind', 'time', 'lat', 'lon']
+#EW_file = mac_windows_file_handle("Weather_Data/EW_01_07_2020__01_07_2022.nc")  #Keys =['eastward_wind', 'time', 'lat', 'lon']
+NW_file_20_21 = mac_windows_file_handle("Weather_Data/NW_01.07.2020_01.07.2021.nc") #Weather data file NW part 1
+NW_file_21_22 = mac_windows_file_handle("Weather_Data/NW_01.07.2021_01.07.2022.nc") #Weather data file NW part 2
+EW_file_20_21 = mac_windows_file_handle("Weather_Data/EW_01.07.2020_01.07.2021.nc") #Weather data file EW part 1
+EW_file_21_22 = mac_windows_file_handle("Weather_Data/EW_01.07.2021_01.07.2022.nc") #Weather data file EW part 2
 
-dataset_NW = nc.Dataset(NW_file)
-dataset_EW = nc.Dataset(EW_file)
+dataset_NW_1 = nc.Dataset(NW_file_20_21)
+dataset_NW_2 = nc.Dataset(NW_file_21_22)
+dataset_EW_1 = nc.Dataset(EW_file_20_21)
+dataset_EW_2 = nc.Dataset(EW_file_21_22)
 
 
 ##################
@@ -62,20 +68,29 @@ dataset_EW = nc.Dataset(EW_file)
 #    print(var)
 #print("north",dataset_NW.variables.keys())
 #print("East",dataset_EW.variables.keys())
-northward_wind  = dataset_NW.variables["northward_wind"]
-northward_time  = dataset_NW.variables["time"]
-northward_lat   = dataset_NW.variables["lat"]
-northward_lon   = dataset_NW.variables["lon"]
+northward_wind_1  = dataset_NW_1.variables["northward_wind"]
+northward_time_1  = dataset_NW_1.variables["time"]
+northward_lat_1   = dataset_NW_1.variables["lat"]
+northward_lon_1   = dataset_NW_1.variables["lon"]
+eastward_wind_1   = dataset_EW_1.variables["eastward_wind"]
+eastward_time_1   = dataset_EW_1.variables["time"]
+eastward_lat_1    = dataset_EW_1.variables["lat"]
+eastward_lon_1    = dataset_EW_1.variables["lon"]
 
-eastward_wind  = dataset_EW.variables["eastward_wind"]
-eastward_time  = dataset_EW.variables["time"]
-eastward_lat   = dataset_EW.variables["lat"]
-eastward_lon   = dataset_EW.variables["lon"]
+northward_wind_2  = dataset_NW_2.variables["northward_wind"]
+northward_time_2  = dataset_NW_2.variables["time"]
+northward_lon_2   = dataset_NW_2.variables["lon"]
+northward_lat_2   = dataset_NW_2.variables["lat"]
+eastward_wind_2   = dataset_EW_2.variables["eastward_wind"]
+eastward_time_2   = dataset_EW_2.variables["time"]
+eastward_lat_2    = dataset_EW_2.variables["lat"]
+eastward_lon_2    = dataset_EW_2.variables["lon"]
 #print(northward_lon[:])
 #print(northward_lat[:])
 
 
-#print(f"The size of Eastward time is: {eastward_time.shape}")
+#print(f"The size of Eastward time_1 is: {eastward_time_1.shape}")
+#print(f"The size of Eastward time_2 is: {eastward_time_2.shape}")
 
 #print(f"The first and last elements of Eastward time are {eastward_time[0]}, and {eastward_time[-1]}\n"
 #      f"this gives {eastward_time[-1]-eastward_time[0]} seconds")
@@ -146,6 +161,7 @@ eastward_lon   = dataset_EW.variables["lon"]
 #print(len(eastward_time[:]))
 
 #translates radians to degrees for python
+
 def r2d(rad):
     """
     :param rad: input angle radians
@@ -169,36 +185,42 @@ def getweather(tid,latitude, longditude):
     :param longditude: Longdtitude where we want to access weather data
     :return: WSN and WSE in m/s at time = tid, and position (lat,lon)
     """
-    #to get the correct index one needs to increase values by 0.125
-    #for example, latitude 58.9375 = latitude[0]
-    #a = eastward_time[1,10,10]
-    if tid >= 17520: #Denne fanger opp situasjoner nær slutten av året der vi mangler værdata for et nytt år. her vil
-        #tiden vi henter værdatafra loope slik at istedenfor å PRØVE å hente været for 02/07/2021, så vil den loope tilbake og finne været for
-        #den 02/07/2020.
-        tid -= 17520
-    lat_pos = int((latitude-eastward_lat[0])*8)              #Access correct position in vector of north wind
-    lon_pos = int((longditude-eastward_lon[0])*8)             #Access correct position in vector of east wind
-    #tid += 962409600 #measurements go from 01/07/2020 - to 01/07/2022
-    #if tid < 0 or tid >= len(dataset_NW["northward_wind"][:,lat_pos,lon_pos]):
-    #    print(f"time was out of bounds at {tid}, time must be within the span of one year (less than 1460)")
-    #    return 1
-    if latitude < eastward_lat[0] or latitude > eastward_lat[-1]:
-        print("latitude out of bounds, latitude between 58.9375 and 70.1875")
-        return 1
-    elif longditude < eastward_lon [0] or longditude > eastward_lon[-1]: #været må være hentet på posisjonen longditude
-        print("longditude out of bounds, longditude between 3.0625 and 20.9375")
-        return 1
-    elif lat_pos >= len(dataset_NW["northward_wind"][tid,:]):
-        print("yay")
-    elif lat_pos >= len(dataset_NW["northward_wind"][tid,:,lon_pos]):
-        print(f"lat posistion is out of bound at {lat_pos} degrees")
-        return 1
-    elif lon_pos >= len(dataset_NW["northward_wind"][tid, lat_pos, :]):
-        print(f"lon posistion is out of bound at {lon_pos} degrees")
-        return 1
+    #This function needs to be split into two, using one set of nc files if time is smaller that 8743,
+    # and the other if the time is larger
 
-    WSN = dataset_NW["northward_wind"][tid,lat_pos,lon_pos]
-    WSE = dataset_EW["eastward_wind"][tid,lat_pos,lon_pos]
+    if tid >= 17520:  #if end of year 2 is reached while sailing, weatherdata from the beginning of year one is used
+        tid -= 17520
+
+    if tid <= 8743:
+
+
+        lat_pos = int((latitude-eastward_lat_1[0])*8)              #Access correct position in vector of north wind
+        lon_pos = int((longditude-eastward_lon_1[0])*8)             #Access correct position in vector of east wind
+
+        if latitude < eastward_lat_1[0] or latitude > eastward_lat_1[-1]:
+            print("latitude out of bounds, latitude between 58.9375 and 70.1875")
+            return 1
+        elif longditude < eastward_lon_1[0] or longditude > eastward_lon_1[-1]: #været må være hentet på posisjonen longditude
+            print("longditude out of bounds, longditude between 3.0625 and 20.9375")
+            return 1
+        elif lat_pos >= len(dataset_NW_1["northward_wind"][tid,:]):
+            print("yay")
+        elif lat_pos >= len(dataset_NW_1["northward_wind"][tid,:,lon_pos]):
+            print(f"lat posistion is out of bound at {lat_pos} degrees")
+            return 1
+        elif lon_pos >= len(dataset_NW_1["northward_wind"][tid, lat_pos, :]):
+            print(f"lon posistion is out of bound at {lon_pos} degrees")
+            return 1
+
+        WSN = dataset_NW_1["northward_wind"][tid,lat_pos,lon_pos]
+        WSE = dataset_EW_1["eastward_wind"][tid,lat_pos,lon_pos]
+    else:
+
+        lat_pos = int((latitude - eastward_lat_2[0]) * 8)  # Access correct position in vector of north wind
+        lon_pos = int((longditude - eastward_lon_2[0]) * 8)  # Access correct position in vector of east wind
+
+        WSN = dataset_NW_2["northward_wind"][tid, lat_pos, lon_pos]
+        WSE = dataset_EW_2["eastward_wind"][tid, lat_pos, lon_pos]
 
     return WSN,WSE
 
