@@ -541,6 +541,7 @@ def test_func():
     print("apparent wind angle using function from sediek",sediek)
     return 0
 
+print("Everything is working (17:34, 14/03")
 #runsimulation(1,100)
 #runsimulation(2,100)
 #runsimulation(3,1000)
