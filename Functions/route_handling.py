@@ -416,9 +416,11 @@ def create_routes():
     write_to_file(route_Aales_Dk,filename_Aal_Dk)
 
     return route_Aber_Faer,route_Faer_Aales,route_Aales_Dk,route_Dk_Amst,route_DK_Stav,route_New_Aber,route_Amst_New
-
+route_stv_Dk        = auto_create_Route(Stavanger,Danmark,Mid_Danmark_stvg)
+filename_Stv_Dk     = mac_windows_file_handle("Route_data/Stavanger_Danmark_Route/Route_Stavanger_Danmark.csv")
+write_to_file(route_stv_Dk,filename_Stv_Dk)
 #route_Aber_Faer,route_Faer_Aales,route_Aales_Dk,route_Dk_Amst,route_DK_Stav,route_New_Aber,route_Amst_New = create_routes()
-route_New_Faer = auto_create_Route(Newcastle,Færøyene,Midpoint_Fa_Ab)
+#route_New_Faer = auto_create_Route(Newcastle,Færøyene,Midpoint_Fa_Ab)
 
 #createmap(route_Aales_Dk)
 #createmap(route_Faer_Aales)

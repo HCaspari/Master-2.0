@@ -41,6 +41,7 @@ def write_to_file(data,filename_func):
     :param filename_func:  name of file that data is to be written to
     :return: 0
     """
+    df = pd.DataFrame(data)
     pd.DataFrame(data).to_csv(filename_func)
     return 0
 
@@ -126,6 +127,45 @@ def read_array_from_file(filename_func):
     #print(data_array)
     return data_array
 
+def read_datestamp_from_file(datestamp_file):
+    datestamp = pd.read_csv(datestamp_file)
+    datestamp = datestamp[datestamp != 0]
+    datestamp_Array = []
+    for i in range(len(datestamp)):
+        datestamp_Array.append(datestamp.loc[i].iat[1])
+
+    return datestamp_Array
+
+def add_timestamp_to_dataframe(datafile, timestamp_file):
+    """
+    Adds column at beginning of csv file with timestamp
+    :param datafile: csv containing data
+    :param timestamp_file: timestamp file with time stamps
+    :return: 0
+    """
+
+    timestamp_array = read_datestamp_from_file(timestamp_file)
+
+    df = pd.read_csv(datafile)
+    #print(df)
+    df = df.drop(df.columns[0],axis=1)              #Drop first column of nothing
+    #print(df)
+    len_datafile = len(df.iloc[:,0])
+    len_timestamp = len(timestamp_array)
+    while len_datafile > len_timestamp:
+        df = df.drop(df.index[-1])
+        len_datafile = len(df.iloc[:, 0])
+    #print(df)
+    timestamp_array = timestamp_array[:len_datafile]
+    df.insert(0, "timestamp", timestamp_array)       #insert timestamp vector
+    #print(df)
+    df.to_csv(datafile)
+    return 0
+
+#datafile = mac_windows_file_handle("Output_files/Færøyene_Ålesund/savespeed_Færøyene_Ålesund.csv")
+#datestamp_file = mac_windows_file_handle("Output_files/datestamp9.csv")
+#add_timestamp_to_dataframe(datafile, datestamp_file)
+
 def read_route(csv):
     """
     reads route data from a csv file
@@ -140,8 +180,6 @@ def read_route(csv):
         positions.append((latitudes[i],longditudes[i]))
     positions = np.asarray(positions)
     return positions
-
-
 
 def test_read_files(routenumber):
 
@@ -180,7 +218,6 @@ def test_read_files(routenumber):
         print("read_test complete, (speed, TWS, TWD)", j,"\n", k,"\n", l)
 
     return 0
-
 
 def create_array_with_datetime():
     # define a numpy array

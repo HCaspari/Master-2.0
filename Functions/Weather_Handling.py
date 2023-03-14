@@ -107,7 +107,8 @@ eastward_lon_2    = dataset_EW_2.variables["lon"]
 #
 #print(f"The size of latitudes is: {eastward_lat.shape}")
 #print(f"The size of longditudes  is: {eastward_lon.shape}")
-#print(dataset_NW["northward_wind"][0,60,20])
+#print(dataset_NW_1["northward_wind"][0,60,20])
+
 
 #print(f"hour since 1990{date(1990,1,1)+ timedelta(days=42731850)}")
 
@@ -224,6 +225,10 @@ def getweather(tid,latitude, longditude):
 
     return WSN,WSE
 
+WSN_Test, WSE_test = getweather(0,61.60252347631243, 5.028807975745387)
+print(f"Wsn is {WSN_Test}, and WSE is {WSE_test}")
+
+
 def datetime_seconds(dtime):
     """
     :param dtime: inputs date during over 2 year period (for this dataset)
@@ -309,8 +314,8 @@ def alpha(vessel_speed,vessel_heading, NWS,EWS):
     return alpha
 
 
-def add_hours_to_date(hours):
-    date_start = datetime(2020,7,1,0,0,0)
+def add_hours_to_date(date,hours):
+    date_start = date
     # add the specified number of hours to the input date
     new_datetime = date_start + timedelta(hours=hours)
     return new_datetime
