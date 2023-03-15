@@ -221,7 +221,8 @@ def simulation(csv,routenumber,interval):
     VS_simulation_vector            = []
     TWS_simulation_vector           = []
     TWD_simulation_vector           = []
-    date_of_simulation              = add_hours_to_date(starttime,hour_intervall)
+    date_of_simulation = starttime
+    #    print(date_of_simulation)
     for iteration in range(0,int(time_of_simulation/hour_intervall)) : #repeating simulation for each hour_intervall through a year
 
         time_of_trip_1,tot_sailing_dist_1, poor_sailing_time_1, poor_sailing_distance_1, sailing_speed_vector, TWS_vector, TWD_vector, route_sailing_time, coordinate_sailing_time, datestamp = main(route_travel,iteration, date_of_simulation)
@@ -252,8 +253,9 @@ def simulation(csv,routenumber,interval):
 
         if iteration%10 == 0:
             print("progress is made, iteration:", iteration)
-
+        date_of_simulation = add_hours_to_date(date_of_simulation,hour_intervall)
     poor_sailing_speed = sum(poor_sailing_distance)/(sum(poor_sailing_time))
+
     print(f"Average speed sailing {csv} over {iteration} iterations is {np.average(VS_simulation_vector[0])}")
     print(f"Throughout all iterations, the vessel sails less than one knot for an average of {np.average(poor_sailing_time)} hours\n"
           f"this iteration is used to sail on average {np.average(poor_sailing_distance)} nautical miles\n"
@@ -565,13 +567,13 @@ print("Everything is working (17:34, 14/03")
 #runsimulation(3,1000)
 
 #runsimulation(4,1000)
-runsimulation(5,1000)
-runsimulation(6,1000)
-runsimulation(7,1000)
-runsimulation(8,1000)
-runsimulation(9,1000)
+#runsimulation(5,1000)
+#runsimulation(6,1000)
+#runsimulation(7,1000)
+#runsimulation(8,1000)
+#runsimulation(9,1000)
 runsimulation(10,1000)
-runsimulation(11,100)
+#runsimulation(11,100)
 #runsimulation(10,1000)
 
 #    Gotta read new weatherfiles <3
