@@ -65,7 +65,7 @@ def histogram(filename, title):
     #speeds_observed.append(df1["speed"].value_counts())
     #print(speeds_observed)
 
-    plt.hist(df1['speed'], edgecolor='black', range=[0,8], bins=8)
+    plt.hist(df1['speed'], edgecolor='black', range=[0,20], bins=20)
     plt.title(title)
     plt.xlabel('Speed [Knots]')
     plt.ylabel('Occurences')
@@ -82,4 +82,91 @@ Test = "Test"
 #histogram(mac_windows_file_handle('Output_files/Aalesund_Floro_reise', Aalesund_Floro))
 #histogram(mac_windows_file_handle('Output_files/Florø_Bergen/savespeed_FloroBergen.csv'), Floro_Bergen)
 #histogram(mac_windows_file_handle('Output_files/savespeed_TrondAales.csv'), Trond_Aalesund)
-#histogram(mac_windows_file_handle("Output_files/savespeed_TrondAales.csv"),Test)
+
+
+#histogram(mac_windows_file_handle("Output_files/Floro_port/TWS_Floro_port.csv"),Test)
+
+
+
+
+def plot_wind_data(filename):
+    # Read the CSV file with semicolon separator and comma as decimal separator
+    df = pd.read_csv(filename, sep=';', decimal=',')
+
+    # Convert wind speed values to knots
+    df['Wind speed'] = df['Wind speed'] * 1.94384
+
+    # Extract wind speed and direction columns and remove missing values
+    wind_speed = df['Wind speed'].dropna()
+    wind_dir = df['Wind direction'].dropna()
+
+    # Plot wind speed histogram
+    plt.hist(wind_speed, range=[0,20], bins=20)
+    plt.title('Wind Speed')
+    plt.xlabel('Speed (knots)')
+    plt.ylabel('Frequency')
+    plt.show()
+
+    # Plot wind direction histogram
+    plt.hist(wind_dir, range=[0,360], bins=36)
+    plt.title('Wind Direction')
+    plt.xlabel('Direction (degrees)')
+    plt.ylabel('Frequency')
+    plt.show()
+
+def histogramangle(filename, title):
+    """
+    :param filename: name of output file containing data to plot
+    :param title: title of histogram
+    :return: plots histogram of data
+    """
+    columns = ['number', 'Angle']
+    df1 = pd.read_csv(filename,header = None, names=columns)
+    #speeds_observed = []
+    #speeds_observed.append(df1["speed"].value_counts())
+    #print(speeds_observed)
+
+    plt.hist(df1['Angle'], edgecolor='black', range=[0,360], bins=36)
+    plt.title(title)
+    plt.xlabel('Angles')
+    plt.ylabel('Occurences')
+    plt.show()
+    return 0
+
+
+
+#histogramangle("Output_files/Floro_port/TWD_Floro_port.csv", Test)
+#plot_wind_data('Output_files/Floro_port/FloroPort_windspeed_winddirection.csv')
+
+
+
+
+# Read the data from the two CSV files into Pandas dataframes
+df1 = pd.read_csv('Output_files/Floro_port/FloroPort_windspeed_winddirection.csv', sep=';', decimal=',')
+df2 = pd.read_csv('Output_files/Floro_port/TWD_Floro_port.csv')
+
+# Convert the datetime column to a datetime object
+df1['DateTime'] = pd.to_datetime(df1['DateTime'])
+df2['DateTime'] = pd.to_datetime(df2['DateTime'])
+
+# Define the datetime period to plot (e.g., from January 1, 2022 to March 31, 2022)
+start_date = pd.to_datetime('2021-10-01')
+end_date = pd.to_datetime('2021-11-01')
+
+# Filter the dataframes to include only data within the datetime period
+df1 = df1.loc[(df1['DateTime'] >= start_date) & (df1['DateTime'] <= end_date)]
+df2 = df2.loc[(df2['DateTime'] >= start_date) & (df2['DateTime'] <= end_date)]
+
+# Plot the wind speed data from file 1 in blue
+plt.plot(df1['DateTime'], df1['Wind direction'], color='blue', label='File 1')
+
+# Plot the wind speed data from file 2 in red
+plt.plot(df2['DateTime'], df2['Wind direction'], color='red', label='File 2')
+
+# Set the axis labels and legend
+plt.xlabel('Datetime')
+plt.ylabel('Wind direction')
+plt.legend()
+
+# Show the plot
+plt.show()
