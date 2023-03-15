@@ -222,7 +222,7 @@ def simulation(csv,routenumber,interval):
     TWS_simulation_vector           = []
     TWD_simulation_vector           = []
     date_of_simulation = starttime
-    #    print(date_of_simulation)
+
     for iteration in range(0,int(time_of_simulation/hour_intervall)) : #repeating simulation for each hour_intervall through a year
 
         time_of_trip_1,tot_sailing_dist_1, poor_sailing_time_1, poor_sailing_distance_1, sailing_speed_vector, TWS_vector, TWD_vector, route_sailing_time, coordinate_sailing_time, datestamp = main(route_travel,iteration, date_of_simulation)
@@ -249,9 +249,9 @@ def simulation(csv,routenumber,interval):
                   f"[4] at an average speed of {poor_sailing_speed} knots")
             print(f"[5] The wind at this point in time was measured to be {TWS_simulation_vector[iteration]} with an AWA of {TWD_simulation_vector[iteration]}")
             print(f"[6] {datetime.now()},iteration is {iteration}")
-            print(f"[7] Datestamp of this point along rute: {datestamp}")
+            #print(f"[7] Datestamp of this point along rute: {datestamp[iteration]}")
 
-        if iteration%10 == 0:
+        if iteration%50 == 0:
             print("progress is made, iteration:", iteration)
         date_of_simulation = add_hours_to_date(date_of_simulation,hour_intervall)
     poor_sailing_speed = sum(poor_sailing_distance)/(sum(poor_sailing_time))
@@ -302,7 +302,7 @@ def simulation(csv,routenumber,interval):
     file_speed_Amst_New = mac_windows_file_handle("Output_files/Amsterdam_Newcastle/savespeed_Amsterdam_Newcastle.csv")
     file_TWS_Amst_New   = mac_windows_file_handle("Output_files/Amsterdam_Newcastle/saveTWD_Amsterdam_Newcastle.csv")
     file_TWD_Amst_New    = mac_windows_file_handle("Output_files/Amsterdam_Newcastle/saveTWS_Amsterdam_Newcastle.csv")
-    datestamp_file_6    = mac_windows_file_handle("Output_files/Datestamps/datestamp5.csv")
+    datestamp_file_6    = mac_windows_file_handle("Output_files/Datestamps/datestamp6.csv")
 
 
     #Danmark Amsterdam
@@ -333,14 +333,14 @@ def simulation(csv,routenumber,interval):
     file_speed_Aal_Dk   = mac_windows_file_handle("Output_files/Ålesund_Danmark/savespeed_Ålesund_Danmark.csv")
     file_TWS_Aal_Dk     = mac_windows_file_handle("Output_files/Ålesund_Danmark/saveTWD_Ålesund_Danmark.csv")
     file_TWD_Aal_Dk     = mac_windows_file_handle("Output_files/Ålesund_Danmark/saveTWS_Ålesund_Danmark.csv")
-    datestamp_file_10   = mac_windows_file_handle("Output_files/datestamp10.csv")
+    datestamp_file_10   = mac_windows_file_handle("Output_files/Datestamps/datestamp10.csv")
 
     #Floro port
 
-    file_speed_Floro_port   = mac_windows_file_handle("Output_files/savespeed_BrgStvg.csv")
-    file_TWS_Floro_port     = mac_windows_file_handle("Output_files/saveTWS_BergenStavanger.csv")
-    file_TWD_Floro_port     = mac_windows_file_handle("Output_files/saveTWD_BergenStavanger.csv")
-    datestamp_file_11       = mac_windows_file_handle("Output_files/datestamp4.csv")
+    file_speed_Floro_port   = mac_windows_file_handle("Output_files/Floro_port/savespeed_port.csv")
+    file_TWS_Floro_port     = mac_windows_file_handle("Output_files/Floro_port/TWD_Floro_port.csv")
+    file_TWD_Floro_port     = mac_windows_file_handle("Output_files/Floro_port/TWS_Floro_port.csv")
+    datestamp_file_11       = mac_windows_file_handle("Output_files/Datestamps/datestamp11.csv")
 
 
     #Write to files
@@ -441,7 +441,9 @@ def simulation(csv,routenumber,interval):
         write_to_file(TWS_simulation_vector,file_TWS_Floro_port)  #TWS vector file
         write_to_file(TWD_simulation_vector,file_TWD_Floro_port)  #TWD vector file
         write_to_file(datestamp_simulation_vector, datestamp_file_11)          #Datestamp file
-
+        add_timestamp_to_dataframe(file_speed_Floro_port, datestamp_file_11)
+        add_timestamp_to_dataframe(file_TWS_Floro_port, datestamp_file_11)
+        add_timestamp_to_dataframe(file_TWD_Floro_port, datestamp_file_11)
 
     return 0
 
@@ -529,13 +531,12 @@ def runsimulation(route, interval):
     if route == 10:
         print("Running simulation for route Ålesund_Danmark now")
         simulation(Aale_DK, route,interval)
-
         print("Simulation Ålesund to Danmark is now complete.\n")
 
     if route == 11:
-        print("Running simulation for route Ålesund_Danmark now")
-        simulation(Floro_port, interval)
-
+        print("Running simulation for route in florø port now")
+        simulation(Floro_port, route, interval)
+        print("Simulation for route in florø port isn ow colmplete")
 
 
     return 0
@@ -562,21 +563,19 @@ def test_func():
     return 0
 
 print("Everything is working (17:34, 14/03")
-#runsimulation(1,100)
-#runsimulation(2,100)
+#runsimulation(1,1000)
+#runsimulation(2,1000)
 #runsimulation(3,1000)
-
 #runsimulation(4,1000)
 #runsimulation(5,1000)
 #runsimulation(6,1000)
 #runsimulation(7,1000)
-#runsimulation(8,1000)
+runsimulation(8,1)
 #runsimulation(9,1000)
-runsimulation(10,1000)
-#runsimulation(11,100)
-#runsimulation(10,1000)
+runsimulation(10,1)
+#runsimulation(11,1000)
 
-#    Gotta read new weatherfiles <3
+
 
 print("Finished <3<3")
 
