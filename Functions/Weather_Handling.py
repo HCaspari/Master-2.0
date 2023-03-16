@@ -203,7 +203,7 @@ def getweather(tid,latitude, longditude):
         tid -= 17520
 
     if tid <= 8743:
-
+        tid -= 8743
 
         lat_pos = int((latitude-eastward_lat_1[0])*8)              #Access correct position in vector of north wind
         lon_pos = int((longditude-eastward_lon_1[0])*8)             #Access correct position in vector of east wind
