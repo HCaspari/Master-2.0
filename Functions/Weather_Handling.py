@@ -202,7 +202,7 @@ def getweather(tid,latitude, longditude):
     if tid >= 17520:  #if end of year 2 is reached while sailing, weatherdata from the beginning of year one is used
         tid -= 17520
 
-    if tid <= 8743:
+    if tid <= 8760:
 
 
         lat_pos = int((latitude-eastward_lat_1[0])*8)              #Access correct position in vector of north wind
@@ -229,7 +229,7 @@ def getweather(tid,latitude, longditude):
     #if tid ==
     else:
 
-        tid -=  8744        #indekserer tiden i andre filen fra start igjen
+        tid -=  8760        #indekserer tiden i andre filen fra start igjen
 
         lat_pos = int((latitude - eastward_lat_2[0]) * 8)  # Access correct position in vector of north wind
         lon_pos = int((longditude - eastward_lon_2[0]) * 8)  # Access correct position in vector of east wind
@@ -380,5 +380,5 @@ def add_hours_to_date(date,hours):
 #print("start of time 2,",add_hours_to_date(starttime,northward_time_2[0]/3600))
 #print("end of time 2,",add_hours_to_date(starttime,northward_time_2[-1]/3600))
 
-
-
+#starttime = datetime(2020,7,1,00,00,00)
+#print(add_hours_to_date(starttime,8760))

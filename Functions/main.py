@@ -224,7 +224,7 @@ def simulation(csv,routenumber,interval):
     TWD_simulation_vector           = []
     date_of_simulation = starttime
 
-    for iteration in range(0,int(time_of_simulation/hour_intervall)) : #repeating simulation for each hour_intervall through a year
+    for iteration in range(8700,int(time_of_simulation/hour_intervall)-1) : #repeating simulation for each hour_intervall through a year
 
         time_of_trip_1,tot_sailing_dist_1, poor_sailing_time_1, poor_sailing_distance_1, sailing_speed_vector, TWS_vector, TWD_vector, route_sailing_time, coordinate_sailing_time, datestamp = main(route_travel,iteration, date_of_simulation)
         time_of_trip[int(iteration)]            = time_of_trip_1
@@ -245,7 +245,7 @@ def simulation(csv,routenumber,interval):
             print(f"[2] total iteration sailed at less than 1 knot is {poor_sailing_time[iteration]}\n"
                   f"[3] this iteration is used to sail {poor_sailing_distance[iteration]} nm\n"
                   f"[4] at an average speed of {poor_sailing_speed} knots")
-            print(f"[5] The wind at this point in time was measured to be {TWS_simulation_vector[iteration]} with an AWA of {TWD_simulation_vector[iteration]}")
+            #print(f"[5] The wind at this point in time was measured to be {TWS_simulation_vector[iteration]} with an AWA of {TWD_simulation_vector[iteration]}")
             print(f"[6] {datetime.now()},iteration is {iteration}")
 
         if iteration%50 == 0:
@@ -569,8 +569,8 @@ print("Everything is working (1241, 16/03")
 #runsimulation(7,1000)
 #runsimulation(8,1)
 #runsimulation(9,1000)
-runsimulation(10,1)
-#runsimulation(11,1000)
+#runsimulation(10,1)
+runsimulation(11,1)
 
 print("Finished <3<3")
 
