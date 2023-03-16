@@ -202,7 +202,7 @@ def getweather(tid,latitude, longditude):
     if tid >= 17520:  #if end of year 2 is reached while sailing, weatherdata from the beginning of year one is used
         tid -= 17520
 
-    if tid <= 8760:
+    if tid <= 8742:
 
         lat_pos = int((latitude-eastward_lat_1[0])*8)              #Access correct position in vector of north wind
         lon_pos = int((longditude-eastward_lon_1[0])*8)             #Access correct position in vector of east wind
@@ -228,7 +228,7 @@ def getweather(tid,latitude, longditude):
     #if tid ==
     else:
 
-        tid -=  8760        #indekserer tiden i andre filen fra start igjen
+        tid -=  8743        #indekserer tiden i andre filen fra start igjen
 
         lat_pos = int((latitude - eastward_lat_2[0]) * 8)  # Access correct position in vector of north wind
         lon_pos = int((longditude - eastward_lon_2[0]) * 8)  # Access correct position in vector of east wind
@@ -237,6 +237,8 @@ def getweather(tid,latitude, longditude):
         WSE = dataset_EW_2["eastward_wind"][tid, lat_pos, lon_pos]
 
     return WSN,WSE
+
+
 
 #WSN_Test, WSE_test = getweather(0,61.60252347631243, 5.028807975745387)
 #print(f"Wsn is {WSN_Test}, and WSE is {WSE_test}")
@@ -372,10 +374,19 @@ def add_hours_to_date(date,hours):
 
 
 #print("XXXXXXXXXXXX")
+#starttime = northward_time_1[0]/3600
+#starttime = datetime(1990,1,1,00,00,00)
+
 #print("end of time 1 in hours",northward_time_1[-1]/3600)
 #print("start of time 2 in hours",northward_time_2[0]/3600)
 #print("start of time 1,",add_hours_to_date(starttime,northward_time_1[0]/3600))
+#print(f"add {(northward_time_1[-1]-northward_time_1[0])/3600} hours")
 #print("end of time 1,",add_hours_to_date(starttime,northward_time_1[-1]/3600))
+#print("start of time 2,",add_hours_to_date(starttime,northward_time_2[0]/3600))
+#print(f"add {(northward_time_2[-1]-northward_time_2[0])/3600} hours")
+#print("end of time 2,",add_hours_to_date(starttime,northward_time_2[-1]/3600))
+
+#print("add 8748 timer to start time 1,", add_hours_to_date(datetime(2020,7,1,18),8748))
 #print("start of time 2,",add_hours_to_date(starttime,northward_time_2[0]/3600))
 #print("end of time 2,",add_hours_to_date(starttime,northward_time_2[-1]/3600))
 

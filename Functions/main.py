@@ -224,7 +224,7 @@ def simulation(csv,routenumber,interval):
     TWD_simulation_vector           = []
     date_of_simulation = starttime
 
-    for iteration in range(8743,int(time_of_simulation/hour_intervall)) : #repeating simulation for each hour_intervall through a year
+    for iteration in range(0,int(time_of_simulation/hour_intervall)) : #repeating simulation for each hour_intervall through a year
 
         time_of_trip_1,tot_sailing_dist_1, poor_sailing_time_1, poor_sailing_distance_1, sailing_speed_vector, TWS_vector, TWD_vector, route_sailing_time, coordinate_sailing_time, datestamp = main(route_travel,iteration, date_of_simulation)
         time_of_trip[int(iteration)]            = time_of_trip_1
@@ -533,7 +533,7 @@ def runsimulation(route, interval):
     if route == 11:
         print("Running simulation for route in florø port now")
         simulation(Floro_port, route, interval)
-        print("Simulation for route in florø port isn ow colmplete")
+        print("Simulation for route in florø port is now colmplete")
 
 
     return 0
@@ -569,10 +569,39 @@ print("Everything is working (1241, 16/03")
 #runsimulation(7,1000)
 #runsimulation(8,1)
 #runsimulation(9,1000)
-#runsimulation(10,1)
-runsimulation(11,1)
+#runsimulation(11,1)
 
 print("Finished <3<3")
 
+def drop_duplicates():
+    # Read in the CSV file
+    df0 = pd.read_csv(mac_windows_file_handle('Output_files/Floro_port/TWS_Floro_port.csv'))
+    df1 = pd.read_csv(mac_windows_file_handle('Output_files/Floro_port/TWD_Floro_port.csv'))
 
-print("Bonus print: Mathias er digg, kl. 14.54, den 03032023")
+
+    # Drop every third row
+    df0.drop_duplicates(subset=[df0.columns[-1]], keep='last', inplace=True)
+    df1.drop_duplicates(subset=[df1.columns[-1]], keep='last', inplace=True)
+
+    # Write the updated dataframe back to a new CSV file
+    df0.to_csv(mac_windows_file_handle('Output_files/Floro_port/TWS_Floro_port.csv'), index=False)
+    df1.to_csv(mac_windows_file_handle('Output_files/Floro_port/TWD_Floro_port.csv'), index=False)
+
+def reset_index():
+    # Read in the CSV file
+    df = pd.read_csv(mac_windows_file_handle('Output_files/Floro_port/TWS_Floro_port.csv'))
+    df1 = pd.read_csv(mac_windows_file_handle('Output_files/Floro_port/TWS_Floro_port.csv'))
+
+    # Reset the index and rename the first column to 'index'
+    index = []
+    for i in range(len(df)):
+        index.append(i)
+
+    df.insert(loc=0, column='new_column_name', value=index)
+    df1.insert(loc=0, column='new_column_name', value=index)
+    # Write the updated dataframe back to a new CSV file
+    df.to_csv(mac_windows_file_handle('Output_files/Floro_port/TWS_Floro_port.csv'), index=False)
+    df1.to_csv(mac_windows_file_handle('Output_files/Floro_port/TWS_Floro_port.csv'), index=False)
+
+reset_index()
+print("Bonus print: Mathias er digg, kl. 1535, den 16032023")
