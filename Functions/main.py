@@ -114,6 +114,7 @@ def main(route, iteration, date_of_simulation):
     #np.append(tot_sailing_dist,[1])
 
     for i in range(len(route)-1): #create itteration through route
+
         position_first      = route[i]
         position_next       = route[i+1]
         sailing_distance    = round(geopy.distance.geodesic(position_first,position_next).nautical,3)    #In Nautical Miles
@@ -226,9 +227,6 @@ def simulation(csv,routenumber,interval):
     for iteration in range(0,int(time_of_simulation/hour_intervall)) : #repeating simulation for each hour_intervall through a year
 
         time_of_trip_1,tot_sailing_dist_1, poor_sailing_time_1, poor_sailing_distance_1, sailing_speed_vector, TWS_vector, TWD_vector, route_sailing_time, coordinate_sailing_time, datestamp = main(route_travel,iteration, date_of_simulation)
-
-
-        #adding data to second column
         time_of_trip[int(iteration)]            = time_of_trip_1
         tot_sailing_dist[int(iteration)]        = tot_sailing_dist_1
         poor_sailing_time[int(iteration)]       = poor_sailing_time_1
@@ -238,7 +236,7 @@ def simulation(csv,routenumber,interval):
         TWD_simulation_vector.extend(TWD_vector)
         datestamp_simulation_vector.extend(datestamp)
 
-        if iteration%100 == 0 and iteration != 0 or iteration == 1:
+        if iteration%1000 == 0 and iteration != 0 or iteration == 1:
             poor_sailing_speed = 0
             if poor_sailing_time_1 > 0:
                 poor_sailing_speed = poor_sailing_distance_1 / poor_sailing_time_1
@@ -249,7 +247,6 @@ def simulation(csv,routenumber,interval):
                   f"[4] at an average speed of {poor_sailing_speed} knots")
             print(f"[5] The wind at this point in time was measured to be {TWS_simulation_vector[iteration]} with an AWA of {TWD_simulation_vector[iteration]}")
             print(f"[6] {datetime.now()},iteration is {iteration}")
-            #print(f"[7] Datestamp of this point along rute: {datestamp[iteration]}")
 
         if iteration%50 == 0:
             print("progress is made, iteration:", iteration)
@@ -562,7 +559,7 @@ def test_func():
     print("apparent wind angle using function from sediek",sediek)
     return 0
 
-print("Everything is working (17:34, 14/03")
+print("Everything is working (1241, 16/03")
 #runsimulation(1,1000)
 #runsimulation(2,1000)
 #runsimulation(3,1000)
@@ -570,12 +567,10 @@ print("Everything is working (17:34, 14/03")
 #runsimulation(5,1000)
 #runsimulation(6,1000)
 #runsimulation(7,1000)
-runsimulation(8,1)
+#runsimulation(8,1)
 #runsimulation(9,1000)
 runsimulation(10,1)
 #runsimulation(11,1000)
-
-
 
 print("Finished <3<3")
 
