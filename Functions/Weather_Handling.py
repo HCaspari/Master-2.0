@@ -5,6 +5,7 @@ import netCDF4 as nc #read .nc files with weather data
 from datetime import datetime, timedelta, date
 from route_handling import mac_windows_file_handle
 
+
 #Input stats
 mean_wind_speed = 10 #knots
 mean_wind_direction = 90 #degrees
@@ -85,8 +86,17 @@ eastward_wind_2   = dataset_EW_2.variables["eastward_wind"]
 eastward_time_2   = dataset_EW_2.variables["time"]
 eastward_lat_2    = dataset_EW_2.variables["lat"]
 eastward_lon_2    = dataset_EW_2.variables["lon"]
-#print(northward_lon[:])
-#print(northward_lat[:])
+
+
+#print("first 1 lat",northward_lat_1[0])
+#print("last 1 lat",northward_lat_1[-1])
+#print("first 1 lon",northward_lon_1[0])
+#print("last 1 lon",northward_lon_1[-1])
+#print("first 2 lat",northward_lat_2[0])
+#print("last 2 lat",northward_lat_2[-1])
+#print("first 2 lon",northward_lon_2[0])
+#print("last 2 lon",northward_lon_2[-1])
+
 
 
 #print(f"The size of Eastward time_1 is: {eastward_time_1.shape}")
@@ -215,7 +225,11 @@ def getweather(tid,latitude, longditude):
 
         WSN = dataset_NW_1["northward_wind"][tid,lat_pos,lon_pos]
         WSE = dataset_EW_1["eastward_wind"][tid,lat_pos,lon_pos]
+
+    #if tid ==
     else:
+
+        tid -=  8744        #indekserer tiden i andre filen fra start igjen
 
         lat_pos = int((latitude - eastward_lat_2[0]) * 8)  # Access correct position in vector of north wind
         lon_pos = int((longditude - eastward_lon_2[0]) * 8)  # Access correct position in vector of east wind
@@ -225,8 +239,9 @@ def getweather(tid,latitude, longditude):
 
     return WSN,WSE
 
-WSN_Test, WSE_test = getweather(0,61.60252347631243, 5.028807975745387)
-print(f"Wsn is {WSN_Test}, and WSE is {WSE_test}")
+#WSN_Test, WSE_test = getweather(0,61.60252347631243, 5.028807975745387)
+#print(f"Wsn is {WSN_Test}, and WSE is {WSE_test}")
+
 
 
 def datetime_seconds(dtime):
@@ -319,3 +334,51 @@ def add_hours_to_date(date,hours):
     # add the specified number of hours to the input date
     new_datetime = date_start + timedelta(hours=hours)
     return new_datetime
+
+#starttime = datetime(2020,7,1,00,00,00)
+#tid = 8785.57
+#latitude = 46
+#longitude = 126
+#print(len(northward_lat_2))
+#print(len(eastward_lat_2))
+#print(len(northward_lon_2))
+#print(len(eastward_lon_2))
+#print(northward_time_2[:])
+#print(add_hours_to_date(starttime,tid))
+#WSN = dataset_NW_2["northward_wind"][tid, lat_pos, lon_pos]
+#WSE = dataset_EW_2["eastward_wind"][tid, lat_pos, lon_pos]
+
+#getweather(tid,latitude,longitude)
+#for i in range(100000):
+#   WSN = dataset_NW_2["northward_wind"][i, lat_pos, lon_pos]
+#    WSE = dataset_EW_2["eastward_wind"][i, lat_pos, lon_pos]
+#    print(f"works with tid =  {i}")
+
+#WSN = dataset_NW_2["northward_wind"][41.5699, lat_pos, lon_pos]
+#WSE = dataset_EW_2["eastward_wind"][41.5699, lat_pos, lon_pos]
+
+#print("time dif time 1", northward_time_1[1]-northward_time_1[0])
+#print("time dif time 2", northward_time_2[1]-northward_time_2[0])
+#print("first time element 1",northward_time_1[0])
+#print("last time element 1",northward_time_1[-1])
+#print("first element time 2", northward_time_2[0])
+#print("time dif end 1 start 2", northward_time_2[0]-northward_time_1[-1])
+#print("XXXXXXXXXXXX")
+
+
+#starttime = datetime(1990,1,1,00,00,00)
+
+#starttime_data_2 = add_hours_to_date(starttime,(northward_time_1[-1]/3600))#
+#print("start2",starttime_data_2)
+
+
+#print("XXXXXXXXXXXX")
+#print("end of time 1 in hours",northward_time_1[-1]/3600)
+#print("start of time 2 in hours",northward_time_2[0]/3600)
+#print("start of time 1,",add_hours_to_date(starttime,northward_time_1[0]/3600))
+#print("end of time 1,",add_hours_to_date(starttime,northward_time_1[-1]/3600))
+#print("start of time 2,",add_hours_to_date(starttime,northward_time_2[0]/3600))
+#print("end of time 2,",add_hours_to_date(starttime,northward_time_2[-1]/3600))
+
+
+
