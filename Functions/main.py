@@ -245,7 +245,7 @@ def simulation(csv,routenumber,interval):
             print(f"[2] total iteration sailed at less than 1 knot is {poor_sailing_time[iteration]}\n"
                   f"[3] this iteration is used to sail {poor_sailing_distance[iteration]} nm\n"
                   f"[4] at an average speed of {poor_sailing_speed} knots")
-            print(f"[5] The wind at this point in time was measured to be {TWS_simulation_vector[iteration]} with an AWA of {TWD_simulation_vector[iteration]}")
+            #print(f"[5] The wind at this point in time was measured to be {TWS_simulation_vector[iteration]} with an AWA of {TWD_simulation_vector[iteration]}")
             print(f"[6] {datetime.now()},iteration is {iteration}")
 
         if iteration%50 == 0:
