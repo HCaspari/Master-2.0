@@ -223,8 +223,11 @@ def simulation(csv,routenumber,interval):
     TWS_simulation_vector           = []
     TWD_simulation_vector           = []
     date_of_simulation = starttime
+    poor_sailing_speed = 0
+
 
     for iteration in range(0,int(time_of_simulation/hour_intervall)) : #repeating simulation for each hour_intervall through a year
+    #for iteration in range(8400,8600) : #repeating simulation for each hour_intervall through a year
 
         time_of_trip_1,tot_sailing_dist_1, poor_sailing_time_1, poor_sailing_distance_1, sailing_speed_vector, TWS_vector, TWD_vector, route_sailing_time, coordinate_sailing_time, datestamp = main(route_travel,iteration, date_of_simulation)
         time_of_trip[int(iteration)]            = time_of_trip_1
@@ -236,22 +239,24 @@ def simulation(csv,routenumber,interval):
         TWD_simulation_vector.extend(TWD_vector)
         datestamp_simulation_vector.extend(datestamp)
 
-        if iteration%1000 == 0 and iteration != 0 or iteration == 1:
-            poor_sailing_speed = 0
-            if poor_sailing_time_1 > 0:
-                poor_sailing_speed = poor_sailing_distance_1 / poor_sailing_time_1
-            print(f"[1] speed sailing the distance of {tot_sailing_dist[iteration]} nm\n"
-                  f" is {np.average(sailing_speed_vector[0:iteration])} knots")
-            print(f"[2] total iteration sailed at less than 1 knot is {poor_sailing_time[iteration]}\n"
-                  f"[3] this iteration is used to sail {poor_sailing_distance[iteration]} nm\n"
-                  f"[4] at an average speed of {poor_sailing_speed} knots")
-            #print(f"[5] The wind at this point in time was measured to be {TWS_simulation_vector[iteration]} with an AWA of {TWD_simulation_vector[iteration]}")
-            print(f"[6] {datetime.now()},iteration is {iteration}")
+#Komenterer ut dette når jeg simultankjører
+        #if iteration%1000 == 0 and iteration != 0 or iteration == 1:
+        #    poor_sailing_speed = 0
+        #    if poor_sailing_time_1 > 0:
+        #        poor_sailing_speed = poor_sailing_distance_1 / poor_sailing_time_1
+        #    print(f"[1] speed sailing the distance of {tot_sailing_dist[iteration]} nm\n"
+        #          f" is {np.average(sailing_speed_vector[0:iteration])} knots")
+        #    print(f"[2] total iteration sailed at less than 1 knot is {poor_sailing_time[iteration]}\n"
+        #          f"[3] this iteration is used to sail {poor_sailing_distance[iteration]} nm\n"
+        #          f"[4] at an average speed of {poor_sailing_speed} knots")
+        #    #print(f"[5] The wind at this point in time was measured to be {TWS_simulation_vector[iteration]} with an AWA of {TWD_simulation_vector[iteration]}")
+        #    print(f"[6] {datetime.now()},iteration is {iteration}")
 
-        if iteration%50 == 0:
-            print("progress is made, iteration:", iteration)
+        if iteration%500 == 0:
+            print("progress is made, iteration:", iteration, "on route", routenumber)
         date_of_simulation = add_hours_to_date(date_of_simulation,hour_intervall)
-    poor_sailing_speed = sum(poor_sailing_distance)/(sum(poor_sailing_time))
+
+
 
     print(f"Average speed sailing {csv} over {iteration} iterations is {np.average(VS_simulation_vector[0])}")
     print(f"Throughout all iterations, the vessel sails less than one knot for an average of {np.average(poor_sailing_time)} hours\n"
@@ -533,7 +538,7 @@ def runsimulation(route, interval):
     if route == 11:
         print("Running simulation for route in florø port now")
         simulation(Floro_port, route, interval)
-        print("Simulation for route in florø port is now colmplete")
+        print("Simulation for route in florø port is now complete")
 
 
     return 0
@@ -559,49 +564,52 @@ def test_func():
     print("apparent wind angle using function from sediek",sediek)
     return 0
 
-print("Everything is working (1241, 16/03")
-#runsimulation(1,1000)
-#runsimulation(2,1000)
-#runsimulation(3,1000)
-#runsimulation(4,1000)
-#runsimulation(5,1000)
-#runsimulation(6,1000)
-#runsimulation(7,1000)
-#runsimulation(8,1)
-#runsimulation(9,1000)
-runsimulation(11,1)
-
-print("Finished <3<3")
-
-def drop_duplicates():
-    # Read in the CSV file
-    df0 = pd.read_csv(mac_windows_file_handle('Output_files/Floro_port/TWS_Floro_port.csv'))
-    df1 = pd.read_csv(mac_windows_file_handle('Output_files/Floro_port/TWD_Floro_port.csv'))
 
 
-    # Drop every third row
-    df0.drop_duplicates(subset=[df0.columns[-1]], keep='last', inplace=True)
-    df1.drop_duplicates(subset=[df1.columns[-1]], keep='last', inplace=True)
 
-    # Write the updated dataframe back to a new CSV file
-    df0.to_csv(mac_windows_file_handle('Output_files/Floro_port/TWS_Floro_port.csv'), index=False)
-    df1.to_csv(mac_windows_file_handle('Output_files/Floro_port/TWD_Floro_port.csv'), index=False)
-
-def reset_index():
-    # Read in the CSV file
-    df = pd.read_csv(mac_windows_file_handle('Output_files/Floro_port/TWS_Floro_port.csv'))
-    df1 = pd.read_csv(mac_windows_file_handle('Output_files/Floro_port/TWS_Floro_port.csv'))
-
-    # Reset the index and rename the first column to 'index'
-    index = []
-    for i in range(len(df)):
-        index.append(i)
-
-    df.insert(loc=0, column='new_column_name', value=index)
-    df1.insert(loc=0, column='new_column_name', value=index)
-    # Write the updated dataframe back to a new CSV file
-    df.to_csv(mac_windows_file_handle('Output_files/Floro_port/TWS_Floro_port.csv'), index=False)
-    df1.to_csv(mac_windows_file_handle('Output_files/Floro_port/TWS_Floro_port.csv'), index=False)
 
 #reset_index()
+print("Everything is working 1241, 16/03")
+#steps = 1
+#runsimulation(1,steps)
+##runsimulation(2,steps)
+#runsimulation(3,steps)
+#runsimulation(4,steps)
+#runsimulation(5,steps)
+#runsimulation(6,steps)
+#runsimulation(7,steps)
+#runsimulation(8,steps)
+#runsimulation(9,steps)
+#runsimulation(10,steps)
+#runsimulation(11,steps)
+
+
+import threading
+
+def runsimulation_multiple(a, b):
+    runsimulation(a,b)
+    print(f"Simulation of route{a} every {b} iteration is completed")
+def run_multiple():
+    j = 100
+    inputs = [(1,j),(2,j), (3,j), (4,j), (5,j), (6,j), (7,j), (8,j), (9,j),(10,j), (11,j)]
+
+    threads = []
+
+    for input in inputs:
+        thread = threading.Thread(target=runsimulation_multiple, args=input)
+        thread.start()
+        threads.append(thread)
+
+    for thread in threads:
+        thread.join()
+    return 0
+run_multiple()
+
+
+
+
+
+print("Finished <3<3")
 print("Bonus print: Mathias er digg, kl. 1035, den 17032023")
+
+

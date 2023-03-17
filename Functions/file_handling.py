@@ -246,6 +246,48 @@ def create_array_with_datetime():
 
     return 0
 
+
+
+def drop_duplicates():
+    """
+    # Read in the CSV file
+
+    :return: 0
+    """
+    df0 = pd.read_csv(mac_windows_file_handle('Output_files/Floro_port/TWS_Floro_port.csv'))
+    df1 = pd.read_csv(mac_windows_file_handle('Output_files/Floro_port/TWD_Floro_port.csv'))
+
+
+    # Drop every third row
+    df0.drop_duplicates(subset=[df0.columns[-1]], keep='last', inplace=True)
+    df1.drop_duplicates(subset=[df1.columns[-1]], keep='last', inplace=True)
+
+    # Write the updated dataframe back to a new CSV file
+    df0.to_csv(mac_windows_file_handle('Output_files/Floro_port/TWS_Floro_port.csv'), index=False)
+    df1.to_csv(mac_windows_file_handle('Output_files/Floro_port/TWD_Floro_port.csv'), index=False)
+
+
+def reset_index():
+    """
+    resets index of csv to 1
+    :return: 0
+    """
+    # Read in the CSV file
+    df = pd.read_csv(mac_windows_file_handle('Output_files/Floro_port/TWS_Floro_port.csv'))
+    df1 = pd.read_csv(mac_windows_file_handle('Output_files/Floro_port/TWS_Floro_port.csv'))
+
+    # Reset the index and rename the first column to 'index'
+    index = []
+    for i in range(len(df)):
+        index.append(i)
+
+    df.insert(loc=0, column='new_column_name', value=index)
+    df1.insert(loc=0, column='new_column_name', value=index)
+    # Write the updated dataframe back to a new CSV file
+    df.to_csv(mac_windows_file_handle('Output_files/Floro_port/TWS_Floro_port.csv'), index=False)
+    df1.to_csv(mac_windows_file_handle('Output_files/Floro_port/TWS_Floro_port.csv'), index=False)
+
+
 #In this example, we first define a numpy array data with shape (3,2).
 # Then, we create a datetime object for today's date and time using the
 # datetime.datetime.now() function.
