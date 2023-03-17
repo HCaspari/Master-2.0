@@ -569,7 +569,7 @@ print("Everything is working (1241, 16/03")
 #runsimulation(7,1000)
 #runsimulation(8,1)
 #runsimulation(9,1000)
-#runsimulation(11,1)
+runsimulation(11,1)
 
 print("Finished <3<3")
 
@@ -603,5 +603,5 @@ def reset_index():
     df.to_csv(mac_windows_file_handle('Output_files/Floro_port/TWS_Floro_port.csv'), index=False)
     df1.to_csv(mac_windows_file_handle('Output_files/Floro_port/TWS_Floro_port.csv'), index=False)
 
-reset_index()
-print("Bonus print: Mathias er digg, kl. 1535, den 16032023")
+#reset_index()
+print("Bonus print: Mathias er digg, kl. 1035, den 17032023")
