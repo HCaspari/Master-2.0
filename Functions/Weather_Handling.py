@@ -392,3 +392,5 @@ def add_hours_to_date(date,hours):
 
 #starttime = datetime(2020,7,1,00,00,00)
 #print(add_hours_to_date(starttime,8760))
+
+#Hei
