@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 import datetime
+
+import csv
 from route_handling import mac_windows_file_handle
 
 
@@ -287,6 +289,29 @@ def reset_index():
     df.to_csv(mac_windows_file_handle('Output_files/Floro_port/TWS_Floro_port.csv'), index=False)
     df1.to_csv(mac_windows_file_handle('Output_files/Floro_port/TWS_Floro_port.csv'), index=False)
 
+def flip_route(csv_file_old_route,csv_file_new_route):
+    # Set the input and output file paths
+    input_file = str(csv_file_old_route)
+    output_file = str(csv_file_new_route)
+
+    # Open the input CSV file and read the data into a list
+    with open(input_file, "r") as f:
+        reader = csv.reader(f)
+        data = list(reader)
+
+    # Loop through the rows in the data list and flip the value in the specified column
+    for row in data:
+        for i in range(len(row)):
+            row[i] = str(row[i])
+
+    # Open the output CSV file and write the modified data to it
+    with open(output_file, "w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerows(["position","latitude", "longitude"])
+        writer.writerows(data)
+
+
+flip_route("../Functions/testVS.csv", "../Functions/testVS2.csv")
 
 #In this example, we first define a numpy array data with shape (3,2).
 # Then, we create a datetime object for today's date and time using the
