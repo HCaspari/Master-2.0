@@ -65,7 +65,7 @@ def histogram(filename, title):
     #speeds_observed.append(df1["speed"].value_counts())
     #print(speeds_observed)
 
-    plt.hist(df1['speed'], edgecolor='black', range=[0,20], bins=20)
+    plt.hist(df1['speed'], edgecolor='black', range=[0,10], bins=10)
     plt.title(title)
     plt.xlabel('Speed [Knots]')
     plt.ylabel('Occurences')
@@ -120,6 +120,7 @@ def histogramangle(filename, title):
     :param title: title of histogram
     :return: plots histogram of data
     """
+
     columns = ['number', 'Angle']
     df1 = pd.read_csv(filename,header = None, names=columns)
     #speeds_observed = []
@@ -138,35 +139,42 @@ def histogramangle(filename, title):
 #histogramangle("Output_files/Floro_port/TWD_Floro_port.csv", Test)
 #plot_wind_data('Output_files/Floro_port/FloroPort_windspeed_winddirection.csv')
 
+filnavn = "Output_files/Newcastle_Aberdeen/SS_Newcastle_Aberdeen.csv"
+filnavn2 = "Output_files/Færøyene_Ålesund/savespeed_Færøyene_Ålesund.csv"
+navn    = "newcastle_aberdeen"
+navn2   = "Færøyene Ålesund"
 
+#histogram(mac_windows_file_handle(filnavn),navn)
+histogram(mac_windows_file_handle(filnavn2),navn2)
 
+def søppel():
+    # Read the data from the two CSV files into Pandas dataframes
+    df1 = pd.read_csv('Output_files/Floro_port/FloroPort_windspeed_winddirection.csv', sep=';', decimal=',')
+    df2 = pd.read_csv('Output_files/Floro_port/TWD_Floro_port.csv')
 
-# Read the data from the two CSV files into Pandas dataframes
-df1 = pd.read_csv('Output_files/Floro_port/FloroPort_windspeed_winddirection.csv', sep=';', decimal=',')
-df2 = pd.read_csv('Output_files/Floro_port/TWD_Floro_port.csv')
+    # Convert the datetime column to a datetime object
+    df1['DateTime'] = pd.to_datetime(df1['DateTime'])
+    df2['DateTime'] = pd.to_datetime(df2['DateTime'])
 
-# Convert the datetime column to a datetime object
-df1['DateTime'] = pd.to_datetime(df1['DateTime'])
-df2['DateTime'] = pd.to_datetime(df2['DateTime'])
+    # Define the datetime period to plot (e.g., from January 1, 2022 to March 31, 2022)
+    start_date = pd.to_datetime('2021-10-01')
+    end_date = pd.to_datetime('2021-11-01')
 
-# Define the datetime period to plot (e.g., from January 1, 2022 to March 31, 2022)
-start_date = pd.to_datetime('2021-10-01')
-end_date = pd.to_datetime('2021-11-01')
+    # Filter the dataframes to include only data within the datetime period
+    df1 = df1.loc[(df1['DateTime'] >= start_date) & (df1['DateTime'] <= end_date)]
+    df2 = df2.loc[(df2['DateTime'] >= start_date) & (df2['DateTime'] <= end_date)]
 
-# Filter the dataframes to include only data within the datetime period
-df1 = df1.loc[(df1['DateTime'] >= start_date) & (df1['DateTime'] <= end_date)]
-df2 = df2.loc[(df2['DateTime'] >= start_date) & (df2['DateTime'] <= end_date)]
+    # Plot the wind speed data from file 1 in blue
+    plt.plot(df1['DateTime'], df1['Wind direction'], color='blue', label='File 1')
 
-# Plot the wind speed data from file 1 in blue
-plt.plot(df1['DateTime'], df1['Wind direction'], color='blue', label='File 1')
+    # Plot the wind speed data from file 2 in red
+    plt.plot(df2['DateTime'], df2['Wind direction'], color='red', label='File 2')
 
-# Plot the wind speed data from file 2 in red
-plt.plot(df2['DateTime'], df2['Wind direction'], color='red', label='File 2')
+    # Set the axis labels and legend
+    plt.xlabel('Datetime')
+    plt.ylabel('Wind direction')
+    plt.legend()
 
-# Set the axis labels and legend
-plt.xlabel('Datetime')
-plt.ylabel('Wind direction')
-plt.legend()
-
-# Show the plot
-plt.show()
+    # Show the plot
+    plt.show()
+    return 0

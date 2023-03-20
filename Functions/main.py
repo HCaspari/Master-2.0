@@ -252,7 +252,7 @@ def simulation(csv,routenumber,interval):
         #    #print(f"[5] The wind at this point in time was measured to be {TWS_simulation_vector[iteration]} with an AWA of {TWD_simulation_vector[iteration]}")
         #    print(f"[6] {datetime.now()},iteration is {iteration}")
 
-        if iteration%500 == 0:
+        if iteration%100 == 0:
             print("progress is made, iteration:", iteration, "on route", routenumber)
         date_of_simulation = add_hours_to_date(date_of_simulation,hour_intervall)
 
@@ -466,6 +466,7 @@ def runsimulation(route, interval):
                         8 runs Færøyene Ålesund
                         9 runs Newcastle Aberdeen
                         10 runs Ålesund Danmark
+                        11 runds floro port
         :param interval: At what time interval do we run simulation
         :return: saved files with simulation results
         """
@@ -570,9 +571,9 @@ def test_func():
 
 #reset_index()
 print("Everything is working 1241, 16/03")
-#steps = 1
-#runsimulation(1,steps)
-##runsimulation(2,steps)
+steps = 1
+runsimulation(1,steps)
+#runsimulation(2,steps)
 #runsimulation(3,steps)
 #runsimulation(4,steps)
 #runsimulation(5,steps)
@@ -581,7 +582,7 @@ print("Everything is working 1241, 16/03")
 #runsimulation(8,steps)
 #runsimulation(9,steps)
 #runsimulation(10,steps)
-#runsimulation(11,steps)
+runsimulation(11,steps)
 
 
 import threading
@@ -603,13 +604,13 @@ def run_multiple():
     for thread in threads:
         thread.join()
     return 0
-run_multiple()
+#run_multiple()
 
 
 
 
 
 print("Finished <3<3")
-print("Bonus print: Mathias er digg, kl. 1035, den 17032023")
+print("Bonus print: Mathias er digg, kl. 1112, den 20032023")
 
 

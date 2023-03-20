@@ -6,6 +6,7 @@ from Weather_Handling import getweather, Apparent_wind_angle, Apparent_Wind_Spee
 from pathlib import PureWindowsPath, Path
 
 
+
 filename = "../env/position_array"  # file containing position array of route
 position_array = read_position_vect_from_file(filename) # reads said file
 
@@ -88,6 +89,35 @@ def start_from_files():
 
     return 0
 time_Vector = [0,1]
+
+
+def create_routes():
+
+    route_DK_Stav   = auto_create_Route(Danmark,Stavanger,Mid_Danmark_stvg)
+    route_Amst_New  = auto_create_Route(Amsterdam,Newcastle)
+    route_Dk_Amst   = auto_create_Route(Danmark,Amsterdam)
+    route_New_Aber  = auto_create_Route(Newcastle,Aberdeen)
+    route_Aber_Faer  = auto_create_Route(Aberdeen,Færøyene,Midpoint_Fa_Ab)
+    route_Faer_Aales  = auto_create_Route(Færøyene,Aalesund)
+    route_Aales_Dk   = auto_create_Route(Aalesund,Danmark, Midpoint_2_Dan_Aal, Midpoint_1_Dan_Aal)
+
+    filename_DK_Stav    = mac_windows_file_handle("Route_data/Danmark_Stavanger_Route/Route_Danmark_Stavanger.csv")
+    filename_Amst_New   = mac_windows_file_handle("Route_data/Amsterdam_Newcastle_Route/Route_Amsterdam_Newcastle.csv")
+    filename_Dk_Amst    = mac_windows_file_handle("Route_data/Danmark_Amsterdam_Route/Route_Danmark_Amsterdam.csv")
+    filename_Faer_Aal     = mac_windows_file_handle("Route_data/Færøyene_Ålesund_Route/Route_Færøyene_Ålesund.csv")
+    filename_New_Aber   = mac_windows_file_handle("Route_data/Newcastle_Aberdeen_Route/Route_Newcastle_Aberdeen.csv")
+    filename_Aal_Dk      = mac_windows_file_handle("Route_data/Ålesund_Danmark_Route/Route_Ålesund_Florø.csv")
+    filename_Aber_Faer   = mac_windows_file_handle("Route_data/Aberdeen_Færøyene_Route/Route_Aberdeen_Færøyene.csv")
+
+    write_to_file(route_Aber_Faer,filename_Aber_Faer)
+    write_to_file(route_DK_Stav,filename_DK_Stav)
+    write_to_file(route_Amst_New,filename_Amst_New)
+    write_to_file(route_Dk_Amst,filename_Dk_Amst)
+    write_to_file(route_New_Aber,filename_New_Aber)
+    write_to_file(route_Faer_Aales,filename_Faer_Aal)
+    write_to_file(route_Aales_Dk,filename_Aal_Dk)
+
+    return route_Aber_Faer,route_Faer_Aales,route_Aales_Dk,route_Dk_Amst,route_DK_Stav,route_New_Aber,route_Amst_New
 
 
 

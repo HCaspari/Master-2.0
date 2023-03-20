@@ -1,17 +1,8 @@
 import math
 import pandas as pd
-#from pandas import DataFrame
-#import random
+import csv
+import os
 import numpy as np
-import matplotlib.pyplot as plt
-import geopy.distance #package to calculate distance between two lat/lon points
-#from env.old_code.MetoceanDownloader import MetoceanDownloader
-import netCDF4 as nc #read .nc files with weather data
-from numpy.ma.core import MaskedConstant
-from scipy.interpolate import interp1d
-from bisect import bisect_left
-from datetime import datetime, timedelta, date
-#import searoute as sr
 
 import folium as folium
 from geopy.distance import geodesic
@@ -380,42 +371,16 @@ Midpoint_1_Dan_Aal  = (60.44513450388027, 3.418535867789226)
 Midpoint_2_Dan_Aal  = (62.324854695720006, 5.0124722561975235)
 
 
-###
 #to create route:
-#1. Create empty route file .csv
-#2. Create empty files for storing Sailing speed, TWD, and TWS
+#1. Run create_folder_with_files(Route_name,directory_path)
+#   Directory path is usually = "C:\\Users\\haako\\Documents\\10. Semester\\MASTAH\\Master-2.0\\Output_files"
 #3. See if intermediate points are needed
 #4. run route_start_end = auto_create_route(Startcoordinate, endcoordinate, optional midcoordinate 1, optional midcoordinate 2)
 #5. run write_to_file(route_start_end), this writes route coordinates to file
 #6. run main(routename, simulation count)
 
-def create_routes():
 
-    route_DK_Stav   = auto_create_Route(Danmark,Stavanger,Mid_Danmark_stvg)
-    route_Amst_New  = auto_create_Route(Amsterdam,Newcastle)
-    route_Dk_Amst   = auto_create_Route(Danmark,Amsterdam)
-    route_New_Aber  = auto_create_Route(Newcastle,Aberdeen)
-    route_Aber_Faer  = auto_create_Route(Aberdeen,Færøyene,Midpoint_Fa_Ab)
-    route_Faer_Aales  = auto_create_Route(Færøyene,Aalesund)
-    route_Aales_Dk   = auto_create_Route(Aalesund,Danmark, Midpoint_2_Dan_Aal, Midpoint_1_Dan_Aal)
 
-    filename_DK_Stav    = mac_windows_file_handle("Route_data/Danmark_Stavanger_Route/Route_Danmark_Stavanger.csv")
-    filename_Amst_New   = mac_windows_file_handle("Route_data/Amsterdam_Newcastle_Route/Route_Amsterdam_Newcastle.csv")
-    filename_Dk_Amst    = mac_windows_file_handle("Route_data/Danmark_Amsterdam_Route/Route_Danmark_Amsterdam.csv")
-    filename_Faer_Aal     = mac_windows_file_handle("Route_data/Færøyene_Ålesund_Route/Route_Færøyene_Ålesund.csv")
-    filename_New_Aber   = mac_windows_file_handle("Route_data/Newcastle_Aberdeen_Route/Route_Newcastle_Aberdeen.csv")
-    filename_Aal_Dk      = mac_windows_file_handle("Route_data/Ålesund_Danmark_Route/Route_Ålesund_Florø.csv")
-    filename_Aber_Faer   = mac_windows_file_handle("Route_data/Aberdeen_Færøyene_Route/Route_Aberdeen_Færøyene.csv")
-
-    write_to_file(route_Aber_Faer,filename_Aber_Faer)
-    write_to_file(route_DK_Stav,filename_DK_Stav)
-    write_to_file(route_Amst_New,filename_Amst_New)
-    write_to_file(route_Dk_Amst,filename_Dk_Amst)
-    write_to_file(route_New_Aber,filename_New_Aber)
-    write_to_file(route_Faer_Aales,filename_Faer_Aal)
-    write_to_file(route_Aales_Dk,filename_Aal_Dk)
-
-    return route_Aber_Faer,route_Faer_Aales,route_Aales_Dk,route_Dk_Amst,route_DK_Stav,route_New_Aber,route_Amst_New
 route_stv_Dk        = auto_create_Route(Stavanger,Danmark,Mid_Danmark_stvg)
 filename_Stv_Dk     = mac_windows_file_handle("Route_data/Stavanger_Danmark_Route/Route_Stavanger_Danmark.csv")
 write_to_file(route_stv_Dk,filename_Stv_Dk)
@@ -471,14 +436,43 @@ def create_international_routes():
 
     return A_F_route,F_M_route,M_A_route,A_N_route,N_A_route,A_E_route, E_M1_route, M1_M2_route, M2_A_route
 
-#A_F_route,F_M_route,M_A_route,A_N_route,N_A_route,A_E_route, E_M1_route, M1_M2_route, M2_A_route = create_international_routes()
-#createmap(A_F_route)
-#createmap(F_M_route)
-#createmap(M_A_route)
-#createmap(A_N_route)
-#createmap(N_A_route)
-#createmap(A_E_route)
-#createmap(E_M1_route)
-#createmap(M1_M2_route)
+def create_folder_with_files(Route_Name, directory_path):
 
-#createmap(M2_A_route)
+    folder_name = str(Route_Name)
+    folder_path = os.path.join(directory_path, folder_name)
+    os.makedirs(folder_path, exist_ok=True)
+    for i in range(1):
+        savespeed = "savespeed_" + Route_Name + ".csv"
+        saveTWD = "saveTWD_" + Route_Name + ".csv"
+        saveTWS = "saveTWS_" + Route_Name + ".csv"
+        path_speed = os.path.join(folder_path, savespeed)
+        path_TWD = os.path.join(folder_path, saveTWD)
+        path_TWS = os.path.join(folder_path, saveTWS)
+        open(path_speed, 'a').close()
+        open(path_TWD, 'a').close()
+        open(path_TWS, 'a').close()
+def create_route_files(Route_Name, directory_path):
+
+    folder_path = os.path.join(directory_path, Route_Name)
+    os.makedirs(folder_path, exist_ok=True)
+    savespeed = "Route_" + Route_Name + ".csv"
+    path_speed = os.path.join(folder_path, savespeed)
+    open(path_speed, 'a').close()
+
+file_path_routes = "C:\\Users\\haako\\Documents\\10. Semester\\MASTAH\\Master-2.0\\Route_data"
+route_directory = "C:\\Users\\haako\Documents\\10. Semester\\MASTAH\\Master-2.0\\Output_files"
+
+def invert_csv(csv_File):
+
+    with open(csv_File, 'r') as textfile:
+        for row in reversed(list(csv.reader(textfile))):
+            print(', '.join(row))
+
+
+#to create route:
+#1. Run create_folder_with_files(Route_name,directory_path)
+#   Directory path is usually = "C:\\Users\\haako\\Documents\\10. Semester\\MASTAH\\Master-2.0\\Output_files"
+#3. See if intermediate points are needed
+#4. run route_start_end = auto_create_route(Startcoordinate, endcoordinate, optional midcoordinate 1, optional midcoordinate 2)
+#5. run write_to_file(route_start_end), this writes route coordinates to file
+#6. run main(routename, simulation count)
