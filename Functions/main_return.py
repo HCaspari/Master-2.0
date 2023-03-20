@@ -1,13 +1,13 @@
 import numpy as np
 import geopy.distance #package to calculate distance between two lat/lon points
-import pandas as pd
+
 from numpy.ma.core import MaskedConstant
 from datetime import datetime
-from file_handling import write_to_file, read_route, test_read_files, write_to_file_2, add_timestamp_to_dataframe
+from file_handling import write_to_file, read_route, add_timestamp_to_dataframe
 from Force_functions import Force_produced, Speed_achieved_old
 from Weather_Handling import getweather, r2d, True_wind_direction, True_wind_speed, Apparent_Wind_Speed, Apparent_wind_angle, alpha, add_hours_to_date
 
-from route_handling import calc_vessel_heading, mac_windows_file_handle, calc_vessel_heading_2
+from route_handling import mac_windows_file_handle, calc_vessel_heading_2
 
 
 
@@ -41,44 +41,6 @@ alpha_const = 3.5
 
 mac_windows_file_handle(filename_AIS)
 #comparisson_vessel_power_by_speed = vessel_velocity**3*0.8*0.55
-
-
-
-
-
-#returns avg forces over each point of a trip
-
-#################################################
-
-#Run to start from files one speed
-#start_from_files()
-
-#file =  "env/old_code/output_files5/speed_sailed_over_time.txt
-#file2 = "env/old_code/output_files5/avg_forward_force.txt"
-#file3 = "env/old_code/output_files5/avg_perp_force.txt"
-#average_Speed = read_array_from_file(file)
-#average_force = read_array_from_file(file2)
-#average_perp  = read_array_from_file(file3)
-
-#Run to start from files with different speeds()
-#start_from_files_dif_speed()
-
-#Run to start program over
-#startfromscratch()
-
-#Run to iterate over different speeds
-#run_dif_speed()
-#################################################
-
-#Calculate vesel speeds achieved:
-#calculate_speeds_achieved()
-
-#plot_resistance()
-
-
-
-
-#Windspeed_North, Windspeed_East = getweather(0,60,0)
 
 
 #Function that calculates time spent sailing from port a to port b, through predetermined route
@@ -471,17 +433,17 @@ def run_return(route, interval):
         :return: saved files with _return results
         """
 
-    Trond_aalesund      = mac_windows_file_handle("Route_data/Trondheim_Ålesund_Rute/Route_Trond_Aales.csv")
-    Aalesund_Floro      = mac_windows_file_handle("Route_data/Ålsund_Florø_Rute/Route_Ålesund_Florø.csv")
-    Floro_Bergen        = mac_windows_file_handle("Route_data/Florø_Bergen_Rute/Route_Floro_Bergen.csv")
-    Bergen_Stavanger    = mac_windows_file_handle("Route_data/Bergen_Stavanger_Rute/Route_Bergen_Stavanger.csv")
-    Aberdeen_Faer       = mac_windows_file_handle("Route_data/Aberdeen_Færøyene_Route/Route_Aberdeen_Færøyene.csv")
-    Amst_New            = mac_windows_file_handle("Route_data/Amsterdam_Newcastle_Route/Route_Amsterdam_Newcastle.csv")
-    DK_Amst             = mac_windows_file_handle("Route_data/Danmark_Amsterdam_Route/Route_Danmark_Amsterdam.csv")
-    Faer_Aale           = mac_windows_file_handle("Route_data/Færøyene_Ålesund_Route/Route_Færøyene_Ålesund.csv")
-    New_Aber            = mac_windows_file_handle("Route_data/Newcastle_Aberdeen_Route/Route_Newcastle_Aberdeen.csv")
-    Aale_DK             = mac_windows_file_handle("Route_data/Ålesund_Danmark_Route/Route_Ålesund_DK.csv")
-    Floro_port          = mac_windows_file_handle("Route_data/Floro_port/Floro_port.csv")
+    Trond_aalesund      = mac_windows_file_handle("Route_data/Ålesund_Trondheim/Route_Ålesund_Trondheim.csv")
+    Aalesund_Floro      = mac_windows_file_handle("")
+    Floro_Bergen        = mac_windows_file_handle("")
+    Bergen_Stavanger    = mac_windows_file_handle("")
+    Aberdeen_Faer       = mac_windows_file_handle("")
+    Amst_New            = mac_windows_file_handle("")
+    DK_Amst             = mac_windows_file_handle("")
+    Faer_Aale           = mac_windows_file_handle("")
+    New_Aber            = mac_windows_file_handle("")
+    Aale_DK             = mac_windows_file_handle("")
+    Floro_port          = mac_windows_file_handle("")
 
 
     if route == 1:
@@ -572,16 +534,16 @@ def test_func():
 #reset_index()
 print("Everything is working 1241, 16/03")
 steps = 1000
-run_return(1,steps)
-run_return(2,steps)
-run_return(3,steps)
-run_return(4,steps)
-run_return(5,steps)
-run_return(6,steps)
-run_return(7,steps)
-run_return(8,steps)
-run_return(9,steps)
-run_return(10,steps)
+#run_return(1,steps)
+#run_return(2,steps)
+#run_return(3,steps)
+#run_return(4,steps)
+#run_return(5,steps)
+#run_return(6,steps)
+#run_return(7,steps)
+#run_return(8,steps)
+#run_return(9,steps)
+#run_return(10,steps)
 #run_return(11,steps)
 
 

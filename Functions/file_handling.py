@@ -290,28 +290,38 @@ def reset_index():
     df1.to_csv(mac_windows_file_handle('Output_files/Floro_port/TWS_Floro_port.csv'), index=False)
 
 def flip_route(csv_file_old_route,csv_file_new_route):
-    # Set the input and output file paths
-    input_file = str(csv_file_old_route)
-    output_file = str(csv_file_new_route)
+    """
 
-    # Open the input CSV file and read the data into a list
-    with open(input_file, "r") as f:
-        reader = csv.reader(f)
-        data = list(reader)
+    :param csv_file_old_route: Filepath of old route file
+    :param csv_file_new_route: Filepath to new, empty route file
+    :return: flips old route file to create return route file.
+    """
+    # Set the file path of the CSV file
+    file_path_old = csv_file_old_route
+    file_path_new = csv_file_new_route
+    dfnew = pd.DataFrame(columns=["latitude", "longitude"])
+    # Get the total number of rows in the CSV file
+    num_rows = sum(1 for line in open(file_path_old))
+    latitude = []
+    longitude = []
+    # Read the CSV file from the last row to the first row
 
-    # Loop through the rows in the data list and flip the value in the specified column
-    for row in data:
-        for i in range(len(row)):
-            row[i] = str(row[i])
+    dfold = pd.read_csv(file_path_old)
+    #dfnew = pd.read_csv(file_path_new)
+    for i in range(0, num_rows-1, 1):
+        latitude.append(dfold.loc[i,"latitude"])
+        longitude.append(dfold.loc[i,"longitude"])
+    latitude.reverse()
+    longitude.reverse()
+    latitude_df = {"latitude": [latitude]}
+    longitude_df = {"latitude": [longitude]}
 
-    # Open the output CSV file and write the modified data to it
-    with open(output_file, "w", newline="") as f:
-        writer = csv.writer(f)
-        writer.writerows(["position","latitude", "longitude"])
-        writer.writerows(data)
+    dfnew = pd.DataFrame(latitude)
+    dfnew["longitude"] = longitude
+
+    dfnew.to_csv(file_path_new)
 
 
-flip_route("../Functions/testVS.csv", "../Functions/testVS2.csv")
 
 #In this example, we first define a numpy array data with shape (3,2).
 # Then, we create a datetime object for today's date and time using the
