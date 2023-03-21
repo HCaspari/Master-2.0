@@ -471,10 +471,10 @@ def runsimulation(route, interval):
         :return: saved files with simulation results
         """
 
-    Trond_aalesund      = mac_windows_file_handle("Route_data/Trondheim_Ålesund_Rute/Route_Trond_Aales.csv")
+    Trond_aalesund      = mac_windows_file_handle("Route_data/Trondheim_Ålesund_Route/Route_Trond_Aales.csv")
     Aalesund_Floro      = mac_windows_file_handle("Route_data/Ålsund_Florø_Rute/Route_Ålesund_Florø.csv")
     Floro_Bergen        = mac_windows_file_handle("Route_data/Florø_Bergen_Rute/Route_Floro_Bergen.csv")
-    Bergen_Stavanger    = mac_windows_file_handle("Route_data/Bergen_Stavanger_Rute/Route_Bergen_Stavanger.csv")
+    Bergen_Stavanger    = mac_windows_file_handle("Route_data/Bergen_Stavanger_Route/Route_Bergen_Stavanger.csv")
     Aberdeen_Faer       = mac_windows_file_handle("Route_data/Aberdeen_Færøyene_Route/Route_Aberdeen_Færøyene.csv")
     Amst_New            = mac_windows_file_handle("Route_data/Amsterdam_Newcastle_Route/Route_Amsterdam_Newcastle.csv")
     DK_Amst             = mac_windows_file_handle("Route_data/Danmark_Amsterdam_Route/Route_Danmark_Amsterdam.csv")

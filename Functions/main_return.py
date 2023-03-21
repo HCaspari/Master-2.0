@@ -151,7 +151,7 @@ def main(route, iteration, date_of__return):
 
 
 #main = time_of_trip,tot_sailing_dist, poor_sailing_time, poor_sailing_distance
-def _return(csv,routenumber,interval):
+def simulation(csv,routenumber,interval):
     """
     :param csv: A csv
     :param routenumber: 1 runs Trondheim Ålesund
@@ -227,84 +227,78 @@ def _return(csv,routenumber,interval):
 
 
     #Read files:
-    #Trond_Ålesund return
-    file_speed_Trond_Aalesund   = mac_windows_file_handle("Output_files/Trondheim_Ålesund_return/savespeed_TrondAales_return.csv")
-    file_TWS_Trond_Aalesund   = mac_windows_file_handle("Output_files/Trondheim_Ålesund_return/saveTWS_TrondAales_return.csv")
-    file_TWD_Trond_Aalesund     = mac_windows_file_handle("Output_files/Trondheim_Ålesund_return/saveTWD_TrondAales_return.csv")
-    datestamp_file_1            = mac_windows_file_handle("Output_files/Datestamps_return/datestamp1_return.csv")
+    if routenumber == 1:
+        #Trond_Ålesund return
+        file_speed_Trond_Aalesund   = mac_windows_file_handle("Output_files/Trondheim_Ålesund_return/savespeed_TrondAales_return.csv")
+        file_TWS_Trond_Aalesund     = mac_windows_file_handle("Output_files/Trondheim_Ålesund_return/saveTWS_TrondAales_return.csv")
+        file_TWD_Trond_Aalesund     = mac_windows_file_handle("Output_files/Trondheim_Ålesund_return/saveTWD_TrondAales_return.csv")
+        datestamp_file_1            = mac_windows_file_handle("Output_files/Datestamps_return/datestamp1_return.csv")
 
+    elif routenumber == 2:
+        #Ålesund_floro return
+        file_speed_Aalesund_Floro   = mac_windows_file_handle("Output_files/Ålesund_Florø_return/savespeed_AalesFloro_return.csv")
+        file_TWS_Aalesund_Floro     = mac_windows_file_handle("Output_files/Ålesund_Florø_return/saveTWS_AalesFloro_return.csv")
+        file_TWD_Aalesund_Floro     = mac_windows_file_handle("Output_files/Ålesund_Florø_return/saveTWD_AalesFloro_return.csv")
+        datestamp_file_2            = mac_windows_file_handle("Output_files/Datestamps_return/datestamp2_return.csv")
 
-    #Ålesund_floro return
-    file_speed_Aalesund_Floro   = mac_windows_file_handle("Output_files/Ålesund_Florø_return/savespeed_AalesFloro_return.csv")
-    file_TWS_Aalesund_Floro     = mac_windows_file_handle("Output_files/Ålesund_Florø_return/saveTWS_AalesFloro_return.csv")
-    file_TWD_Aalesund_Floro     = mac_windows_file_handle("Output_files/Ålesund_Florø_return/saveTWD_AalesFloro_return.csv")
-    datestamp_file_2            = mac_windows_file_handle("Output_files/Datestamps_return/datestamp2_return.csv")
+    elif routenumber == 3:
+        #Floro_bergen return
+        file_speed_Floro_Bergen     = mac_windows_file_handle("Output_files/Florø_Bergen_return/savespeed_FloroBergen_return.csv")
+        file_TWS_Floro_Bergen       = mac_windows_file_handle("Output_files/Florø_Bergen_return/saveTWS_FloroBergen_return.csv")
+        file_TWD_Floro_Bergen       = mac_windows_file_handle("Output_files/Florø_Bergen_return/saveTWD_FloroBergen_return.csv")
+        datestamp_file_3            = mac_windows_file_handle("Output_files/Datestamps_return/datestamp3_return.csv")
 
+    elif routenumber == 4:
+        #Bergen_stavanger return
+        file_speed_Bergen_Stavanger = mac_windows_file_handle("Output_files/Bergen_Stavanger_return/savespeed_BrgStvg_return.csv")
+        file_TWS_Bergen_Stavanger   = mac_windows_file_handle("Output_files/Bergen_Stavanger_return/saveTWS_BergenStavanger_return.csv")
+        file_TWD_Bergen_Stavanger   = mac_windows_file_handle("Output_files/Bergen_Stavanger_return/saveTWD_BergenStavanger_return.csv")
+        datestamp_file_4            = mac_windows_file_handle("Output_files/Datestamps_return/datestamp4_return.csv")
 
-    #Floro_bergen return
-    file_speed_Floro_Bergen     = mac_windows_file_handle("Output_files/Florø_Bergen_return/savespeed_FloroBergen_return.csv")
-    file_TWS_Floro_Bergen       = mac_windows_file_handle("Output_files/Florø_Bergen_return/saveTWS_FloroBergen_return.csv")
-    file_TWD_Floro_Bergen       = mac_windows_file_handle("Output_files/Florø_Bergen_return/saveTWD_FloroBergen_return.csv")
-    datestamp_file_3            = mac_windows_file_handle("Output_files/Datestamps_return/datestamp3_return.csv")
+    elif routenumber == 5:
+        #Aberdeen_Færøyene return
+        file_speed_Aber_Faer    = mac_windows_file_handle("Output_files/Aberdeen_Færøyene_return/savespeed_Aberdeen_Færøyene_return.csv")
+        file_TWS_Aber_Faer      = mac_windows_file_handle("Output_files/Aberdeen_Færøyene_return/saveTWS_Aberdeen_Færøyene_return.csv")
+        file_TWD_Aber_Faer      = mac_windows_file_handle("Output_files/Aberdeen_Færøyene_return/saveTWD_Aberdeen_Færøyene_return.csv")
+        datestamp_file_5        = mac_windows_file_handle("Output_files/Datestamps_return/datestamp5_return.csv")
 
+    elif routenumber == 6:
+        #Amsterdam Newcastle return
+        file_speed_Amst_New = mac_windows_file_handle("Output_files/Amsterdam_Newcastle_return/savespeed_Amsterdam_Newcastle_return.csv")
+        file_TWS_Amst_New   = mac_windows_file_handle("Output_files/Amsterdam_Newcastle_return/saveTWS_Amsterdam_Newcastle_return.csv")
+        file_TWD_Amst_New   = mac_windows_file_handle("Output_files/Amsterdam_Newcastle_return/saveTWD_Amsterdam_Newcastle_return.csv")
+        datestamp_file_6    = mac_windows_file_handle("Output_files/Datestamps_return/datestamp6_return.csv")
 
-    #Bergen_stavanger return
-    file_speed_Bergen_Stavanger = mac_windows_file_handle("Output_files/Bergen_Stavanger_return/savespeed_BrgStvg_return.csv")
-    file_TWS_Bergen_Stavanger   = mac_windows_file_handle("Output_files/Bergen_Stavanger_return/saveTWS_BergenStavanger_return.csv")
-    file_TWD_Bergen_Stavanger   = mac_windows_file_handle("Output_files/Bergen_Stavanger_return/saveTWD_BergenStavanger_return.csv")
-    datestamp_file_4            = mac_windows_file_handle("Output_files/Datestamps_return/datestamp4_return.csv")
+    elif routenumber == 7:
+        #Danmark Amsterdam return
+        file_speed_Dk_Amst  = mac_windows_file_handle("Output_files/Danmark_Amsterdam_return/savespeed_Danmark_Amsterdam_return.csv")
+        file_TWS_Dk_Amst    = mac_windows_file_handle("Output_files/Danmark_Amsterdam_return/saveTWS_Danmark_Amsterdam_return.csv")
+        file_TWD_Dk_Amst    = mac_windows_file_handle("Output_files/Danmark_Amsterdam_return/saveTWD_Danmark_Amsterdam_return.csv")
+        datestamp_file_7    = mac_windows_file_handle("Output_files/Datestamps_return/datestamp7_return.csv")
 
+    elif routenumber == 8:
+        #Færøyene Ålesund return
 
-    #Aberdeen_Færøyene return
-    file_speed_Aber_Faer    = mac_windows_file_handle("Output_files/Aberdeen_Færøyene_return/savespeed_Aberdeen_Færøyene_return.csv")
-    file_TWS_Aber_Faer      = mac_windows_file_handle("Output_files/Aberdeen_Færøyene_return/saveTWD_Aberdeen_Færøyene_return.csv")
-    file_TWD_Aber_Faer      = mac_windows_file_handle("Output_files/Aberdeen_Færøyene_return/saveTWS_Aberdeen_Færøyene_return.csv")
-    datestamp_file_5        = mac_windows_file_handle("Output_files/Datestamps_return/datestamp5_return.csv")
+        file_speed_Faer_Aal = mac_windows_file_handle("Output_files/Færøyene_Ålesund_return/savespeed_Færøyene_Ålesund_return.csv")
+        file_TWS_Faer_Aal   = mac_windows_file_handle("Output_files/Færøyene_Ålesund_return/saveTWS_Færøyene_Ålesund_return.csv")
+        file_TWD_Faer_Aal   = mac_windows_file_handle("Output_files/Færøyene_Ålesund_return/saveTWD_Færøyene_Ålesund_return.csv")
+        datestamp_file_8    = mac_windows_file_handle("Output_files/Datestamps_return/datestamp8_return.csv")
 
+    elif routenumber == 9:
+        #Newcastle Aberdeen return
 
-    #Amsterdam Newcastle return
-    file_speed_Amst_New = mac_windows_file_handle("Output_files/Amsterdam_Newcastle_return/savespeed_Amsterdam_Newcastle_return.csv")
-    file_TWS_Amst_New   = mac_windows_file_handle("Output_files/Amsterdam_Newcastle_return/saveTWD_Amsterdam_Newcastle_return.csv")
-    file_TWD_Amst_New    = mac_windows_file_handle("Output_files/Amsterdam_Newcastle_return/saveTWS_Amsterdam_Newcastle_return.csv")
-    datestamp_file_6    = mac_windows_file_handle("Output_files/Datestamps_return/datestamp6_return.csv")
+        file_speed_New_Aber = mac_windows_file_handle("Output_files/Newcastle_Aberdeen_return/SS_Newcastle_Aberdeen_return.csv")
+        file_TWS_New_Aber   = mac_windows_file_handle("Output_files/Newcastle_Aberdeen_return/TWS_Newcastle_Aberdeen_return.csv")
+        file_TWD_New_Aber   = mac_windows_file_handle("Output_files/Newcastle_Aberdeen_return/TWD_Newcastle_Aberdeen_return.csv")
+        datestamp_file_9    = mac_windows_file_handle("Output_files/Datestamps_return/datestamp9_return.csv")
 
+    elif routenumber == 10:
+        #Ålesund Danmark return
 
-    #Danmark Amsterdam return 
-    file_speed_Dk_Amst  = mac_windows_file_handle("Output_files/Danmark_Amsterdam_return/savespeed_Danmark_Amsterdam_return.csv")
-    file_TWS_Dk_Amst    = mac_windows_file_handle("Output_files/Danmark_Amsterdam_return/saveTWD_Danmark_Amsterdam_return.csv")
-    file_TWD_Dk_Amst    = mac_windows_file_handle("Output_files/Danmark_Amsterdam_return/saveTWS_Danmark_Amsterdam_return.csv")
-    datestamp_file_7    = mac_windows_file_handle("Output_files/Datestamps_return/datestamp7_return.csv")
-
-
-    #Færøyene Ålesund return
-
-    file_speed_Faer_Aal = mac_windows_file_handle("Output_files/Færøyene_Ålesund_return/savespeed_Færøyene_Ålesund_return.csv")
-    file_TWS_Faer_Aal   = mac_windows_file_handle("Output_files/Færøyene_Ålesund_return/saveTWD_Færøyene_Ålesund_return.csv")
-    file_TWD_Faer_Aal   = mac_windows_file_handle("Output_files/Færøyene_Ålesund_return/saveTWS_Færøyene_Ålesund_return.csv")
-    datestamp_file_8    = mac_windows_file_handle("Output_files/Datestamps_return/datestamp8_return.csv")
-
-
-    #Newcastle Aberdeen return
-
-    file_speed_New_Aber = mac_windows_file_handle("Output_files/Newcastle_Aberdeen_return/SS_Newcastle_Aberdeen_return.csv")
-    file_TWS_New_Aber   = mac_windows_file_handle("Output_files/Newcastle_Aberdeen_return/TWD_Newcastle_Aberdeen_return.csv")
-    file_TWD_New_Aber   = mac_windows_file_handle("Output_files/Newcastle_Aberdeen_return/TWS_Newcastle_Aberdeen_return.csv")
-    datestamp_file_9    = mac_windows_file_handle("Output_files/Datestamps_return/datestamp9_return.csv")
-
-
-    #Ålesund Danmark return 
-
-    file_speed_Aal_Dk   = mac_windows_file_handle("Output_files/Ålesund_Danmark_return/savespeed_Ålesund_Danmark_return.csv")
-    file_TWS_Aal_Dk     = mac_windows_file_handle("Output_files/Ålesund_Danmark_return/saveTWD_Ålesund_Danmark_return.csv")
-    file_TWD_Aal_Dk     = mac_windows_file_handle("Output_files/Ålesund_Danmark_return/saveTWS_Ålesund_Danmark_return.csv")
-    datestamp_file_10   = mac_windows_file_handle("Output_files/Datestamps_return/datestamp10_return.csv")
-
-    #Floro port return
-
-    file_speed_Floro_port   = mac_windows_file_handle("Output_files/Floro_port/savespeed_port.csv")
-    file_TWS_Floro_port     = mac_windows_file_handle("Output_files/Floro_port/TWD_Floro_port.csv")
-    file_TWD_Floro_port     = mac_windows_file_handle("Output_files/Floro_port/TWS_Floro_port.csv")
-    datestamp_file_11       = mac_windows_file_handle("Output_files/Datestamps/datestamp11.csv")
+        file_speed_Aal_Dk   = mac_windows_file_handle("Output_files/Ålesund_Danmark_return/savespeed_Ålesund_Danmark_return.csv")
+        file_TWS_Aal_Dk     = mac_windows_file_handle("Output_files/Ålesund_Danmark_return/saveTWS_Ålesund_Danmark_return.csv")
+        file_TWD_Aal_Dk     = mac_windows_file_handle("Output_files/Ålesund_Danmark_return/saveTWD_Ålesund_Danmark_return.csv")
+        datestamp_file_10   = mac_windows_file_handle("Output_files/Datestamps_return/datestamp10_return.csv")
 
 
     #Write to files
@@ -400,15 +394,6 @@ def _return(csv,routenumber,interval):
         add_timestamp_to_dataframe(file_TWS_Aal_Dk, datestamp_file_10)
         add_timestamp_to_dataframe(file_TWD_Aal_Dk, datestamp_file_10)
 
-    elif routenumber == 11:
-        write_to_file(VS__return_vector,file_speed_Floro_port) #VS vector file
-        write_to_file(TWS__return_vector,file_TWS_Floro_port)  #TWS vector file
-        write_to_file(TWD__return_vector,file_TWD_Floro_port)  #TWD vector file
-        write_to_file(datestamp__return_vector, datestamp_file_11)          #Datestamp file
-        add_timestamp_to_dataframe(file_speed_Floro_port, datestamp_file_11)
-        add_timestamp_to_dataframe(file_TWS_Floro_port, datestamp_file_11)
-        add_timestamp_to_dataframe(file_TWD_Floro_port, datestamp_file_11)
-
     return 0
 
 
@@ -418,90 +403,84 @@ def _return(csv,routenumber,interval):
 
 def run_return(route, interval):
     """
-        :param route:   1 runs Trondheim Ålesund
-                        2 runs Ålesund Florø
-                        3 runs Florø Bergen
-                        4 runs Bergen Stavanger
-                        5 runs Aberdeen Færøyene
-                        6 runs Amsterdam Newcastle
-                        7 runs Danmark AMsterdam
-                        8 runs Færøyene Ålesund
-                        9 runs Newcastle Aberdeen
-                        10 runs Ålesund Danmark
-                        11 runds floro port
-        :param interval: At what time interval do we run _return
-        :return: saved files with _return results
+        :param route:   1 runs Trondheim Ålesund return
+                        2 runs Ålesund Florø return
+                        3 runs Florø Bergen return
+                        4 runs Bergen Stavanger return
+                        5 runs Aberdeen Færøyene return
+                        6 runs Amsterdam Newcastle return
+                        7 runs Danmark AMsterdam return
+                        8 runs Færøyene Ålesund return
+                        9 runs Newcastle Aberdeen return
+                        10 runs Ålesund Danmark return
+        :param interval: At what time interval do we run return
+        :return: saved files with return results
         """
 
-    Trond_aalesund      = mac_windows_file_handle("Route_data/Ålesund_Trondheim/Route_Ålesund_Trondheim.csv")
-    Aalesund_Floro      = mac_windows_file_handle("")
-    Floro_Bergen        = mac_windows_file_handle("")
-    Bergen_Stavanger    = mac_windows_file_handle("")
-    Aberdeen_Faer       = mac_windows_file_handle("")
-    Amst_New            = mac_windows_file_handle("")
-    DK_Amst             = mac_windows_file_handle("")
-    Faer_Aale           = mac_windows_file_handle("")
-    New_Aber            = mac_windows_file_handle("")
-    Aale_DK             = mac_windows_file_handle("")
-    Floro_port          = mac_windows_file_handle("")
+    Trond_aalesund_retur      = mac_windows_file_handle("Route_data/Trondheim_Ålesund_Return_Route/Route_Trondheim_Ålesund_retur.csv")
+    Aalesund_Floro_retur      = mac_windows_file_handle("Route_data/Ålesund_Florø_Return_Route/Route_Ålesund_Florø_retur.csv")
+    Floro_Bergen_retur        = mac_windows_file_handle("Route_data/Floro_Bergen_Return_Route/Route_Floro_Bergen_retur.csv")
+    Bergen_Stavanger_retur    = mac_windows_file_handle("Route_data/Bergen_Stavanger_Return_Route/Route_Bergen_Stavanger_retur.csv")
+    Aberdeen_Faer_retur       = mac_windows_file_handle("Route_data/Aberdeen_Færøyene_Return_Route/Route_Aberdeen_Færøyene_retur.csv")
+    Amst_New_retur            = mac_windows_file_handle("Route_data/Amsterdam_Newcastle_Return_Route/Route_Amsterdam_Newcastle_retur.csv")
+    DK_Amst_retur             = mac_windows_file_handle("Route_data/Danmark_Amsterdam_Return_Route/Route_Danmark_Amsterdam_retur.csv")
+    Faer_Aale_retur           = mac_windows_file_handle("Route_data/Ålesund_Færøyene_Return_Route/Route_Færøyene_Ålesund_retur.csv")
+    New_Aber_retur            = mac_windows_file_handle("Route_data/Newcastle_Aberdeen_Return_Route/Route_Newcastle_Aberdeen_retur.csv")
+    Aale_DK_retur             = mac_windows_file_handle("Route_data/Ålesund_Danmark_Return_Route/Route_Ålesund_DK_retur.csv")
+
 
 
     if route == 1:
-        print("Running _return for route Trondheim Aalesund now")
-        _return(Trond_aalesund,route,interval)
-        print("Simulation Trondheim to Ålesund is now complete.\n")
+        print("Running return for route Aalesund Trondheim now")
+        simulation(Trond_aalesund_retur,route,interval)
+        print("Simulation Ålesund to Trondheim is now complete.\n")
 
     if route == 2:
-        print("Running _return for route Ålesund Florø now")
-        _return(Aalesund_Floro,route,interval)
-        print("Simulation Ålesund to Florø is now complete.\n")
+        print("Running return for route Florø Ålesund now")
+        simulation(Aalesund_Floro_retur,route,interval)
+        print("Simulation  Florø to Ålesund is now complete.\n")
 
 
     if route == 3:
-        print("Running _return for route Florø Bergen now")
-        _return(Floro_Bergen,route,interval)
-        print("Simulation Florø to Bergen d is now complete.\n")
+        print("Running return for route Florø Bergen now")
+        simulation(Floro_Bergen_retur,route,interval)
+        print("Simulation return Florø to Bergen is now complete.\n")
 
     if route == 4:
-        print("Running _return for route Bergen Stavanger now")
-        _return(Bergen_Stavanger,route,interval)
-        print("Simulation Bergen to Stavanger is now complete.\n")
+        print("Running return for route Bergen Stavanger now")
+        simulation(Bergen_Stavanger_retur,route,interval)
+        print("Simulation return Bergen to Stavanger is now complete.\n")
 
 
     if route == 5:
-        print("Running _return for route Aberdeen_Faerøyene now")
-        _return(Aberdeen_Faer, route,interval)
-        print("Simulation Aberdeen to Færøyene is now complete.\n")
+        print("Running return for route Aberdeen_Faerøyene now")
+        simulation(Aberdeen_Faer_retur, route,interval)
+        print("Simulation return Aberdeen to Færøyene is now complete.\n")
 
     if route == 6:
-        print("Running _return for route Amsterdam_Newcastle now")
-        _return(Amst_New, route,interval)
+        print("Running return for route Amsterdam_Newcastle now")
+        simulation(Amst_New_retur, route,interval)
         print("Simulation Amsterdam to Newcastle is now complete.\n")
 
     if route == 7:
-        print("Running _return for route Danmark_Amsterdam now")
-        _return(DK_Amst, route,interval)
+        print("Running return for route Danmark_Amsterdam now")
+        simulation(DK_Amst_retur, route,interval)
         print("Simulation Danmark to Amsterdam is now complete.\n")
 
     if route == 8:
-        print("Running _return for route Færøyene_Ålesund now")
-        _return(Faer_Aale, route,interval)
+        print("Running return for route Færøyene_Ålesund now")
+        simulation(Faer_Aale_retur, route,interval)
         print("Simulation Færøyene to Ålesund is now complete.\n")
 
     if route == 9:
-        print("Running _return for route Newcastle_Aberdeen now")
-        _return(New_Aber, route,interval)
+        print("Running return for route Newcastle_Aberdeen now")
+        simulation(New_Aber_retur, route,interval)
         print("Simulation Newcastle to Aberdeen is now complete.\n")
 
     if route == 10:
-        print("Running _return for route Ålesund_Danmark now")
-        _return(Aale_DK, route,interval)
+        print("Running return for route Ålesund_Danmark now")
+        simulation(Aale_DK_retur, route,interval)
         print("Simulation Ålesund to Danmark is now complete.\n")
-
-    if route == 11:
-        print("Running _return for route in florø port now")
-        _return(Floro_port, route, interval)
-        print("Simulation for route in florø port is now complete")
 
 
     return 0
@@ -532,19 +511,18 @@ def test_func():
 
 
 #reset_index()
-print("Everything is working 1241, 16/03")
+print("Everything is working 1151, 21/03")
 steps = 1000
-#run_return(1,steps)
-#run_return(2,steps)
-#run_return(3,steps)
-#run_return(4,steps)
-#run_return(5,steps)
-#run_return(6,steps)
-#run_return(7,steps)
-#run_return(8,steps)
-#run_return(9,steps)
-#run_return(10,steps)
-#run_return(11,steps)
+run_return(1,steps)
+run_return(2,steps)
+run_return(3,steps)
+run_return(4,steps)
+run_return(5,steps)
+run_return(6,steps)
+run_return(7,steps)
+run_return(8,steps)
+run_return(9,steps)
+run_return(10,steps)
 
 
 import threading

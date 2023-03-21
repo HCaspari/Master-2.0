@@ -60,34 +60,34 @@ def write_to_file_2(datatype, data, filename_func):
     return 0
 
 
-#reads columns of dataframe to find distances, latitudes, longditudes of trip
+#reads columns of dataframe to find distances, latitudes, longitudes of trip
 def read_cols(filename_ais_data):
     """
     this function is specific to reading ais data
-    :param filename_ais_data: filename of data, containing distance, traveltime, latitudes, longditudes,  heading of vessel
-    :return: vectors showing distance and travel time between lats and longs, the latitudes and longditudes of those points and the heading that the vesesl has at these points.
+    :param filename_ais_data: filename of data, containing distance, traveltime, latitudes, longitudes,  heading of vessel
+    :return: vectors showing distance and travel time between lats and longs, the latitudes and longitudes of those points and the heading that the vesesl has at these points.
     """
     df= pd.read_csv(filename_ais_data)
     #a = df[['dt',"distance","travel_time"]]
     distances  = df[["distance"]]
     travel_time = df[["travel_time"]]
     latitudes   = df[["lat"]]
-    longditudes = df[["lon"]]
+    longitudes = df[["lon"]]
     heading     = df[["heading"]]
     dist_vect_func = []
     travel_time_vect_func   = []
     latitudes_vect_func     = []
-    longditudes_vect_func   = []
+    longitudes_vect_func   = []
     heading_vect_func       = []
     for i in range (len(distances)):
         dist_vect_func.append(distances.loc[i].iat[0])
         travel_time_vect_func.append(travel_time.loc[i].iat[0])
         latitudes_vect_func.append(round(latitudes.loc[i].iat[0],4))
-        longditudes_vect_func.append(round(longditudes.loc[i].iat[0],4))
+        longitudes_vect_func.append(round(longitudes.loc[i].iat[0],4))
         heading_vect_func.append(heading.loc[i].iat[0])
     heading_file = mac_windows_file_handle("env/input_files/heading.csv")
     write_to_file(heading, heading_file)
-    return dist_vect_func,travel_time_vect_func,latitudes_vect_func,longditudes_vect_func,heading_vect_func
+    return dist_vect_func,travel_time_vect_func,latitudes_vect_func,longitudes_vect_func,heading_vect_func
 
 def read_position_vect_from_file(filename_func):
     """
@@ -176,10 +176,10 @@ def read_route(csv):
     """
     df = pd.read_csv(csv)
     latitudes   = df["latitude"]
-    longditudes = df["longditude"]
+    longitudes = df["longitude"]
     positions = []
     for i in range(len(latitudes)):
-        positions.append((latitudes[i],longditudes[i]))
+        positions.append((latitudes[i],longitudes[i]))
     positions = np.asarray(positions)
     return positions
 
