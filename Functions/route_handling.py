@@ -386,8 +386,9 @@ filename_Stv_Dk     = mac_windows_file_handle("Route_data/Stavanger_Danmark_Rout
 write_to_file(route_stv_Dk,filename_Stv_Dk)
 #route_Aber_Faer,route_Faer_Aales,route_Aales_Dk,route_Dk_Amst,route_DK_Stav,route_New_Aber,route_Amst_New = create_routes()
 #route_New_Faer = auto_create_Route(Newcastle,Færøyene,Midpoint_Fa_Ab)
+#print(route_stv_Dk)
 
-#createmap(route_Aales_Dk)
+#createmap(route_stv_Dk)
 #createmap(route_Faer_Aales)
 #createmap(route_Aales_Dk)
 #createmap(route_Dk_Amst)

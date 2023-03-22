@@ -214,8 +214,8 @@ def simulation(csv,routenumber,interval):
         #    #print(f"[5] The wind at this point in time was measured to be {TWS__return_vector[iteration]} with an AWA of {TWD__return_vector[iteration]}")
         #    print(f"[6] {datetime.now()},iteration is {iteration}")
 
-        if iteration%100 == 0:
-            print("progress is made, iteration:", iteration, "on route", routenumber)
+        if iteration%1000 == 0:
+            print("progress is made, iteration:", iteration, "on route", routenumber, "at time", datetime.now())
         date_of__return = add_hours_to_date(date_of__return,hour_intervall)
 
 
@@ -512,7 +512,7 @@ def test_func():
 
 #reset_index()
 print("Everything is working 1151, 21/03")
-steps = 1000
+steps = 1
 run_return(1,steps)
 run_return(2,steps)
 run_return(3,steps)
@@ -551,6 +551,6 @@ def run_multiple():
 
 
 print("Finished <3<3")
-print("Bonus print: Mathias er digg, kl. 1112, den 20032023")
+print("Bonus print: Mathias er digg, kl. 1112, den 22032023")
 
 
