@@ -220,7 +220,7 @@ def simulation(csv,routenumber,interval):
 
 
 
-    print(f"Average speed sailing {csv} over {iteration} iterations is {np.average(VS__return_vector[0])}")
+    print(f"Average speed sailing {csv} over {iteration} iterations is {np.average(VS__return_vector)}")
     print(f"Throughout all iterations, the vessel sails less than one knot for an average of {np.average(poor_sailing_time)} hours\n"
           f"this iteration is used to sail on average {np.average(poor_sailing_distance)} nautical miles\n"
           f"at an average speed of {poor_sailing_speed} knots")
