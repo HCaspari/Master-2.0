@@ -1,4 +1,8 @@
+import datetime
+
+import datetime as datetime
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 from route_handling import mac_windows_file_handle
 import matplotlib as mpl
@@ -139,13 +143,13 @@ def histogramangle(filename, title):
 #histogramangle("Output_files/Floro_port/TWD_Floro_port.csv", Test)
 #plot_wind_data('Output_files/Floro_port/FloroPort_windspeed_winddirection.csv')
 
-filnavn = "Output_files/Newcastle_Aberdeen/SS_Newcastle_Aberdeen.csv"
-filnavn2 = "Output_files/Færøyene_Ålesund/savespeed_Færøyene_Ålesund.csv"
-navn    = "newcastle_aberdeen"
-navn2   = "Færøyene Ålesund"
+#filnavn = "Output_files/Newcastle_Aberdeen/SS_Newcastle_Aberdeen.csv"
+#filnavn2 = "Output_files/Færøyene_Ålesund/savespeed_Færøyene_Ålesund.csv"
+#navn    = "newcastle_aberdeen"
+#navn2   = "Færøyene Ålesund"
 
 #histogram(mac_windows_file_handle(filnavn),navn)
-histogram(mac_windows_file_handle(filnavn2),navn2)
+#histogram(mac_windows_file_handle(filnavn2),navn2)
 
 def søppel():
     # Read the data from the two CSV files into Pandas dataframes
@@ -178,5 +182,4 @@ def søppel():
     # Show the plot
     plt.show()
     return 0
-
 

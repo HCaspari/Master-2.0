@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
-import datetime
+from datetime import datetime
+
 
 import csv
 from route_handling import mac_windows_file_handle
@@ -336,3 +337,60 @@ def flip_route(csv_file_old_route,csv_file_new_route):
 # np.concatenate() function. Finally, we print the final array with
 # shape (3,4) that has the original data in the first two columns,
 # the datetime in the third column, and the vector data in the fourth column.
+
+
+
+
+#dictionary = {date of start: datetime, sailing speeds observed: np.array, average speed route iteration: float}
+
+#01012020, [0.4,3.1,3.4,....] , 5 knop
+#01012020, [0.4,3.1,3.4,....] , 1 knop
+#01012020, [0.4,3.1,3.4,....] , 5.3 knop
+#01012020, [0.4,3.1,3.4,....] , 2.3 knop
+#01012020, [0.4,3.1,3.4,....] , 3 knop
+#01012020, [0.4,3.1,3.4,....] , 4 knop
+
+#reliability given as percentage of time vessel sails route over x knots on average.
+#reliability for route x, speed 5 knots is 30%
+#reliability for route x, speed 4 knots is 55%
+
+#compare this is corresponding for normal shipping.
+#https://atlas-network.com/container-carriers-sailing-reliability-over-and-beyond/
+
+
+def write_to_dictionary(filename):
+    routename = {}
+    df = pd.read_csv(filename)
+    length_dataframe = len(df)
+    VS_total   = 0
+    amount_of_loops = 0
+    k = 0
+    for i in range(1,length_dataframe):
+        #Her må VS_total kun være de for siste turen
+        # her må også /i endres slik at den bare deler på den siste rutens iterasjoner <3
+        timestamp_previous    = df.loc[i-1]["timestamp"]
+        timestamp_next        = df.loc[i]["timestamp"]
+        sailing_speed = df.loc[i-1]["0"]
+        VS_total += sailing_speed
+        if timestamp_next < timestamp_previous:
+
+            index = df.loc[k]["timestamp"]
+            routename[index] = {}
+            if amount_of_loops == 0:
+                routename[index]["average sailing speed"] = VS_total/i
+            if amount_of_loops != 0:
+                routename[index]["average sailing speed"] = VS_total / amount_of_loops
+            amount_of_loops = i
+            k = i
+
+            VS_total = 0
+
+        if i % 50000 == 0:
+            print("progress", i, "of", length_dataframe, datetime.now())
+
+    df = pd.DataFrame.from_dict(routename, orient="index")
+    df.to_csv("../Output_files/Florø_Bergen/avgspeed.csv")
+    return 0
+write_to_dictionary(mac_windows_file_handle("Output_files/Trondheim_Ålesund/savespeed_TrondAales.csv"))
+
+
