@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 from route_handling import mac_windows_file_handle
-
+import matplotlib as mpl
 #Input stats
 mean_wind_speed = 10 #knots
 mean_wind_direction = 90 #degrees
@@ -178,3 +178,5 @@ def søppel():
     # Show the plot
     plt.show()
     return 0
+
+
