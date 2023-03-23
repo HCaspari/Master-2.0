@@ -512,17 +512,17 @@ def test_func():
 
 #reset_index()
 print("Everything is working 1151, 21/03")
-steps = 1
-run_return(1,steps)
-run_return(2,steps)
-run_return(3,steps)
-run_return(4,steps)
-run_return(5,steps)
+steps = 1000
+#run_return(1,steps)
+#run_return(2,steps)
+#run_return(3,steps)
+#run_return(4,steps)
+#run_return(5,steps)
 run_return(6,steps)
-run_return(7,steps)
-run_return(8,steps)
-run_return(9,steps)
-run_return(10,steps)
+#run_return(7,steps)
+#run_return(8,steps)
+#run_return(9,steps)
+#run_return(10,steps)
 
 
 import threading

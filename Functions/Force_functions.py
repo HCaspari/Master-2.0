@@ -181,7 +181,7 @@ def Force_produced_new_CL(AWS, AWD):
     lift = 0.5 * rho_air * A_rotor * AWS ** 2 * Cl  # lift force from traut
     drag = 0.5 * rho_air * A_rotor * AWS ** 2 * Cd  # drag force from traut
 
-    power_consumption = Cp * (rho_air/2) * A_rotor * AWS**3       #Input to flettner is energy to spin rotors
+    power_consumption = Cp * (rho_air/2) * A_rotor * AWS**3       #Input to flettner is energy to spin rotors (traut et al)
 
 
     if 0 <= AWD <= 90 or 270 <= AWD <= 360:  # drag is set to negative if the wind is coming ahead, and positive if not
@@ -262,3 +262,25 @@ def Speed_achieved_old(perp_force, forward_force):
 
 
     return speed_achieved #IN KNOTS
+
+
+def powerinput_flettner_traut(AWS):
+    """
+    :param AWS = Apparent Wind Speed
+    Function that calculates required input power of flettner
+    :return: power_consumption in kWof flettner rotor
+    """
+    SR = 3 * np.pi * 5 / (2 * AWS)
+    Cm_traut = 0.2
+    power_consumption_traut = (0.5 * rho_air * A_rotor * AWS**3 * Cm_traut * SR)/1000     #Input to flettner is power kW to spin rotors (traut et al)
+
+    print(f"power consumption traut is {power_consumption_traut} kW")
+    print(f" this means we need a batterycapacity of {power_consumption_traut*300}")
+    return 0
+
+for i in range(1,10):
+    print("AWS of:",i, " gives:")
+    powerinput_flettner_traut(i)*300
+    #print(f"power needed for longest trip is {powerinput_flettner_traut(i)} kWh")
+
+

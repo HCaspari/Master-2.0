@@ -262,7 +262,7 @@ def simulation(csv,routenumber,interval):
     print(f"Throughout all iterations, the vessel sails less than one knot for an average of {np.average(poor_sailing_time)} hours\n"
           f"this iteration is used to sail on average {np.average(poor_sailing_distance)} nautical miles\n"
           f"at an average speed of {poor_sailing_speed} knots")
-
+    print(np.average(time_of_trip))
 
     #Read files:
     #Trond_Ålesund
@@ -571,8 +571,8 @@ def test_func():
 
 #reset_index()
 print("Everything is working 1241, 16/03")
-steps = 1
-runsimulation(1,steps)
+steps = 100
+#runsimulation(1,steps)
 #runsimulation(2,steps)
 #runsimulation(3,steps)
 #runsimulation(4,steps)
@@ -582,7 +582,7 @@ runsimulation(1,steps)
 #runsimulation(8,steps)
 #runsimulation(9,steps)
 #runsimulation(10,steps)
-runsimulation(11,steps)
+#runsimulation(11,steps)
 
 
 import threading
@@ -591,7 +591,7 @@ def runsimulation_multiple(a, b):
     runsimulation(a,b)
     print(f"Simulation of route{a} every {b} iteration is completed")
 def run_multiple():
-    j = 100
+    j = 1000
     inputs = [(1,j),(2,j), (3,j), (4,j), (5,j), (6,j), (7,j), (8,j), (9,j),(10,j), (11,j)]
 
     threads = []
@@ -604,7 +604,7 @@ def run_multiple():
     for thread in threads:
         thread.join()
     return 0
-#run_multiple()
+run_multiple()
 
 
 

@@ -375,16 +375,16 @@ def add_hours_to_date(date,hours):
 
 #print("XXXXXXXXXXXX")
 #starttime = northward_time_1[0]/3600
-#starttime = datetime(1990,1,1,00,00,00)
+starttime = datetime(1990,1,1,00,00,00)
 
-#print("end of time 1 in hours",northward_time_1[-1]/3600)
-#print("start of time 2 in hours",northward_time_2[0]/3600)
-#print("start of time 1,",add_hours_to_date(starttime,northward_time_1[0]/3600))
-#print(f"add {(northward_time_1[-1]-northward_time_1[0])/3600} hours")
-#print("end of time 1,",add_hours_to_date(starttime,northward_time_1[-1]/3600))
-#print("start of time 2,",add_hours_to_date(starttime,northward_time_2[0]/3600))
-#print(f"add {(northward_time_2[-1]-northward_time_2[0])/3600} hours")
-#print("end of time 2,",add_hours_to_date(starttime,northward_time_2[-1]/3600))
+print("end of time 1 in hours",northward_time_1[-1]/3600)
+print("start of time 2 in hours",northward_time_2[0]/3600)
+print("start of time 1,",add_hours_to_date(starttime,northward_time_1[0]/3600))
+print(f"add {(northward_time_1[-1]-northward_time_1[0])/3600} hours")
+print("end of time 1,",add_hours_to_date(starttime,northward_time_1[-1]/3600))
+print("start of time 2,",add_hours_to_date(starttime,northward_time_2[0]/3600))
+print(f"add {(northward_time_2[-1]-northward_time_2[0])/3600} hours")
+print("end of time 2,",add_hours_to_date(starttime,northward_time_2[-1]/3600))
 
 #print("add 8748 timer to start time 1,", add_hours_to_date(datetime(2020,7,1,18),8748))
 #print("start of time 2,",add_hours_to_date(starttime,northward_time_2[0]/3600))
