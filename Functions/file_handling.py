@@ -1,8 +1,7 @@
 import pandas as pd
 import numpy as np
 from datetime import datetime
-
-
+import re
 import csv
 from route_handling import mac_windows_file_handle
 
@@ -359,38 +358,83 @@ def flip_route(csv_file_old_route,csv_file_new_route):
 
 
 def write_to_dictionary(filename):
+    name = filename[16:]
+    end_index = name.find("/")
+    name = name[:end_index]
+    print("starting write_to_dictionary of", name)
     routename = {}
     df = pd.read_csv(filename)
     length_dataframe = len(df)
     VS_total   = 0
-    amount_of_loops = 0
     k = 0
-    for i in range(1,length_dataframe):
-        #Her må VS_total kun være de for siste turen
-        # her må også /i endres slik at den bare deler på den siste rutens iterasjoner <3
+    iterations_this_loop = 0
+    for i in range(1,length_dataframe):     #loop over
         timestamp_previous    = df.loc[i-1]["timestamp"]
         timestamp_next        = df.loc[i]["timestamp"]
         sailing_speed = df.loc[i-1]["0"]
         VS_total += sailing_speed
-        if timestamp_next < timestamp_previous:
-
+        iterations_this_loop += 1
+        if timestamp_next < timestamp_previous: #if simulation resets, calculate avg speed
             index = df.loc[k]["timestamp"]
             routename[index] = {}
-            if amount_of_loops == 0:
-                routename[index]["average sailing speed"] = VS_total/i
-            if amount_of_loops != 0:
-                routename[index]["average sailing speed"] = VS_total / amount_of_loops
-            amount_of_loops = i
+            routename[index]["average sailing speed"] = VS_total/iterations_this_loop
+            #reset indices
             k = i
-
             VS_total = 0
+            iterations_this_loop = 0
 
         if i % 50000 == 0:
             print("progress", i, "of", length_dataframe, datetime.now())
 
     df = pd.DataFrame.from_dict(routename, orient="index")
-    df.to_csv("../Output_files/Florø_Bergen/avgspeed.csv")
+
+    df.to_csv(mac_windows_file_handle("Output_files/"+name+"/avgspeed.csv"))
     return 0
-write_to_dictionary(mac_windows_file_handle("Output_files/Trondheim_Ålesund/savespeed_TrondAales.csv"))
 
+def write_all_to_dict():
+    print(datetime.now())
+    write_to_dictionary(mac_windows_file_handle("Output_files/Aberdeen_Færøyene/savespeed_Aberdeen_Færøyene.csv"))
+    print(datetime.now())
+    write_to_dictionary(mac_windows_file_handle("Output_files/Aberdeen_Færøyene_return/savespeed_Aberdeen_Færøyene_return.csv"))
+    print(datetime.now())
+    write_to_dictionary(mac_windows_file_handle("Output_files/Amsterdam_Newcastle/savespeed_Amsterdam_Newcastle.csv"))
+    print(datetime.now())
+    write_to_dictionary(mac_windows_file_handle("Output_files/Amsterdam_Newcastle_return/savespeed_Amsterdam_Newcastle_return.csv"))
+    print(datetime.now())
+    write_to_dictionary(mac_windows_file_handle("Output_files/Bergen_Stavanger/savespeed_BrgStvg.csv"))
+    print(datetime.now())
+    write_to_dictionary(mac_windows_file_handle("Output_files/Bergen_Stavanger_return/savespeed_BrgStvg_return.csv"))
+    print(datetime.now())
+    write_to_dictionary(mac_windows_file_handle("Output_files/Danmark_Amsterdam/savespeed_Danmark_Amsterdam.csv"))
+    print(datetime.now())
+    write_to_dictionary(mac_windows_file_handle("Output_files/Danmark_Amsterdam_return/savespeed_Danmark_Amsterdam_return.csv"))
+    print(datetime.now())
+    write_to_dictionary(mac_windows_file_handle("Output_files/Floro_port/savespeed_port.csv"))
+    print(datetime.now())
+    write_to_dictionary(mac_windows_file_handle("Output_files/Florø_Bergen/savespeed_FloroBergen.csv"))
+    print(datetime.now())
+    #write_to_dictionary(mac_windows_file_handle("Output_files/Florø_Bergen_return/savespeed_FloroBergen_return.csv"))
+    #print(datetime.now())
+    #write_to_dictionary(mac_windows_file_handle("Output_files/Færøyene_Ålesund/savespeed_Færøyene_Ålesund.csv"))
+    #print(datetime.now())
+    #write_to_dictionary(mac_windows_file_handle("Output_files/Færøyene_Ålesund_return/savespeed_Færøyene_Ålesund_return.csv"))
+    #print(datetime.now())
+    #write_to_dictionary(mac_windows_file_handle("Output_files/Newcastle_Aberdeen/SS_Newcastle_Aberdeen.csv"))
+    #print(datetime.now())
+    #write_to_dictionary(mac_windows_file_handle("Output_files/Newcastle_Aberdeen_return/SS_Newcastle_Aberdeen_return.csv"))
+    #print(datetime.now())
+    #write_to_dictionary(mac_windows_file_handle("Output_files/Trondheim_Ålesund/savespeed_TrondAales.csv"))
+    #print(datetime.now())
+    #write_to_dictionary(mac_windows_file_handle("Output_files/Trondheim_Ålesund_return/savespeed_TrondAales_return.csv"))
+    #print(datetime.now())
+    #write_to_dictionary(mac_windows_file_handle("Output_files/Ålesund_Danmark/savespeed_Ålesund_Danmark.csv"))
+    #print(datetime.now())
+    #write_to_dictionary(mac_windows_file_handle("Output_files/Ålesund_Danmark_return/savespeed_Ålesund_Danmark_return.csv"))
+    #print(datetime.now())
+    #write_to_dictionary(mac_windows_file_handle("Output_files/Ålesund_Florø/savespeed_AalesFloro.csv"))
+    #print(datetime.now())
+    #write_to_dictionary(mac_windows_file_handle("Output_files/Ålesund_Florø_return/savespeed_AalesFloro_return.csv"))
+    #print(datetime.now())
+    return 0
 
+write_all_to_dict()
