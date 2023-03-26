@@ -391,28 +391,63 @@ def write_to_dictionary(filename):
     df.to_csv(mac_windows_file_handle("Output_files/"+name+"/avgspeed.csv"))
     return 0
 
+import threading
+
+def run_write_to_multiple(filename):
+    write_to_dictionary(filename)
+    print(f"Simulation of route{filename}")
+
+def run_multiple():
+    a = "Output_files/Færøyene_Ålesund_return/savespeed_Færøyene_Ålesund_return.csv"
+    b = "Output_files/Færøyene_Ålesund/savespeed_Færøyene_Ålesund.csv"
+    inputs = [(a),(b)]
+               #(mac_windows_file_handle("Output_files/Newcastle_Aberdeen/SS_Newcastle_Aberdeen.csv")),
+               #(mac_windows_file_handle("Output_files/Newcastle_Aberdeen_return/SS_Newcastle_Aberdeen_return.csv")),
+               #(mac_windows_file_handle("Output_files/Trondheim_Ålesund/savespeed_TrondAales.csv")),
+               #(mac_windows_file_handle("Output_files/Trondheim_Ålesund_return/savespeed_TrondAales_return.csv")),
+               #(mac_windows_file_handle("Output_files/Ålesund_Danmark/savespeed_Ålesund_Danmark.csv")),
+               #(mac_windows_file_handle("Output_files/Ålesund_Danmark_return/savespeed_Ålesund_Danmark_return.csv")),
+               #(mac_windows_file_handle("Output_files/Ålesund_Florø/savespeed_AalesFloro.csv")),
+               #(mac_windows_file_handle("Output_files/Ålesund_Florø_return/savespeed_AalesFloro_return.csv"))]
+
+    threads = []
+
+    for input in inputs:
+        a = input
+        thread = threading.Thread(target=run_write_to_multiple, args=a)
+        thread.start()
+        threads.append(thread)
+
+    for thread in threads:
+        thread.join()
+    return 0
+
+
 def write_all_to_dict():
-    print(datetime.now())
-    write_to_dictionary(mac_windows_file_handle("Output_files/Aberdeen_Færøyene/savespeed_Aberdeen_Færøyene.csv"))
-    print(datetime.now())
-    write_to_dictionary(mac_windows_file_handle("Output_files/Aberdeen_Færøyene_return/savespeed_Aberdeen_Færøyene_return.csv"))
-    print(datetime.now())
-    write_to_dictionary(mac_windows_file_handle("Output_files/Amsterdam_Newcastle/savespeed_Amsterdam_Newcastle.csv"))
-    print(datetime.now())
-    write_to_dictionary(mac_windows_file_handle("Output_files/Amsterdam_Newcastle_return/savespeed_Amsterdam_Newcastle_return.csv"))
-    print(datetime.now())
-    write_to_dictionary(mac_windows_file_handle("Output_files/Bergen_Stavanger/savespeed_BrgStvg.csv"))
-    print(datetime.now())
-    write_to_dictionary(mac_windows_file_handle("Output_files/Bergen_Stavanger_return/savespeed_BrgStvg_return.csv"))
-    print(datetime.now())
-    write_to_dictionary(mac_windows_file_handle("Output_files/Danmark_Amsterdam/savespeed_Danmark_Amsterdam.csv"))
-    print(datetime.now())
-    write_to_dictionary(mac_windows_file_handle("Output_files/Danmark_Amsterdam_return/savespeed_Danmark_Amsterdam_return.csv"))
-    print(datetime.now())
-    write_to_dictionary(mac_windows_file_handle("Output_files/Floro_port/savespeed_port.csv"))
-    print(datetime.now())
-    write_to_dictionary(mac_windows_file_handle("Output_files/Florø_Bergen/savespeed_FloroBergen.csv"))
-    print(datetime.now())
+    #print(datetime.now())
+    ##write_to_dictionary(mac_windows_file_handle("Output_files/Aberdeen_Færøyene/savespeed_Aberdeen_Færøyene.csv"))
+    ##print(datetime.now())
+    ##write_to_dictionary(mac_windows_file_handle("Output_files/Aberdeen_Færøyene_return/savespeed_Aberdeen_Færøyene_return.csv"))
+    ##print(datetime.now())
+    #write_to_dictionary(mac_windows_file_handle("Output_files/Amsterdam_Newcastle/savespeed_Amsterdam_Newcastle.csv"))
+    #print(datetime.now())
+    #write_to_dictionary(mac_windows_file_handle("Output_files/Amsterdam_Newcastle_return/savespeed_Amsterdam_Newcastle_return.csv"))
+    #print(datetime.now())
+    #write_to_dictionary(mac_windows_file_handle("Output_files/Bergen_Stavanger/savespeed_BrgStvg.csv"))
+    #print(datetime.now())
+    #write_to_dictionary(mac_windows_file_handle("Output_files/Bergen_Stavanger_return/savespeed_BrgStvg_return.csv"))
+    #print(datetime.now())
+    #write_to_dictionary(mac_windows_file_handle("Output_files/Danmark_Amsterdam/savespeed_Danmark_Amsterdam.csv"))
+    #print(datetime.now())
+    #write_to_dictionary(mac_windows_file_handle("Output_files/Danmark_Amsterdam_return/savespeed_Danmark_Amsterdam_return.csv"))
+    #print(datetime.now())
+    #write_to_dictionary(mac_windows_file_handle("Output_files/Floro_port/savespeed_port.csv"))
+    #print(datetime.now())
+    #write_to_dictionary(mac_windows_file_handle("Output_files/Florø_Bergen/savespeed_FloroBergen.csv"))
+    #print(datetime.now())
+
+    #run This next
+
     #write_to_dictionary(mac_windows_file_handle("Output_files/Florø_Bergen_return/savespeed_FloroBergen_return.csv"))
     #print(datetime.now())
     #write_to_dictionary(mac_windows_file_handle("Output_files/Færøyene_Ålesund/savespeed_Færøyene_Ålesund.csv"))
@@ -420,21 +455,22 @@ def write_all_to_dict():
     #write_to_dictionary(mac_windows_file_handle("Output_files/Færøyene_Ålesund_return/savespeed_Færøyene_Ålesund_return.csv"))
     #print(datetime.now())
     #write_to_dictionary(mac_windows_file_handle("Output_files/Newcastle_Aberdeen/SS_Newcastle_Aberdeen.csv"))
-    #print(datetime.now())
-    #write_to_dictionary(mac_windows_file_handle("Output_files/Newcastle_Aberdeen_return/SS_Newcastle_Aberdeen_return.csv"))
-    #print(datetime.now())
-    #write_to_dictionary(mac_windows_file_handle("Output_files/Trondheim_Ålesund/savespeed_TrondAales.csv"))
-    #print(datetime.now())
-    #write_to_dictionary(mac_windows_file_handle("Output_files/Trondheim_Ålesund_return/savespeed_TrondAales_return.csv"))
-    #print(datetime.now())
+   # print(datetime.now())
+   # write_to_dictionary(mac_windows_file_handle("Output_files/Newcastle_Aberdeen_return/SS_Newcastle_Aberdeen_return.csv"))
+   # print(datetime.now())
+   # write_to_dictionary(mac_windows_file_handle("Output_files/Trondheim_Ålesund/savespeed_TrondAales.csv"))
+   # print(datetime.now())
+   # write_to_dictionary(mac_windows_file_handle("Output_files/Trondheim_Ålesund_return/savespeed_TrondAales_return.csv"))
+   # print(datetime.now())
     #write_to_dictionary(mac_windows_file_handle("Output_files/Ålesund_Danmark/savespeed_Ålesund_Danmark.csv"))
     #print(datetime.now())
     #write_to_dictionary(mac_windows_file_handle("Output_files/Ålesund_Danmark_return/savespeed_Ålesund_Danmark_return.csv"))
     #print(datetime.now())
-    #write_to_dictionary(mac_windows_file_handle("Output_files/Ålesund_Florø/savespeed_AalesFloro.csv"))
-    #print(datetime.now())
-    #write_to_dictionary(mac_windows_file_handle("Output_files/Ålesund_Florø_return/savespeed_AalesFloro_return.csv"))
-    #print(datetime.now())
+    write_to_dictionary(mac_windows_file_handle("Output_files/Ålesund_Florø/savespeed_AalesFloro.csv"))
+    print(datetime.now())
+    write_to_dictionary(mac_windows_file_handle("Output_files/Ålesund_Florø_return/savespeed_AalesFloro_return.csv"))
+    print(datetime.now())
     return 0
+
 
 write_all_to_dict()

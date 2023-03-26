@@ -585,26 +585,7 @@ steps = 100
 #runsimulation(11,steps)
 
 
-import threading
 
-def runsimulation_multiple(a, b):
-    runsimulation(a,b)
-    print(f"Simulation of route{a} every {b} iteration is completed")
-def run_multiple():
-    j = 1000
-    inputs = [(1,j),(2,j), (3,j), (4,j), (5,j), (6,j), (7,j), (8,j), (9,j),(10,j), (11,j)]
-
-    threads = []
-
-    for input in inputs:
-        thread = threading.Thread(target=runsimulation_multiple, args=input)
-        thread.start()
-        threads.append(thread)
-
-    for thread in threads:
-        thread.join()
-    return 0
-run_multiple()
 
 
 
