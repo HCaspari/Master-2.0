@@ -50,6 +50,15 @@ dataset_NW_2 = nc.Dataset(NW_file_21_22)
 dataset_EW_1 = nc.Dataset(EW_file_20_21)
 dataset_EW_2 = nc.Dataset(EW_file_21_22)
 
+## Test weather
+
+file_test_1 = "../Weather_Data/lon1.519445_lat55.655872.nc"
+file_test_2 = "../Weather_Data/lon1.4653575_lat54.15128.nc"
+file_test_3 = "../Weather_Data/lon1.4030863_lat51.116695.nc"
+dataset_test_1 = nc.Dataset(file_test_1)
+dataset_test_2 = nc.Dataset(file_test_2)
+dataset_test_3 = nc.Dataset(file_test_3)
+##
 
 ##################
     #geospatial_lat_min: 58.9375
@@ -63,11 +72,52 @@ dataset_EW_2 = nc.Dataset(EW_file_21_22)
 
 ##################
 #handling datafiles:
-
+#print(dataset_test)
+###for var in dataset_test.variables.values():
+#    print(var)
 #print(dataset_EW)
 #for var in dataset_NW.variables.values():
-#    print(var)
-#print("north",dataset_NW.variables.keys())
+#    print(var)#
+#    print(dataset_test_1.variables.keys())
+#print(dataset_test_1.variables["time"])
+#print(dataset_test_2.variables["time"])
+#print(dataset_test_3.variables["time"])
+#print("time first ", dataset_test_1.variables["time"][0])
+#print("time last ", dataset_test_1.variables["time"][-1])
+#print("lon 1", dataset_test_1.variables["lon"][:])
+#print("lat 1", dataset_test_1.variables["lat"][:])
+#print(len(dataset_test_1.variables))
+#print(len(dataset_test_1.dimensions))
+#print(dataset_test_1.dimensions)
+#print(dataset_test_1["time"])
+#print(dataset_test_1["x"])
+#print(dataset_test_1["y"])
+#print(dataset_test_1["height"])
+
+# datasets have 4 dimentions: time, x, y, height.
+#time is days since 2018-12-01 00:00:00
+#increases by 0.0416 days per value, meaning increases by hour
+#x is latitude
+#y is longitude
+#height is either 10,20,40--- up to 600, we only need 10 at position 0, so write 0 (the 0th position)
+
+print(dataset_test_1.variables.keys())
+print("Windspeed is : ",dataset_test_1["wspeed"][579,0,0,0], "at time 02/07/2020, position",dataset_test_1["lat"][:],dataset_test_1["lon"][:])
+print("wind direction is: ", dataset_test_1["wdir"][579,0,0,0], "at time 02/07/2020, position",dataset_test_1["lat"][:],dataset_test_1["lon"][:])
+
+print("Windspeed is : ",dataset_test_2["wspeed"][579,0,0,0], "at time 02/07/2020, position",dataset_test_2["lat"][:],dataset_test_2["lon"][:])
+print("wind direction is: ", dataset_test_2["wdir"][579,0,0,0], "at time 02/07/2020, position",dataset_test_2["lat"][:],dataset_test_2["lon"][:])
+
+print("Windspeed is : ",dataset_test_3["wspeed"][579,0,0,0], "at time 02/07/2020, position",dataset_test_3["lat"][:],dataset_test_3["lon"][:])
+print("wind direction is: ", dataset_test_3["wdir"][579,0,0,0], "at time 02/07/2020, position",dataset_test_3["lat"][:],dataset_test_3["lon"][:])
+
+
+#dataset_NW["northward_wind"][:,lat_pos,lon_pos])
+#print(dataset_test.variables["y"][:])
+#print(dataset_test.variables["x"][:])
+
+#print("north",dataset_NW_1.variables.keys())
+#print("")
 #print("East",dataset_EW.variables.keys())
 northward_wind_1  = dataset_NW_1.variables["northward_wind"]
 northward_time_1  = dataset_NW_1.variables["time"]
@@ -188,6 +238,7 @@ def d2r(degree):
     """
     rad = np.pi*degree/180
     return rad
+
 
 def getweather(tid,latitude, longditude):
     """
@@ -375,16 +426,16 @@ def add_hours_to_date(date,hours):
 
 #print("XXXXXXXXXXXX")
 #starttime = northward_time_1[0]/3600
-starttime = datetime(1990,1,1,00,00,00)
+#starttime = datetime(1990,1,1,00,00,00)
 
-print("end of time 1 in hours",northward_time_1[-1]/3600)
-print("start of time 2 in hours",northward_time_2[0]/3600)
-print("start of time 1,",add_hours_to_date(starttime,northward_time_1[0]/3600))
-print(f"add {(northward_time_1[-1]-northward_time_1[0])/3600} hours")
-print("end of time 1,",add_hours_to_date(starttime,northward_time_1[-1]/3600))
-print("start of time 2,",add_hours_to_date(starttime,northward_time_2[0]/3600))
-print(f"add {(northward_time_2[-1]-northward_time_2[0])/3600} hours")
-print("end of time 2,",add_hours_to_date(starttime,northward_time_2[-1]/3600))
+#print("end of time 1 in hours",northward_time_1[-1]/3600)
+#print("start of time 2 in hours",northward_time_2[0]/3600)
+#print("start of time 1,",add_hours_to_date(starttime,northward_time_1[0]/3600))
+#print(f"add {(northward_time_1[-1]-northward_time_1[0])/3600} hours")
+#print("end of time 1,",add_hours_to_date(starttime,northward_time_1[-1]/3600))
+#print("start of time 2,",add_hours_to_date(starttime,northward_time_2[0]/3600))
+#print(f"add {(northward_time_2[-1]-northward_time_2[0])/3600} hours")
+#print("end of time 2,",add_hours_to_date(starttime,northward_time_2[-1]/3600))
 
 #print("add 8748 timer to start time 1,", add_hours_to_date(datetime(2020,7,1,18),8748))
 #print("start of time 2,",add_hours_to_date(starttime,northward_time_2[0]/3600))
