@@ -52,13 +52,15 @@ dataset_EW_2 = nc.Dataset(EW_file_21_22)
 
 ## Test weather
 
-file_test_1 = "../Weather_Data/lon1.519445_lat55.655872.nc"
-file_test_2 = "../Weather_Data/lon1.4653575_lat54.15128.nc"
-file_test_3 = "../Weather_Data/lon1.4030863_lat51.116695.nc"
-dataset_test_1 = nc.Dataset(file_test_1)
-dataset_test_2 = nc.Dataset(file_test_2)
-dataset_test_3 = nc.Dataset(file_test_3)
+file_Sleipnir_A  = mac_windows_file_handle("Weather_Data/Platform Check/Sleipner-A_2021_03.nc") #WEather Data taken from Sleipnir A
+file_Troll_A     = mac_windows_file_handle("Weather_Data/Platform Check/Troll-A_2020_07.nc") #Weather data taken from Troll A
+
+dataset_Sleipnir_A  = nc.Dataset(file_Sleipnir_A)
+dataset_Troll_A     = nc.Dataset(file_Troll_A)
+
 ##
+#print(dataset_Sleipnir_A)
+#print(dataset_Troll_A)
 
 ##################
     #geospatial_lat_min: 58.9375
@@ -84,6 +86,9 @@ dataset_test_3 = nc.Dataset(file_test_3)
 #print(dataset_test_3.variables["time"])
 #print("time first ", dataset_test_1.variables["time"][0])
 #print("time last ", dataset_test_1.variables["time"][-1])
+
+#print("time first of 2 ", dataset_test_2.variables["time"][0])
+#print("time last of 2", dataset_test_2.variables["time"][-1])
 #print("lon 1", dataset_test_1.variables["lon"][:])
 #print("lat 1", dataset_test_1.variables["lat"][:])
 #print(len(dataset_test_1.variables))
@@ -100,16 +105,6 @@ dataset_test_3 = nc.Dataset(file_test_3)
 #x is latitude
 #y is longitude
 #height is either 10,20,40--- up to 600, we only need 10 at position 0, so write 0 (the 0th position)
-
-print(dataset_test_1.variables.keys())
-print("Windspeed is : ",dataset_test_1["wspeed"][579,0,0,0], "at time 02/07/2020, position",dataset_test_1["lat"][:],dataset_test_1["lon"][:])
-print("wind direction is: ", dataset_test_1["wdir"][579,0,0,0], "at time 02/07/2020, position",dataset_test_1["lat"][:],dataset_test_1["lon"][:])
-
-print("Windspeed is : ",dataset_test_2["wspeed"][579,0,0,0], "at time 02/07/2020, position",dataset_test_2["lat"][:],dataset_test_2["lon"][:])
-print("wind direction is: ", dataset_test_2["wdir"][579,0,0,0], "at time 02/07/2020, position",dataset_test_2["lat"][:],dataset_test_2["lon"][:])
-
-print("Windspeed is : ",dataset_test_3["wspeed"][579,0,0,0], "at time 02/07/2020, position",dataset_test_3["lat"][:],dataset_test_3["lon"][:])
-print("wind direction is: ", dataset_test_3["wdir"][579,0,0,0], "at time 02/07/2020, position",dataset_test_3["lat"][:],dataset_test_3["lon"][:])
 
 
 #dataset_NW["northward_wind"][:,lat_pos,lon_pos])
@@ -136,6 +131,9 @@ eastward_wind_2   = dataset_EW_2.variables["eastward_wind"]
 eastward_time_2   = dataset_EW_2.variables["time"]
 eastward_lat_2    = dataset_EW_2.variables["lat"]
 eastward_lon_2    = dataset_EW_2.variables["lon"]
+
+
+
 
 
 #print("first 1 lat",northward_lat_1[0])
@@ -247,8 +245,6 @@ def getweather(tid,latitude, longditude):
     :param longditude: Longdtitude where we want to access weather data
     :return: WSN and WSE in m/s at time = tid, and position (lat,lon)
     """
-    #This function needs to be split into two, using one set of nc files if time is smaller that 8743,
-    # and the other if the time is larger
 
     if tid >= 17520:  #if end of year 2 is reached while sailing, weatherdata from the beginning of year one is used
         tid -= 17520
@@ -291,10 +287,6 @@ def getweather(tid,latitude, longditude):
 
 
 
-#WSN_Test, WSE_test = getweather(0,61.60252347631243, 5.028807975745387)
-#print(f"Wsn is {WSN_Test}, and WSE is {WSE_test}")
-
-
 
 def datetime_seconds(dtime):
     """
@@ -302,9 +294,10 @@ def datetime_seconds(dtime):
     :return: point of time in seconds from 01/07/2020. Gives posibility of accessing specific sailing speed at given date and time
     """
     dt = dtime
-    epoch = date(2020,7,1)
+    epoch = date(1990,1,1)
     delta = (dt-epoch)
     return delta.total_seconds()
+
 
 def True_wind_speed(WSN,WSE): 
     """
@@ -313,6 +306,7 @@ def True_wind_speed(WSN,WSE):
     :return: True wind speed in m/s
     """
     TWS = np.sqrt(WSN**2+WSE**2)
+
     return TWS
 
 #Function that return true wind direction in degrees from wind speed north/east (WSN/WSE)
@@ -330,6 +324,7 @@ def True_wind_direction(vessel_heading,wind_speed_north,wind_speed_east):
     true_wind_direction = wind_angle_degs-vessel_heading        #true wind direction in degrees
 
     true_wind_direction = (true_wind_direction + 360) % 360
+
     return true_wind_direction #in degrees
 
 def Apparent_Wind_Speed(true_wind_speed, vessel_speed, true_wind_direction):
@@ -382,10 +377,38 @@ def alpha(vessel_speed,vessel_heading, NWS,EWS):
 
 
 def add_hours_to_date(date,hours):
+    """
+
+    :param date: start date
+    :param hours: 6 hour intervalls
+    :return: datetime
+    """
+
     date_start = date
+    hours = hours*6
     # add the specified number of hours to the input date
     new_datetime = date_start + timedelta(hours=hours)
+
     return new_datetime
+#print(add_hours_to_date(date(2020,7,2),4))
+
+def add_seconds_to_date(date,seconds):
+    date_start = date
+    # add the specified number of hours to the input date
+    new_datetime = date_start + timedelta(seconds=seconds)
+    return new_datetime
+
+def find_index(date_now):
+    """
+
+    :param date_now:
+    :return: correct index of csv file from copernicus in situ
+    """
+    date_start      = datetime(1950,1,1)
+    second_delta    = (date_now-date_start).total_seconds()
+    #indeksert per 10. sekund, ergo dele på 360, ikke 3600
+    day_delta       = second_delta/3600/24
+    return day_delta
 
 #starttime = datetime(2020,7,1,00,00,00)
 #tid = 8785.57
@@ -443,5 +466,138 @@ def add_hours_to_date(date,hours):
 
 #starttime = datetime(2020,7,1,00,00,00)
 #print(add_hours_to_date(starttime,8760))
+def find_position(ten_mins,TIME):
+    # create a masked array from the input TIME array
+    time = np.ma.masked_invalid(TIME)
 
-#Hei
+    # remove masked values from the time array
+    time = time[~time.mask]
+
+    position = np.where(time == ten_mins)
+    try:
+        index    = position[0][0]
+    except (IndexError):
+        #print("Could not find index for", ten_mins)
+        index = np.abs(time-ten_mins).argmin()
+        return index
+
+    #print("The index of ",ten_mins, "ten minute intervalls in the weather matrix is:", index)
+
+    return index
+#print(dataset_test_2["x"][:])
+
+#print(dataset_test_2["y"][:])
+
+def get_Weather_date_index(datenow):
+    start_date = datetime(2020,1,1)
+
+    #finding number of hours between start date and current date
+    index = datenow-start_date
+    index = int(index.total_seconds()/3600)
+    return index
+
+get_Weather_date_index(datetime(2020,7,2,12))
+#print("\n")
+#print(f"the date 2.7.2020  is the {datetime_seconds(date(2020,7,2))} second")
+#print(f"the date 2.7.2020  is the 579 element in the datasets")
+
+#print(dataset_Troll_A.variables)
+
+
+def find_average_weather_Troll():
+    True_wind_speed_vector_Troll = []
+    for i in range(1,31):
+        for j in range(1,24):
+            if i == 1 and j <4 :
+                break
+            index       = find_index(datetime(2020,7,i,j))
+            position    = find_position(index,Time_T)
+            WSN,WSE     = getweather(position,Troll_lat,Troll_lon)
+            True_wind_speed_vector_Troll.append(True_wind_speed(WSN,WSE))
+
+    return True_wind_speed_vector_Troll
+
+def find_average_weather_Sleipnir():
+    True_wind_speed_vector_Sleipnir = []
+    for i in range(1,31):
+        for j in range(1,24):
+            if i == 1 and j <4 :
+                break
+            index       = find_index(datetime(2021,3,i,j))
+            position    = find_position(index,Time_S)
+            WSN,WSE     = getweather(position,Troll_lat,Troll_lon)
+            True_wind_speed_vector_Sleipnir.append(True_wind_speed(WSN,WSE))
+    return True_wind_speed_vector_Sleipnir
+
+
+
+start_date_T    = datetime(1950,1,1,00,00,00)
+Time_T          = dataset_Troll_A.variables["TIME"]
+WSPD_T          = dataset_Troll_A.variables["WSPD"]
+WSPD_T_QC       = dataset_Troll_A.variables["WSPD_QC"]
+VDIR_T          = dataset_Troll_A.variables["WDIR"]
+VDIR_T_QC       = dataset_Troll_A.variables["WDIR_QC"]
+
+start_date_S    = datetime(1950,1,1,00,00,00)
+
+Time_S          = dataset_Sleipnir_A.variables["TIME"]
+WSPD_S          = dataset_Sleipnir_A.variables["WSPD"]
+WSPD_S_QC       = dataset_Sleipnir_A.variables["WSPD_QC"]
+VDIR_S          = dataset_Sleipnir_A.variables["WDIR"]
+VDIR_S_QC       = dataset_Sleipnir_A.variables["WDIR_QC"]
+
+
+#days_second_july    = find_index(datetime(2020, 7, 1, 12))
+#days_tenth_march    = find_index(datetime(2021, 3, 10,12))
+#second_july = find_position(days_second_july,Time_T)
+#tenth_march = find_position(days_tenth_march,Time_S)
+#print(len(Time_S))
+
+Troll_lat = 60.64350
+Troll_lon = 3.71930
+Sleipnir_lat = 58.37110
+Sleipnir_lon = 1.90910
+#WSN_Troll,WSE_Troll = getweather(second_july,Troll_lat,Troll_lon)
+#WSN_Sleipnir,WSE_Sleipnir = getweather(tenth_march,Sleipnir_lat,Sleipnir_lon)
+
+
+#ind = find_index(datetime(2021,3,10,12))
+
+#WSN2,WSE2 = getweather(find_index(datetime(2020,7,1,12)),Sleipnir_lat,Sleipnir_lon)
+#WSN1,WSE1 = getweather(find_index(datetime(2021,3,10,12)),Troll_lat,Troll_lon)
+#print("True wind speed is ", True_wind_speed(WSN1,WSE1),"at Troll")
+#print("True wind speed is ", True_wind_speed(WSN2,WSE2),"at Sleipner")
+#print("True wind direction is ",True_wind_direction(0,WSN1,WSE1),"at troll")#
+#print("True wind direction is ",True_wind_direction(0,WSN2,WSE2),"at sleipner")#
+
+def get_old_weather_vect_Sleipner():
+    Vect_Sleipnir_Old = []
+    for i in range(1, 31):
+        for j in range(1, 24):
+            index = get_Weather_date_index(datetime(2020,7,i,j))
+            WSN, WSE = getweather(index, Sleipnir_lat, Sleipnir_lon)
+            Vect_Sleipnir_Old.append(True_wind_speed(WSN, WSE))
+
+    return Vect_Sleipnir_Old
+
+
+def get_old_weather_vect_Troll():
+    Vect_Troll_Old = []
+    for i in range(1, 31):
+        for j in range(1, 24):
+            index = get_Weather_date_index(datetime(2021,3,i,j))
+            WSN, WSE = getweather(index, Troll_lat, Troll_lon)
+            Vect_Troll_Old.append(True_wind_speed(WSN, WSE))
+    return Vect_Troll_Old
+
+Vect_Troll = find_average_weather_Troll()
+Vect_Troll_Old = get_old_weather_vect_Troll()
+Vect_Sleipner = find_average_weather_Sleipnir()
+Vect_Sleipner_Old = get_old_weather_vect_Sleipner()
+
+
+
+print("Average wind Troll new june of 2020 ", np.average(Vect_Troll))
+print("Average wind Troll old june of 2020", np.average(Vect_Troll_Old))
+print("Average wind Sleipnir new march of 2021", np.average(Vect_Sleipner))
+print("Average wind Sleipnir old march of 2021", np.average(Vect_Sleipner_Old))

@@ -96,3 +96,4 @@ Output_files/Trondheim_Ålesund/savespeed_TrondAales.csv
 Output_files/Trondheim_Ålesund/saveTWD_TrondAales.csv
 *.pyc
 *.csv
+*.csv
