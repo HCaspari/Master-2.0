@@ -120,4 +120,48 @@ def create_routes():
     return route_Aber_Faer,route_Faer_Aales,route_Aales_Dk,route_Dk_Amst,route_DK_Stav,route_New_Aber,route_Amst_New
 
 
+def extract_data():
+    # Load the first NetCDF file
+    ds1 = xr.open_dataset('../Weather Check/2020 Troll/NO_TS_MO_Troll-A_202001.nc')
+    ds2 = xr.open_dataset('../Weather Check/2020 Troll/NO_TS_MO_Troll-A_202002.nc')
+    ds3 = xr.open_dataset('../Weather Check/2020 Troll/NO_TS_MO_Troll-A_202003.nc')
+    ds4 = xr.open_dataset('../Weather Check/2020 Troll/NO_TS_MO_Troll-A_202004.nc')
+    ds5 = xr.open_dataset('../Weather Check/2020 Troll/NO_TS_MO_Troll-A_202005.nc')
+    ds6 = xr.open_dataset('../Weather Check/2020 Troll/NO_TS_MO_Troll-A_202006.nc')
+    ds7 = xr.open_dataset('../Weather Check/2020 Troll/NO_TS_MO_Troll-A_202007.nc')
+    ds8 = xr.open_dataset('../Weather Check/2020 Troll/NO_TS_MO_Troll-A_202008.nc')
+    ds9 = xr.open_dataset('../Weather Check/2020 Troll/NO_TS_MO_Troll-A_202009.nc')
+    ds10 = xr.open_dataset('../Weather Check/2020 Troll/NO_TS_MO_Troll-A_202010.nc')
+    ds11 = xr.open_dataset('../Weather Check/2020 Troll/NO_TS_MO_Troll-A_202011.nc')
+    ds12 = xr.open_dataset('../Weather Check/2020 Troll/NO_TS_MO_Troll-A_202012.nc')
 
+    variable_names = list(ds1.variables.keys())
+    #northward_wind_1  = dataset_NW_1.variables["northward_wind"]
+    # Print the names of all variables in the NetCDF file
+    print(variable_names)
+
+
+    WSPD_1 = ds1.variables["WSPD"][:,0].values
+    WSPD_2 = ds2.variables["WSPD"][:,0].values
+    WSPD_3 = ds3.variables["WSPD"][:,0].values
+    WSPD_4 = ds4.variables["WSPD"][:,0].values
+    WSPD_5 = ds5.variables["WSPD"][:,0].values
+    WSPD_6 = ds6.variables["WSPD"][:,0].values
+    WSPD_7 = ds7.variables["WSPD"][:,0].values
+    WSPD_8 = ds8.variables["WSPD"][:,0].values
+    WSPD_9 = ds9.variables["WSPD"][:,0].values
+    WSPD_10 = ds10.variables["WSPD"][:,0].values
+    WSPD_11 = ds11.variables["WSPD"][:,0].values
+    WSPD_12 = ds12.variables["WSPD"][:,0].values
+
+    combined = np.concatenate((WSPD_1,WSPD_2,WSPD_3,WSPD_4,WSPD_5,WSPD_6,WSPD_7,WSPD_8,WSPD_9,WSPD_10,WSPD_11,WSPD_12),0)
+
+    # Load the datasets into a list
+    datasets = [xr.open_dataset(fp) for fp in file_paths]
+
+    # Extract the WSPD variable data for each dataset using a loop
+    WSPD_list = []
+    for ds in datasets:
+        WSPD = ds['WSPD'][:, 0].values
+        WSPD_list.append(WSPD)
+    return 0

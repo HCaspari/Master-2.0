@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from datetime import datetime
+import xarray as xr
 import re
 import csv
 from route_handling import mac_windows_file_handle
@@ -473,4 +474,90 @@ def write_all_to_dict():
     return 0
 
 
-write_all_to_dict()
+
+def combine_troll():
+    # Define the file paths
+    file_paths = ['../Weather Check/2020 Troll/NO_TS_MO_Troll-A_202001.nc',
+                  '../Weather Check/2020 Troll/NO_TS_MO_Troll-A_202002.nc',
+                  '../Weather Check/2020 Troll/NO_TS_MO_Troll-A_202003.nc',
+                  '../Weather Check/2020 Troll/NO_TS_MO_Troll-A_202004.nc',
+                  '../Weather Check/2020 Troll/NO_TS_MO_Troll-A_202005.nc',
+                  '../Weather Check/2020 Troll/NO_TS_MO_Troll-A_202006.nc',
+                  '../Weather Check/2020 Troll/NO_TS_MO_Troll-A_202007.nc',
+                  '../Weather Check/2020 Troll/NO_TS_MO_Troll-A_202008.nc',
+                  '../Weather Check/2020 Troll/NO_TS_MO_Troll-A_202009.nc',
+                  '../Weather Check/2020 Troll/NO_TS_MO_Troll-A_202010.nc',
+                  '../Weather Check/2020 Troll/NO_TS_MO_Troll-A_202011.nc',
+                  '../Weather Check/2020 Troll/NO_TS_MO_Troll-A_202012.nc']
+
+    # Load the datasets into a list
+    datasets = [xr.open_dataset(fp) for fp in file_paths]
+
+    # Extract the WSPD variable data for each dataset using a loop
+    TIME_list = []
+    WSPD_list = []
+    WDIR_list = []
+
+
+    for ds in datasets:
+        WSPD = ds['WSPD'][:, 0].values
+        WDIR = ds['WDIR'][:, 0].values
+        TIME = ds['TIME'][:].values
+        WSPD_list.append(WSPD)
+        WDIR_list.append(WDIR)
+        TIME_list.append(TIME)
+
+    WSPD_concatenated = np.concatenate(WSPD_list)
+    WDIR_concatenated = np.concatenate(WDIR_list)
+    TIME_concatenated = np.concatenate(TIME_list)
+    return WSPD_concatenated,WDIR_concatenated,TIME_concatenated
+
+
+def combine_Sleipnir():
+    # Define the file paths
+    file_paths = ['../Weather Check/2021 Sleipner/NO_TS_MO_Sleipner-A_202101.nc',
+                  '../Weather Check/2021 Sleipner/NO_TS_MO_Sleipner-A_202102.nc',
+                  '../Weather Check/2021 Sleipner/NO_TS_MO_Sleipner-A_202103.nc',
+                  '../Weather Check/2021 Sleipner/NO_TS_MO_Sleipner-A_202104.nc',
+                  '../Weather Check/2021 Sleipner/NO_TS_MO_Sleipner-A_202105.nc',
+                  '../Weather Check/2021 Sleipner/NO_TS_MO_Sleipner-A_202106.nc',
+                  '../Weather Check/2021 Sleipner/NO_TS_MO_Sleipner-A_202107.nc',
+                  '../Weather Check/2021 Sleipner/NO_TS_MO_Sleipner-A_202108.nc',
+                  '../Weather Check/2021 Sleipner/NO_TS_MO_Sleipner-A_202109.nc',
+                  '../Weather Check/2021 Sleipner/NO_TS_MO_Sleipner-A_202110.nc',
+                  '../Weather Check/2021 Sleipner/NO_TS_MO_Sleipner-A_202112.nc']
+
+
+    # Load the datasets into a list
+    datasets = [xr.open_dataset(fp) for fp in file_paths]
+
+    # Extract the WSPD variable data for each dataset using a loop
+    TIME_list = []
+    WSPD_list = []
+    WDIR_list = []
+
+
+    for ds in datasets:
+        # Get the names of all variables in the NetCDF file
+        variable_names = list(ds.variables.keys())
+
+        # Print the names of all variables in the NetCDF file
+        print(variable_names)
+        WSPD = ds['WSPD'][:, 0].values
+        WDIR = ds['WDIR'][:, 0].values
+        TIME = ds['TIME'][:].values
+        try:
+            WSPD_list.append(WSPD)
+            WDIR_list.append(WDIR)
+            TIME_list.append(TIME)
+        except KeyError:
+            print("nah")
+
+
+
+
+    WSPD_S_concatenated = np.concatenate(WSPD_list)
+    WDIR_S_concatenated = np.concatenate(WDIR_list)
+    TIME_S_concatenated = np.concatenate(TIME_list)
+    return WSPD_S_concatenated,WDIR_S_concatenated,TIME_S_concatenated
+

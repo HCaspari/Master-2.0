@@ -1,5 +1,4 @@
 import datetime
-
 import datetime as datetime
 import matplotlib.pyplot as plt
 import numpy as np
@@ -47,6 +46,24 @@ def plot_power(title, y_axis, x_label, y_label):
     x_axis = []
     for i in range(1,10):
         x_axis.append(730*i)
+    plt.plot(y_axis)
+    plt.xticks(x_axis)
+    plt.title(title)
+    plt.xlabel(x_label)
+    plt.ylabel(y_label)
+    plt.show()
+    return 0
+
+def plot_something(title, x_axis, y_axis, x_label, y_label):
+    """
+    :param title: Title of graph
+    :param x_axis: What goes on the x-axis
+    :param y_axis: What goes on the y-axis
+    :param x_label: x_label
+    :param y_label: y_label
+    :return: Shows graph
+    """
+
     plt.plot(y_axis)
     plt.xticks(x_axis)
     plt.title(title)

@@ -4,7 +4,9 @@ import numpy as np
 import netCDF4 as nc #read .nc files with weather data
 from datetime import datetime, timedelta, date
 from route_handling import mac_windows_file_handle
-
+from plot_functions import plot_something
+from file_handling import write_to_file, combine_troll,combine_Sleipnir
+import matplotlib.pyplot as plt
 
 #Input stats
 mean_wind_speed = 10 #knots
@@ -16,6 +18,10 @@ Start_north = 0
 Start_position = (Start_east,Start_north) #Current Position
 GlobalPositionVect = [(0,0)]
 clock = 0
+Troll_lat = 60.64350
+Troll_lon = 3.71930
+Sleipnir_lat = 58.37110
+Sleipnir_lon = 1.90910
 
 filename_AIS = mac_windows_file_handle("env/input_files/ais_data_v4.csv")
 travel_iteration            = 0
@@ -131,6 +137,42 @@ eastward_wind_2   = dataset_EW_2.variables["eastward_wind"]
 eastward_time_2   = dataset_EW_2.variables["time"]
 eastward_lat_2    = dataset_EW_2.variables["lat"]
 eastward_lon_2    = dataset_EW_2.variables["lon"]
+
+
+#Clean Data
+start_date_T    = datetime(1950,1,1,00,00,00)
+Time_T          = dataset_Troll_A.variables["TIME"]
+Time_T_masked   = np.ma.masked_invalid(Time_T[:])
+Time_T_clean    = Time_T_masked[~Time_T_masked.mask]
+Time_T_clean    = np.insert(Time_T_clean,0, 25749.0 )
+
+WSPD_T          = dataset_Troll_A.variables["WSPD"]
+WSPD_T_masked   = np.ma.masked_invalid(WSPD_T[:])
+WSPD_T_clean    = WSPD_T_masked[~WSPD_T_masked.mask]
+WSPD_T_clean    = np.insert(WSPD_T_clean, 0,WSPD_T_clean[0] )
+#insert copy of first value into beginning of dataset for precision
+
+WDIR_T        = dataset_Troll_A.variables["WDIR"]#from true north
+WDIR_T_masked = np.ma.masked_invalid(WDIR_T[:])
+WDIR_T_clean  = WDIR_T_masked[~WDIR_T_masked.mask]
+WDIR_T_clean = np.insert(WDIR_T_clean, 0,WDIR_T_clean[0] )
+
+start_date_S    = datetime(1950, 1, 1, 00, 00, 00)
+Time_S          = dataset_Sleipnir_A.variables["TIME"]
+Time_S_masked   = np.ma.masked_invalid(Time_S[:])
+Time_S_clean    = Time_S_masked[~Time_S_masked.mask]
+
+WSPD_S = dataset_Sleipnir_A.variables["WSPD"]
+WSPD_S_masked = np.ma.masked_invalid(WSPD_S[:])
+WSPD_S_clean = WSPD_S_masked[~WSPD_S_masked.mask]
+#insert copy of first value into beginning of dataset for precision
+
+# WSPD_S_QC       = dataset_Sleipnir_A.variables["WSPD_QC"]
+WDIR_S        = dataset_Sleipnir_A.variables["WDIR"]  # from true north
+WDIR_S_masked = np.ma.masked_invalid(WDIR_S[:])
+WDIR_S_clean  = WDIR_S_masked[~WDIR_S_masked.mask]
+
+
 
 
 
@@ -375,6 +417,10 @@ def alpha(vessel_speed,vessel_heading, NWS,EWS):
 
     return alpha
 
+def add_days_to_date(days):
+    date = datetime(1950,1,1)
+    new_datetime = date + timedelta(days=days)
+    return new_datetime
 
 def add_hours_to_date(date,hours):
     """
@@ -406,66 +452,10 @@ def find_index(date_now):
     """
     date_start      = datetime(1950,1,1)
     second_delta    = (date_now-date_start).total_seconds()
-    #indeksert per 10. sekund, ergo dele på 360, ikke 3600
     day_delta       = second_delta/3600/24
+
     return day_delta
 
-#starttime = datetime(2020,7,1,00,00,00)
-#tid = 8785.57
-#latitude = 46
-#longitude = 126
-#print(len(northward_lat_2))
-#print(len(eastward_lat_2))
-#print(len(northward_lon_2))
-#print(len(eastward_lon_2))
-#print(northward_time_2[:])
-#print(add_hours_to_date(starttime,tid))
-#WSN = dataset_NW_2["northward_wind"][tid, lat_pos, lon_pos]
-#WSE = dataset_EW_2["eastward_wind"][tid, lat_pos, lon_pos]
-
-#getweather(tid,latitude,longitude)
-#for i in range(100000):
-#   WSN = dataset_NW_2["northward_wind"][i, lat_pos, lon_pos]
-#    WSE = dataset_EW_2["eastward_wind"][i, lat_pos, lon_pos]
-#    print(f"works with tid =  {i}")
-
-#WSN = dataset_NW_2["northward_wind"][41.5699, lat_pos, lon_pos]
-#WSE = dataset_EW_2["eastward_wind"][41.5699, lat_pos, lon_pos]
-
-#print("time dif time 1", northward_time_1[1]-northward_time_1[0])
-#print("time dif time 2", northward_time_2[1]-northward_time_2[0])
-#print("first time element 1",northward_time_1[0])
-#print("last time element 1",northward_time_1[-1])
-#print("first element time 2", northward_time_2[0])
-#print("time dif end 1 start 2", northward_time_2[0]-northward_time_1[-1])
-#print("XXXXXXXXXXXX")
-
-
-#starttime = datetime(1990,1,1,00,00,00)
-
-#starttime_data_2 = add_hours_to_date(starttime,(northward_time_1[-1]/3600))#
-#print("start2",starttime_data_2)
-
-
-#print("XXXXXXXXXXXX")
-#starttime = northward_time_1[0]/3600
-#starttime = datetime(1990,1,1,00,00,00)
-
-#print("end of time 1 in hours",northward_time_1[-1]/3600)
-#print("start of time 2 in hours",northward_time_2[0]/3600)
-#print("start of time 1,",add_hours_to_date(starttime,northward_time_1[0]/3600))
-#print(f"add {(northward_time_1[-1]-northward_time_1[0])/3600} hours")
-#print("end of time 1,",add_hours_to_date(starttime,northward_time_1[-1]/3600))
-#print("start of time 2,",add_hours_to_date(starttime,northward_time_2[0]/3600))
-#print(f"add {(northward_time_2[-1]-northward_time_2[0])/3600} hours")
-#print("end of time 2,",add_hours_to_date(starttime,northward_time_2[-1]/3600))
-
-#print("add 8748 timer to start time 1,", add_hours_to_date(datetime(2020,7,1,18),8748))
-#print("start of time 2,",add_hours_to_date(starttime,northward_time_2[0]/3600))
-#print("end of time 2,",add_hours_to_date(starttime,northward_time_2[-1]/3600))
-
-#starttime = datetime(2020,7,1,00,00,00)
-#print(add_hours_to_date(starttime,8760))
 def find_position(ten_mins,TIME):
     # create a masked array from the input TIME array
     time = np.ma.masked_invalid(TIME)
@@ -477,16 +467,10 @@ def find_position(ten_mins,TIME):
     try:
         index    = position[0][0]
     except (IndexError):
-        #print("Could not find index for", ten_mins)
         index = np.abs(time-ten_mins).argmin()
         return index
 
-    #print("The index of ",ten_mins, "ten minute intervalls in the weather matrix is:", index)
-
     return index
-#print(dataset_test_2["x"][:])
-
-#print(dataset_test_2["y"][:])
 
 def get_Weather_date_index(datenow):
     start_date = datetime(2020,1,1)
@@ -496,108 +480,262 @@ def get_Weather_date_index(datenow):
     index = int(index.total_seconds()/3600)
     return index
 
-get_Weather_date_index(datetime(2020,7,2,12))
-#print("\n")
-#print(f"the date 2.7.2020  is the {datetime_seconds(date(2020,7,2))} second")
-#print(f"the date 2.7.2020  is the 579 element in the datasets")
-
-#print(dataset_Troll_A.variables)
-
-
 def find_average_weather_Troll():
-    True_wind_speed_vector_Troll = []
+    True_wind_speed_vector_Troll     = []
+    True_wind_direction_vector_Troll = []
     for i in range(1,31):
-        for j in range(1,24):
-            if i == 1 and j <4 :
-                break
-            index       = find_index(datetime(2020,7,i,j))
-            position    = find_position(index,Time_T)
-            WSN,WSE     = getweather(position,Troll_lat,Troll_lon)
-            True_wind_speed_vector_Troll.append(True_wind_speed(WSN,WSE))
-
-    return True_wind_speed_vector_Troll
-
+        if i == 1:
+            for j in range(1, 24):
+                index = find_index(datetime(2020, 7, i, j))
+                position = find_position(index, Time_T_clean)
+                True_wind_speed_vector_Troll.append(WSPD_T_clean[position])
+                True_wind_direction_vector_Troll.append(WDIR_T_clean[position])
+        if i > 1:
+            for j in range(1,24):
+                index = find_index(datetime(2020,7,i,j))
+                position = find_position(index, Time_T_clean)
+                True_wind_speed_vector_Troll.append(WSPD_T_clean[position])
+                True_wind_direction_vector_Troll.append(WDIR_T_clean[position])
+    return True_wind_speed_vector_Troll, True_wind_direction_vector_Troll
+#find_average_weather_Troll()
 def find_average_weather_Sleipnir():
     True_wind_speed_vector_Sleipnir = []
+    True_wind_direction_vector_Sleipnir = []
     for i in range(1,31):
-        for j in range(1,24):
-            if i == 1 and j <4 :
-                break
-            index       = find_index(datetime(2021,3,i,j))
-            position    = find_position(index,Time_S)
-            WSN,WSE     = getweather(position,Troll_lat,Troll_lon)
-            True_wind_speed_vector_Sleipnir.append(True_wind_speed(WSN,WSE))
-    return True_wind_speed_vector_Sleipnir
-
-
-
-start_date_T    = datetime(1950,1,1,00,00,00)
-Time_T          = dataset_Troll_A.variables["TIME"]
-WSPD_T          = dataset_Troll_A.variables["WSPD"]
-WSPD_T_QC       = dataset_Troll_A.variables["WSPD_QC"]
-VDIR_T          = dataset_Troll_A.variables["WDIR"]
-VDIR_T_QC       = dataset_Troll_A.variables["WDIR_QC"]
-
-start_date_S    = datetime(1950,1,1,00,00,00)
-
-Time_S          = dataset_Sleipnir_A.variables["TIME"]
-WSPD_S          = dataset_Sleipnir_A.variables["WSPD"]
-WSPD_S_QC       = dataset_Sleipnir_A.variables["WSPD_QC"]
-VDIR_S          = dataset_Sleipnir_A.variables["WDIR"]
-VDIR_S_QC       = dataset_Sleipnir_A.variables["WDIR_QC"]
-
-
-#days_second_july    = find_index(datetime(2020, 7, 1, 12))
-#days_tenth_march    = find_index(datetime(2021, 3, 10,12))
-#second_july = find_position(days_second_july,Time_T)
-#tenth_march = find_position(days_tenth_march,Time_S)
-#print(len(Time_S))
-
-Troll_lat = 60.64350
-Troll_lon = 3.71930
-Sleipnir_lat = 58.37110
-Sleipnir_lon = 1.90910
-#WSN_Troll,WSE_Troll = getweather(second_july,Troll_lat,Troll_lon)
-#WSN_Sleipnir,WSE_Sleipnir = getweather(tenth_march,Sleipnir_lat,Sleipnir_lon)
-
-
-#ind = find_index(datetime(2021,3,10,12))
-
-#WSN2,WSE2 = getweather(find_index(datetime(2020,7,1,12)),Sleipnir_lat,Sleipnir_lon)
-#WSN1,WSE1 = getweather(find_index(datetime(2021,3,10,12)),Troll_lat,Troll_lon)
-#print("True wind speed is ", True_wind_speed(WSN1,WSE1),"at Troll")
-#print("True wind speed is ", True_wind_speed(WSN2,WSE2),"at Sleipner")
-#print("True wind direction is ",True_wind_direction(0,WSN1,WSE1),"at troll")#
-#print("True wind direction is ",True_wind_direction(0,WSN2,WSE2),"at sleipner")#
+        if i == 1:
+            for j in range(0, 24):
+                index       = find_index(datetime(2021,3,i,j))
+                position    = find_position(index,Time_S_clean)
+                True_wind_speed_vector_Sleipnir.append(round(WSPD_S_clean[position],3))
+                True_wind_direction_vector_Sleipnir.append(round(WDIR_S_clean[position],3))
+        if i >= 1:
+            for j in range(1, 24):
+                index       = find_index(datetime(2021, 3, i, j))
+                position    = find_position(index, Time_S_clean)
+                True_wind_speed_vector_Sleipnir.append(round(WSPD_S_clean[position],3))
+                True_wind_direction_vector_Sleipnir.append(round(WDIR_S_clean[position],3))
+    return True_wind_speed_vector_Sleipnir, True_wind_direction_vector_Sleipnir
 
 def get_old_weather_vect_Sleipner():
-    Vect_Sleipnir_Old = []
+    WSPD_Vect_Sleipnir_Old = []
+    WDir_Vect_Sleipner_Old = []
     for i in range(1, 31):
         for j in range(1, 24):
             index = get_Weather_date_index(datetime(2020,7,i,j))
             WSN, WSE = getweather(index, Sleipnir_lat, Sleipnir_lon)
-            Vect_Sleipnir_Old.append(True_wind_speed(WSN, WSE))
-
-    return Vect_Sleipnir_Old
-
+            WSPD_Vect_Sleipnir_Old.append(True_wind_speed(WSN, WSE))
+            WDir_Vect_Sleipner_Old.append(True_wind_direction(0, WSN, WSE))
+    return WSPD_Vect_Sleipnir_Old,WDir_Vect_Sleipner_Old
 
 def get_old_weather_vect_Troll():
-    Vect_Troll_Old = []
+    WSPD_Vect_Troll_Old = []
+    WDir_Vect_Troll_Old = []
     for i in range(1, 31):
         for j in range(1, 24):
             index = get_Weather_date_index(datetime(2021,3,i,j))
             WSN, WSE = getweather(index, Troll_lat, Troll_lon)
-            Vect_Troll_Old.append(True_wind_speed(WSN, WSE))
-    return Vect_Troll_Old
+            WSPD_Vect_Troll_Old.append(True_wind_speed(WSN, WSE))
+            WDir_Vect_Troll_Old.append(True_wind_direction(0,WSN,WSE))
+    return WSPD_Vect_Troll_Old,WDir_Vect_Troll_Old
 
-Vect_Troll = find_average_weather_Troll()
-Vect_Troll_Old = get_old_weather_vect_Troll()
-Vect_Sleipner = find_average_weather_Sleipnir()
-Vect_Sleipner_Old = get_old_weather_vect_Sleipner()
+def get_old_weather_vect_Troll_year():
+    WSPD_Vect_Troll_Old_year = []
+    WDir_Vect_Troll_Old_year = []
+    for k in range(1,13):
+        if k == 2:
+            for i in range(1, 29):
+                for j in range(1, 24):
+                    index = get_Weather_date_index(datetime(2021, k, i, j))
+                    WSN, WSE = getweather(index, Troll_lat, Troll_lon)
+                    WSPD_Vect_Troll_Old_year.append(True_wind_speed(WSN, WSE))
+                    WDir_Vect_Troll_Old_year.append(True_wind_direction(0, WSN, WSE))
+        elif k%2 == 0:
+            for i in range(1, 31):
+                for j in range(1, 24):
+                    index = get_Weather_date_index(datetime(2021,k,i,j))
+                    WSN, WSE = getweather(index, Troll_lat, Troll_lon)
+                    WSPD_Vect_Troll_Old_year.append(True_wind_speed(WSN, WSE))
+                    WDir_Vect_Troll_Old_year.append(True_wind_direction(0,WSN,WSE))
+        elif k%2 == 1:
+            for i in range(1, 30):
+                for j in range(1, 24):
+                    index = get_Weather_date_index(datetime(2021,k,i,j))
+                    WSN, WSE = getweather(index, Troll_lat, Troll_lon)
+                    WSPD_Vect_Troll_Old_year.append(True_wind_speed(WSN, WSE))
+                    WDir_Vect_Troll_Old_year.append(True_wind_direction(0,WSN,WSE))
+    return WSPD_Vect_Troll_Old_year,WDir_Vect_Troll_Old_year
+
+# assume your data is stored in a list called WSPD_Vect_Troll_Old
+def plot_Vect_Weekly(datavector_one, datavector_two, xlabel, ylabel, title1, title2, title):
+
+    if len(datavector_one) > len(datavector_two):
+        datavector_one = datavector_one[:len(datavector_two)]
+    if len(datavector_two) > len(datavector_one):
+        datavector_two = datavector_two[:len(datavector_one)]
+
+    # Create a list of indices corresponding to each day
+    indices = [i for i in range(0, len(datavector_one), 168)]
+
+    # Calculate the average for each day
+    weekly_avg = [sum(datavector_one[i:i + 168]) / 168 for i in indices]
+
+    # Calculate the average for each day in the second list
+    second_weekly_avg = [sum(datavector_two[i:i + 168]) / 168 for i in indices]
+
+    # Create the figure and axes objects
+    fig, ax = plt.subplots()
+
+    # Plot the first graph
+    ax.plot(weekly_avg, label=title1)
+
+    # Plot the second graph
+    ax.plot(second_weekly_avg, label=title2, color='red')
+
+    # Add a legend
+    ax.legend()
+
+    # Calculate the correlation coefficient
+
+    corr = np.corrcoef(datavector_one, datavector_two)[0, 1]
+
+    # Display the correlation coefficient
+    print(f"The correlation coefficient between y1 and y2 is {corr}")
+
+    # Show the plot
+
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.title(title + ' weekly')
+    plt.show()
+
+    return 0
+
+def plot_Vect_Daily(datavector_one, datavector_two, xlabel, ylabel, title1, title2, title):
+
+    if len(datavector_one) > len(datavector_two):
+        datavector_one = datavector_one[:len(datavector_two)]
+    if len(datavector_two) > len(datavector_one):
+        datavector_two = datavector_two[:len(datavector_one)]
+
+    # Create a list of indices corresponding to each day
+    indices = [i for i in range(0, len(datavector_one), 24)]
+
+    # Calculate the average for each day
+    daily_avg = [sum(datavector_one[i:i + 24]) / 24 for i in indices]
+
+    # Calculate the average for each day in the second list
+    second_daily_avg = [sum(datavector_two[i:i + 24]) / 24 for i in indices]
+
+    # Create the figure and axes objects
+    fig, ax = plt.subplots()
+
+    # Plot the first graph
+    ax.plot(daily_avg, label=title1)
+
+    # Plot the second graph
+    ax.plot(second_daily_avg, label=title2, color='red')
+
+    # Add a legend
+    ax.legend()
+
+    # Calculate the correlation coefficient
+
+    corr = np.corrcoef(datavector_one, datavector_two)[0, 1]
+
+    # Display the correlation coefficient
+    print(f"The correlation coefficient between y1 and y2 is {corr}")
+
+    # Show the plot
+
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.title(title + ' daily')
+    plt.show()
+
+    return 0
+
+def plot_Vect_hourly(datavector_one, datavector_two, xlabel, ylabel, title1, title2, title):
+
+    if len(datavector_one) > len(datavector_two):
+        datavector_one = datavector_one[:len(datavector_two)]
+    if len(datavector_two) > len(datavector_one):
+        datavector_two = datavector_two[:len(datavector_one)]
+
+    # Create the figure and axes objects
+    fig, ax = plt.subplots()
+
+    # Plot the first graph
+    ax.plot(datavector_one, label=title1)
+
+    # Plot the second graph
+    ax.plot(datavector_two, label=title2, color='red')
+
+    # Add a legend
+    ax.legend()
+
+    # Show the plot
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+
+    # Calculate the correlation coefficient
+
+    corr = np.corrcoef(datavector_one, datavector_two)[0, 1]
+
+    # Display the correlation coefficient
+    print(f"The correlation coefficient between y1 and y2 is {corr}")
+    plt.title(title + " hourly")
+    plt.show()
+
+    return 0
+
+WSPD_Vect_Troll,       WDIR_Vect_Troll = find_average_weather_Troll()
+WSPD_Vect_Troll_Old,   WDIR_Vect_Troll_Old = get_old_weather_vect_Troll()
+WSPD_Vect_Sleipner,    WDIR_Vect_Sleipner = find_average_weather_Sleipnir()
+WSPD_Vect_Sleipner_Old,WDIR_Vect_Sleipner_Old = get_old_weather_vect_Sleipner()
 
 
+print("Average wind Troll new june of 2020 "    , np.average(WSPD_Vect_Troll))
+print("Average wind Troll old june of 2020"     , np.average(WSPD_Vect_Troll_Old))
+print("Average wind Sleipnir new march of 2021" , np.average(WSPD_Vect_Sleipner))
+print("Average wind Sleipnir old march of 2021" , np.average(WSPD_Vect_Sleipner_Old))
 
-print("Average wind Troll new june of 2020 ", np.average(Vect_Troll))
-print("Average wind Troll old june of 2020", np.average(Vect_Troll_Old))
-print("Average wind Sleipnir new march of 2021", np.average(Vect_Sleipner))
-print("Average wind Sleipnir old march of 2021", np.average(Vect_Sleipner_Old))
+x_axis = []
+y_axis = []
+for i in range(31):
+    x_axis.append(i)
+
+#plot_something("Wind direction Troll",x_axis,WDIR_Vect_Troll,"Wind Direction","Angle in Degrees")
+#plot_something("Wind direction Troll Old",x_axis,WDIR_Vect_Troll_Old,"Wind Direction","Angle in Degrees")
+#plot_something("Wind direction Sleipner",x_axis,WDIR_Vect_Sleipner,"Wind Direction","Angle in Degrees")
+#plot_something("Wind direction Sleipner Old",x_axis,WDIR_Vect_Sleipner_Old,"Wind Direction","Angle in Degrees")
+
+#print(add_days_to_date(Time_S_clean[0]))
+#print(add_days_to_date(Time_S_clean[-1]))
+
+#print(add_days_to_date(Time_T_clean[0]))
+#print(add_days_to_date(Time_T_clean[-1]))
+
+#plot_Vect_Weekly(WSPD_Vect_Sleipner_Old,WSPD_Vect_Sleipner,"Week","WSPD", "WSPD Old", " WSPD New","Sleipner")
+#plot_Vect_Weekly(WSPD_Vect_Troll_Old,WSPD_Vect_Troll,"Week","WSPD", "WSPD Old", "WSPD New", "Troll")
+
+#plot_Vect_Daily(WSPD_Vect_Sleipner_Old,WSPD_Vect_Sleipner,"Day","Average WSPD", "Average WSPD Old per Day", "Average WSPD new per Day","Sleipner")
+#plot_Vect_Daily(WSPD_Vect_Troll_Old,WSPD_Vect_Troll,"Day","Average WSPD", "Average WSPD Old per Day", "Average WSPD new per Day", "Troll")
+
+#plot_Vect_hourly(WSPD_Vect_Sleipner_Old,WSPD_Vect_Sleipner,"Day","WSPD", "WSPD Old", " WSPD New","Sleipner")
+#plot_Vect_hourly(WSPD_Vect_Troll_Old,WSPD_Vect_Troll,"Day","WSPD", "WSPD Old", "WSPD New", "Troll")
+
+WSPD_Vect_Troll_Old_year,WDir_Vect_Troll_Old_year = get_old_weather_vect_Troll_year()
+
+WSPD_T_concatenated,WDIR_T_concatenated,TIME_T_concatenated = combine_troll()
+
+print("Concatenated is 52k long as it contains every 10 minutes through a year \n"
+      "while Vect old is 8k long as it contains only every hour")
+print(len(WSPD_T_concatenated))
+print(len(WDIR_T_concatenated))
+print(len(TIME_T_concatenated))
+
+print(len(WSPD_Vect_Troll_Old_year))
+print(len(WDir_Vect_Troll_Old_year))
+
+
+#plot_Vect_Weekly()
