@@ -92,6 +92,40 @@ def histogram(filename, title):
     plt.ylabel('Occurences')
     plt.show()
     return 0
+
+def plot_histogram(data1,data2,title):
+
+    # Define the range of values to bin the data into
+    bins = [0,2,4,6,8,10,12,14,16,18,20,22,24]
+
+    # Calculate the histogram of the data
+    hist_1, bin_edges_1 = np.histogram(data1, bins=bins)
+    hist_2, bin_edges_2 = np.histogram(data2, bins=bins)
+
+    # Calculate the percentage of values in each bin
+    bin_percentages_1 = hist_1 / np.sum(hist_1) * 100
+    bin_percentages_2 = hist_2 / np.sum(hist_2) * 100
+
+
+    # Create a bar plot of the percentage of values in each bin
+    #plt.bar(bins[:-1], bin_percentages_1,edgecolor='black', width=np.diff(bins), align='edge')
+    #plt.bar(bins[:-1], bin_percentages_2,edgecolor='black', width=np.diff(bins), align='edge')
+
+    # Create a bar plot of the percentage of values in each bin
+    plt.bar(bins[:-1], bin_percentages_1, color = "red" , edgecolor='black', width=np.diff(bins), align='edge', label = "Measured")
+    plt.bar(bins[:-1], bin_percentages_2, edgecolor='black', width=np.diff(bins), align='edge', alpha=0.5, hatch=':', label = "Calculated",
+            lw=0.5)
+
+    #plt.hist(data,edgecolor='black', range=[0,10], bins=bins)
+    # Add axis labels and a title
+    plt.legend(loc='upper right')
+    plt.xlabel('Speed in knots')
+    plt.ylabel('Percentage of Values')
+    plt.title(title)
+
+    #Show plot
+    plt.show()
+    return 0
 Trond_Aalesund      = "Trondheim Ålesund"
 Aalesund_Floro      = "Ålesund Florø"
 Floro_Bergen        = "Florø Bergen"
@@ -115,11 +149,11 @@ def plot_wind_data(filename):
     df = pd.read_csv(filename, sep=';', decimal=',')
 
     # Convert wind speed values to knots
-    df['Wind speed'] = df['Wind speed'] * 1.94384
+    df['TWS'] = df['TWS'] * 1.94384
 
     # Extract wind speed and direction columns and remove missing values
-    wind_speed = df['Wind speed'].dropna()
-    wind_dir = df['Wind direction'].dropna()
+    wind_speed = df['TWS'].dropna()
+    #wind_dir = df['Wind direction'].dropna()
 
     # Plot wind speed histogram
     plt.hist(wind_speed, range=[0,20], bins=20)
@@ -156,7 +190,7 @@ def histogramangle(filename, title):
     return 0
 
 
-
+#plot_wind_data("../Output_files/Aberdeen_Færøyene/saveTWS_Aberdeen_Færøyene.csv")
 #histogramangle("Output_files/Floro_port/TWD_Floro_port.csv", Test)
 #plot_wind_data('Output_files/Floro_port/FloroPort_windspeed_winddirection.csv')
 
@@ -167,36 +201,4 @@ def histogramangle(filename, title):
 
 #histogram(mac_windows_file_handle(filnavn),navn)
 #histogram(mac_windows_file_handle(filnavn2),navn2)
-
-def søppel():
-    # Read the data from the two CSV files into Pandas dataframes
-    df1 = pd.read_csv('Output_files/Floro_port/FloroPort_windspeed_winddirection.csv', sep=';', decimal=',')
-    df2 = pd.read_csv('Output_files/Floro_port/TWD_Floro_port.csv')
-
-    # Convert the datetime column to a datetime object
-    df1['DateTime'] = pd.to_datetime(df1['DateTime'])
-    df2['DateTime'] = pd.to_datetime(df2['DateTime'])
-
-    # Define the datetime period to plot (e.g., from January 1, 2022 to March 31, 2022)
-    start_date = pd.to_datetime('2021-10-01')
-    end_date = pd.to_datetime('2021-11-01')
-
-    # Filter the dataframes to include only data within the datetime period
-    df1 = df1.loc[(df1['DateTime'] >= start_date) & (df1['DateTime'] <= end_date)]
-    df2 = df2.loc[(df2['DateTime'] >= start_date) & (df2['DateTime'] <= end_date)]
-
-    # Plot the wind speed data from file 1 in blue
-    plt.plot(df1['DateTime'], df1['Wind direction'], color='blue', label='File 1')
-
-    # Plot the wind speed data from file 2 in red
-    plt.plot(df2['DateTime'], df2['Wind direction'], color='red', label='File 2')
-
-    # Set the axis labels and legend
-    plt.xlabel('Datetime')
-    plt.ylabel('Wind direction')
-    plt.legend()
-
-    # Show the plot
-    plt.show()
-    return 0
 

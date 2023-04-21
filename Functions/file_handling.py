@@ -475,20 +475,20 @@ def write_all_to_dict():
 
 
 
-def combine_troll():
+def combine_troll(year_Place, year):
     # Define the file paths
-    file_paths = ['../Weather Check/2020 Troll/NO_TS_MO_Troll-A_202001.nc',
-                  '../Weather Check/2020 Troll/NO_TS_MO_Troll-A_202002.nc',
-                  '../Weather Check/2020 Troll/NO_TS_MO_Troll-A_202003.nc',
-                  '../Weather Check/2020 Troll/NO_TS_MO_Troll-A_202004.nc',
-                  '../Weather Check/2020 Troll/NO_TS_MO_Troll-A_202005.nc',
-                  '../Weather Check/2020 Troll/NO_TS_MO_Troll-A_202006.nc',
-                  '../Weather Check/2020 Troll/NO_TS_MO_Troll-A_202007.nc',
-                  '../Weather Check/2020 Troll/NO_TS_MO_Troll-A_202008.nc',
-                  '../Weather Check/2020 Troll/NO_TS_MO_Troll-A_202009.nc',
-                  '../Weather Check/2020 Troll/NO_TS_MO_Troll-A_202010.nc',
-                  '../Weather Check/2020 Troll/NO_TS_MO_Troll-A_202011.nc',
-                  '../Weather Check/2020 Troll/NO_TS_MO_Troll-A_202012.nc']
+    file_paths = [f'../Weather Check/{year_Place}/NO_TS_MO_Troll-A_{year}01.nc',
+                  f'../Weather Check/{year_Place}/NO_TS_MO_Troll-A_{year}02.nc',
+                  f'../Weather Check/{year_Place}/NO_TS_MO_Troll-A_{year}03.nc',
+                  f'../Weather Check/{year_Place}/NO_TS_MO_Troll-A_{year}04.nc',
+                  f'../Weather Check/{year_Place}/NO_TS_MO_Troll-A_{year}05.nc',
+                  f'../Weather Check/{year_Place}/NO_TS_MO_Troll-A_{year}06.nc',
+                  f'../Weather Check/{year_Place}/NO_TS_MO_Troll-A_{year}07.nc',
+                  f'../Weather Check/{year_Place}/NO_TS_MO_Troll-A_{year}08.nc',
+                  f'../Weather Check/{year_Place}/NO_TS_MO_Troll-A_{year}09.nc',
+                  f'../Weather Check/{year_Place}/NO_TS_MO_Troll-A_{year}10.nc',
+                  f'../Weather Check/{year_Place}/NO_TS_MO_Troll-A_{year}11.nc',
+                  f'../Weather Check/{year_Place}/NO_TS_MO_Troll-A_{year}12.nc']
 
     # Load the datasets into a list
     datasets = [xr.open_dataset(fp) for fp in file_paths]
@@ -507,10 +507,11 @@ def combine_troll():
         WDIR_list.append(WDIR)
         TIME_list.append(TIME)
 
-    WSPD_concatenated = np.concatenate(WSPD_list)
-    WDIR_concatenated = np.concatenate(WDIR_list)
-    TIME_concatenated = np.concatenate(TIME_list)
-    return WSPD_concatenated,WDIR_concatenated,TIME_concatenated
+    WSPD_concat = np.concatenate(WSPD_list)
+    WDIR_concat = np.concatenate(WDIR_list)
+    TIME_concat = np.concatenate(TIME_list)
+
+    return WSPD_concat,WDIR_concat,TIME_concat
 
 
 def combine_Sleipnir():
@@ -561,3 +562,5 @@ def combine_Sleipnir():
     TIME_S_concatenated = np.concatenate(TIME_list)
     return WSPD_S_concatenated,WDIR_S_concatenated,TIME_S_concatenated
 
+WSPD_concat_2021,WDIR_concat_2021,TIME_concat_2021 = combine_troll("2021 Troll",2021)
+print(len(WSPD_concat_2021[:]))
