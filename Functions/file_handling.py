@@ -563,4 +563,4 @@ def combine_Sleipnir():
     return WSPD_S_concatenated,WDIR_S_concatenated,TIME_S_concatenated
 
 WSPD_concat_2021,WDIR_concat_2021,TIME_concat_2021 = combine_troll("2021 Troll",2021)
-print(len(WSPD_concat_2021[:]))
+

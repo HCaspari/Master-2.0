@@ -4,7 +4,7 @@ import numpy as np
 import netCDF4 as nc #read .nc files with weather data
 from datetime import datetime, timedelta, date
 from route_handling import mac_windows_file_handle
-from plot_functions import plot_something, plot_histogram
+from plot_functions import plot_something, plot_histogram, plot_Vect_Daily,plot_Vect_Weekly,plot_Vect_hourly, plot_Vect_hourly_single
 from file_handling import write_to_file, combine_troll,combine_Sleipnir
 import matplotlib.pyplot as plt
 
@@ -436,7 +436,7 @@ def add_hours_to_date(date,hours):
     new_datetime = date_start + timedelta(hours=hours)
 
     return new_datetime
-#print(add_hours_to_date(date(2020,7,2),4))
+
 
 def add_seconds_to_date(date,seconds):
     date_start = date
@@ -568,144 +568,6 @@ def get_calculated_weather_vect_Troll_year(year):
                     WDir_Vect_Troll_Old_year.append(True_wind_direction(0,WSN,WSE))
     return WSPD_Vect_Troll_Old_year,WDir_Vect_Troll_Old_year
 
-# assume your data is stored in a list called WSPD_Vect_Troll_Old
-def plot_Vect_Weekly(datavector_one, datavector_two, xlabel, ylabel, title1, title2, title):
-
-    weekly_avg_one = []
-    weekly_avg_two = []
-    if len(datavector_one) > len(datavector_two):
-        datavector_one = datavector_one[:len(datavector_two)]
-    if len(datavector_two) > len(datavector_one):
-        datavector_two = datavector_two[:len(datavector_one)]
-
-    # Create a list of indices corresponding to each day
-    indices = [i for i in range(0, len(datavector_one), 168)]
-
-    # Calculate the average for each week in first list (168 hours)
-    for i in range(len(datavector_one)):
-        #  Checks vector for nan values, if discovered, uses prior value
-        if math.isnan(datavector_one[i]):
-            datavector_one[i] = datavector_one[i-1]
-        if math.isnan(datavector_two[i]):
-            datavector_two[i] = datavector_two[i-1]
-
-    #check for remaining nan-values
-    for i in range(len(datavector_one)):
-        #  Checks vector for nan values, if discovered, uses prior value
-        if math.isnan(datavector_one[i]):
-            print("nan value at index",i)
-        if math.isnan(datavector_two[i]):
-            print("nan value at index",i)
-
-    for i in indices:
-        weekly_avg_one.append(sum(datavector_one[i:i + 168]) / 168)
-        weekly_avg_two.append(sum(datavector_two[i:i + 168]) / 168)
-
-    # Create the figure and axes objects
-    fig, ax = plt.subplots()
-
-    # Plot the first graph
-    ax.plot(weekly_avg_one, label=title1)
-
-    # Plot the second graph
-    ax.plot(weekly_avg_two, label=title2, color='red')
-
-    # Add a legend
-    ax.legend()
-
-    # Calculate the correlation coefficient
-
-    corr = np.corrcoef(datavector_one, datavector_two)[0, 1]
-
-    # Display the correlation coefficient
-    print(f"The correlation coefficient between y1 and y2 is {corr}")
-
-    # Show the plot
-
-    plt.xlabel(xlabel)
-    plt.ylabel(ylabel)
-    plt.title(title)
-    plt.show()
-
-    return 0
-
-def plot_Vect_Daily(datavector_one, datavector_two, xlabel, ylabel, title1, title2, title):
-
-    if len(datavector_one) > len(datavector_two):
-        datavector_one = datavector_one[:len(datavector_two)]
-    if len(datavector_two) > len(datavector_one):
-        datavector_two = datavector_two[:len(datavector_one)]
-
-    # Create a list of indices corresponding to each day
-    indices = [i for i in range(0, len(datavector_one), 24)]
-
-    # Calculate the average for each day
-    daily_avg = [sum(datavector_one[i:i + 24]) / 24 for i in indices]
-
-    # Calculate the average for each day in the second list
-    second_daily_avg = [sum(datavector_two[i:i + 24]) / 24 for i in indices]
-
-    # Create the figure and axes objects
-    fig, ax = plt.subplots()
-
-    # Plot the first graph
-    ax.plot(daily_avg, label=title1)
-
-    # Plot the second graph
-    ax.plot(second_daily_avg, label=title2, color='red')
-
-    # Add a legend
-    ax.legend()
-
-    # Calculate the correlation coefficient
-
-    corr = np.corrcoef(datavector_one, datavector_two)[0, 1]
-
-    # Display the correlation coefficient
-    print(f"The correlation coefficient between y1 and y2 is {corr}")
-
-    # Show the plot
-
-    plt.xlabel(xlabel)
-    plt.ylabel(ylabel)
-    plt.title(title + ' daily')
-    plt.show()
-
-    return 0
-
-def plot_Vect_hourly(datavector_one, datavector_two, xlabel, ylabel, title1, title2, title):
-
-    if len(datavector_one) > len(datavector_two):
-        datavector_one = datavector_one[:len(datavector_two)]
-    if len(datavector_two) > len(datavector_one):
-        datavector_two = datavector_two[:len(datavector_one)]
-
-    # Create the figure and axes objects
-    fig, ax = plt.subplots()
-
-    # Plot the first graph
-    ax.plot(datavector_one, label=title1)
-
-    # Plot the second graph
-    ax.plot(datavector_two, label=title2, color='red')
-
-    # Add a legend
-    ax.legend()
-
-    # Show the plot
-    plt.xlabel(xlabel)
-    plt.ylabel(ylabel)
-
-    # Calculate the correlation coefficient
-
-    corr = np.corrcoef(datavector_one, datavector_two)[0, 1]
-
-    # Display the correlation coefficient
-    print(f"The correlation coefficient between y1 and y2 is {corr}")
-    plt.title(title + " hourly")
-    plt.show()
-
-    return 0
 
 def Hourly_Concat(ten_mins):
     # Create a list of indices corresponding to each day
@@ -714,7 +576,6 @@ def Hourly_Concat(ten_mins):
     # Calculate the average for each day
     hourly_avg = [sum(ten_mins[i:i + 6]) / 6 for i in indices]
 
-    print("length new vect = ",len(hourly_avg))
     return hourly_avg
 
 def Time_Concat(ten_mins):
@@ -724,32 +585,32 @@ def Time_Concat(ten_mins):
     # Calculate the average for each day
     hourly_avg = [ten_mins[i] for i in indices]
 
-    print("length new vect = ",len(hourly_avg))
     return hourly_avg
 
 WSPD_Vect_Sleipner_Measured, WDIR_Vect_Sleipner_Measured = find_average_weather_Sleipnir_Measured()
 WSPD_Vect_Sleipner_Calculated, WDIR_Vect_Sleipner_Calculated = get_calculated_weather_vect_Sleipner()
 
-
-
 WSPD_Vect_Troll_Measured, WDIR_Vect_Troll_Measured = find_average_weather_Troll_Measured()
 WSPD_Vect_Troll_Calculated, WDIR_Vect_Troll_Calculated = get_calculated_weather_vect_Troll()
 
+a = []
+for i in range(31):
+    a.append(i)
+#plot_something("Sleipner_Calculated", WSPD_Vect_Sleipner_Calculated,"Day","WSPD")
+#plot_something("Sleipner_Measured", WSPD_Vect_Sleipner_Measured,"Day","WSPD")
+plot_something("Troll Measured", WSPD_Vect_Troll_Measured,"Hour","WSPD")
 
-print("Average wind Troll new june of 2020 ", np.average(WSPD_Vect_Troll_Measured))
-print("Average wind Troll old june of 2020", np.average(WSPD_Vect_Troll_Calculated))
-print("Average wind Sleipnir new march of 2021", np.average(WSPD_Vect_Sleipner_Measured))
-print("Average wind Sleipnir old march of 2021", np.average(WSPD_Vect_Sleipner_Calculated))
+
+#print("Average wind Troll new july of 2020 ", np.average(WSPD_Vect_Troll_Measured))
+#print("Average wind Troll old july of 2020", np.average(WSPD_Vect_Troll_Calculated))
+#print("Average wind Sleipnir new march of 2021", np.average(WSPD_Vect_Sleipner_Measured))
+#print("Average wind Sleipnir old march of 2021", np.average(WSPD_Vect_Sleipner_Calculated))
 
 x_axis = []
 y_axis = []
 for i in range(31):
     x_axis.append(i)
 
-#plot_something("Wind direction Troll",x_axis,WDIR_Vect_Troll,"Wind Direction","Angle in Degrees")
-#plot_something("Wind direction Troll Old",x_axis,WDIR_Vect_Troll_Old,"Wind Direction","Angle in Degrees")
-#plot_something("Wind direction Sleipner",x_axis,WDIR_Vect_Sleipner,"Wind Direction","Angle in Degrees")
-#plot_something("Wind direction Sleipner Old",x_axis,WDIR_Vect_Sleipner_Old,"Wind Direction","Angle in Degrees")
 
 #print(add_days_to_date(Time_S_clean[0]))
 #print(add_days_to_date(Time_S_clean[-1]))
@@ -757,14 +618,10 @@ for i in range(31):
 #print(add_days_to_date(Time_T_clean[0]))
 #print(add_days_to_date(Time_T_clean[-1]))
 
-#plot_Vect_Weekly(WSPD_Vect_Sleipner_Old,WSPD_Vect_Sleipner,"Week","WSPD", "WSPD Old", " WSPD New","Sleipner")
-plot_Vect_Weekly(WSPD_Vect_Troll_Calculated,WSPD_Vect_Troll_Measured,"Week","WSPD", "WSPD Calculated", "WSPD Measured", "Troll")
+#plot_Vect_Daily(WSPD_Vect_Sleipner_Calculated,WSPD_Vect_Sleipner_Measured,"Day","WSPD", "WSPD Calculated", " WSPD Measured","Sleipner March 2021")
+#plot_Vect_Daily(WSPD_Vect_Troll_Calculated,WSPD_Vect_Troll_Measured,"Day","WSPD", "WSPD Calculated", "WSPD Measured", "Troll July 2020")
 
-#plot_Vect_Daily(WSPD_Vect_Sleipner_Old,WSPD_Vect_Sleipner,"Day","Average WSPD", "Average WSPD Old per Day", "Average WSPD new per Day","Sleipner")
-#plot_Vect_Daily(WSPD_Vect_Troll_Old,WSPD_Vect_Troll,"Day","Average WSPD", "Average WSPD Old per Day", "Average WSPD new per Day", "Troll")
 
-#plot_Vect_hourly(WSPD_Vect_Sleipner_Old,WSPD_Vect_Sleipner,"Day","WSPD", "WSPD Old", " WSPD New","Sleipner")
-#plot_Vect_hourly(WSPD_Vect_Troll_Old,WSPD_Vect_Troll,"Day","WSPD", "WSPD Old", "WSPD New", "Troll")
 
 
 #WSPD_Troll_Hourly_Calculated_2019, WDir_Vect_Troll_Calculated_2019 = get_calculated_weather_vect_Troll_year(2019)
@@ -782,8 +639,8 @@ WSPD_T_conc_Measured_2020, WDIR_T_conc_Measured_2020, TIME_T_conc_Measured_2020 
 
 #2020
 WSPD_Troll_Hourly_measured_2020 = Hourly_Concat(WSPD_T_conc_Measured_2020)
-WDIR_Troll_Hourly_Measured_2020 = Hourly_Concat(WDIR_T_conc_Measured_2020)
-TIME_Troll_Hourly_measured_2020 = Time_Concat(TIME_T_conc_Measured_2020)
+#WDIR_Troll_Hourly_Measured_2020 = Hourly_Concat(WDIR_T_conc_Measured_2020)
+#TIME_Troll_Hourly_measured_2020 = Time_Concat(TIME_T_conc_Measured_2020)
 
 #2021
 #WSPD_Troll_Hourly_measured_2021 = Hourly_Concat(WSPD_T_conc_Measured_2021)
@@ -791,7 +648,15 @@ TIME_Troll_Hourly_measured_2020 = Time_Concat(TIME_T_conc_Measured_2020)
 #TIME_Troll_Hourly_measured_2021 = Time_Concat(TIME_T_conc_Measured_2021)
 
 
-plot_Vect_Weekly(WSPD_Troll_Hourly_measured_2020, WSPD_Troll_Hourly_Calculated_2020, "Week",
-                 "WSPD in m/s","Measured","Calculated","Weekly Wind at Troll Measured vs Calculated")
+#plot_Vect_Weekly(WSPD_Troll_Hourly_Calculated_2020,WSPD_Troll_Hourly_measured_2020,  "Week",
+#                "WSPD in m/s","Calculated","Measured","Troll 2020 by week")
 
-plot_histogram(WSPD_Troll_Hourly_measured_2020,WSPD_Troll_Hourly_Calculated_2020, "Distribution of Wind Speeds Measured vs Calculated")
+#plot_histogram(WSPD_Troll_Hourly_measured_2020,WSPD_Troll_Hourly_Calculated_2020, "Distribution of Wind Speeds Measured vs Calculated")
+
+#plot_Vect_Daily(WSPD_Vect_Sleipner_Calculated,WSPD_Vect_Sleipner_Measured,"Hour","Average WSPD", "Average WSPD Calculated", "Average WSPD Measured","Sleipner March 2021")
+#plot_Vect_Daily(WSPD_Vect_Troll_Calculated,WSPD_Vect_Troll_Measured,"Hour","Average WSPD", "Average WSPD Calculated", "Average WSPD Measured", "Troll July 2020")
+
+#plot_Vect_hourly(WSPD_Vect_Sleipner_Calculated,WSPD_Vect_Sleipner_Measured,"Hour","WSPD", "WSPD Calculated", " WSPD Measured","Sleipner March 2021")
+plot_Vect_hourly(WSPD_Vect_Troll_Calculated,WSPD_Vect_Troll_Measured,"Hour","WSPD", "WSPD Calculated", "WSPD Measured", "Troll July 2020")
+
+#plot_Vect_hourly_single(WSPD_Vect_Troll_Measured,"Hour","WSPD", "WSPD measured", "Troll July 2020")

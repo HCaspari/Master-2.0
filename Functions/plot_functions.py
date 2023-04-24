@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 from route_handling import mac_windows_file_handle
 import matplotlib as mpl
+import math
 #Input stats
 mean_wind_speed = 10 #knots
 mean_wind_direction = 90 #degrees
@@ -54,7 +55,7 @@ def plot_power(title, y_axis, x_label, y_label):
     plt.show()
     return 0
 
-def plot_something(title, x_axis, y_axis, x_label, y_label):
+def plot_something(title, y_axis, x_label, y_label):
     """
     :param title: Title of graph
     :param x_axis: What goes on the x-axis
@@ -63,9 +64,8 @@ def plot_something(title, x_axis, y_axis, x_label, y_label):
     :param y_label: y_label
     :return: Shows graph
     """
-
+    plt.ylim(0,20)
     plt.plot(y_axis)
-    plt.xticks(x_axis)
     plt.title(title)
     plt.xlabel(x_label)
     plt.ylabel(y_label)
@@ -82,9 +82,6 @@ def histogram(filename, title):
     """
     columns = ['number', 'speed']
     df1 = pd.read_csv(filename,header = None, names=columns)
-    #speeds_observed = []
-    #speeds_observed.append(df1["speed"].value_counts())
-    #print(speeds_observed)
 
     plt.hist(df1['speed'], edgecolor='black', range=[0,10], bins=10)
     plt.title(title)
@@ -131,7 +128,6 @@ Aalesund_Floro      = "Ålesund Florø"
 Floro_Bergen        = "Florø Bergen"
 Bergen_Stavanger    = "Bergen Stavanger"
 vector = []
-Test = "Test"
 
 #histogram(mac_windows_file_handle('Output_files/Trondheim_Aalesund_reise', Trond_Aalesund))
 #histogram(mac_windows_file_handle('Output_files/Aalesund_Floro_reise', Aalesund_Floro))
@@ -178,9 +174,6 @@ def histogramangle(filename, title):
 
     columns = ['number', 'Angle']
     df1 = pd.read_csv(filename,header = None, names=columns)
-    #speeds_observed = []
-    #speeds_observed.append(df1["speed"].value_counts())
-    #print(speeds_observed)
 
     plt.hist(df1['Angle'], edgecolor='black', range=[0,360], bins=36)
     plt.title(title)
@@ -190,15 +183,164 @@ def histogramangle(filename, title):
     return 0
 
 
-#plot_wind_data("../Output_files/Aberdeen_Færøyene/saveTWS_Aberdeen_Færøyene.csv")
-#histogramangle("Output_files/Floro_port/TWD_Floro_port.csv", Test)
-#plot_wind_data('Output_files/Floro_port/FloroPort_windspeed_winddirection.csv')
+# assume your data is stored in a list called WSPD_Vect_Troll_Old
+def plot_Vect_Weekly(datavector_one, datavector_two, xlabel, ylabel, title1, title2, title):
 
-#filnavn = "Output_files/Newcastle_Aberdeen/SS_Newcastle_Aberdeen.csv"
-#filnavn2 = "Output_files/Færøyene_Ålesund/savespeed_Færøyene_Ålesund.csv"
-#navn    = "newcastle_aberdeen"
-#navn2   = "Færøyene Ålesund"
+    weekly_avg_one = []
+    weekly_avg_two = []
+    if len(datavector_one) > len(datavector_two):
+        datavector_one = datavector_one[:len(datavector_two)]
+    if len(datavector_two) > len(datavector_one):
+        datavector_two = datavector_two[:len(datavector_one)]
 
-#histogram(mac_windows_file_handle(filnavn),navn)
-#histogram(mac_windows_file_handle(filnavn2),navn2)
+    # Create a list of indices corresponding to each day
+    indices = [i for i in range(0, len(datavector_one), 168)]
 
+    # Calculate the average for each week in first list (168 hours)
+    for i in range(len(datavector_one)):
+        #  Checks vector for nan values, if discovered, uses prior value
+        if math.isnan(datavector_one[i]):
+            datavector_one[i] = datavector_one[i-1]
+        if math.isnan(datavector_two[i]):
+            datavector_two[i] = datavector_two[i-1]
+
+    #check for remaining nan-values
+    for i in range(len(datavector_one)):
+        #  Checks vector for nan values, if discovered, uses prior value
+        if math.isnan(datavector_one[i]):
+            print("nan value at index",i)
+        if math.isnan(datavector_two[i]):
+            print("nan value at index",i)
+
+    for i in indices:
+        weekly_avg_one.append(sum(datavector_one[i:i + 168]) / 168)
+        weekly_avg_two.append(sum(datavector_two[i:i + 168]) / 168)
+
+    # Create the figure and axes objects
+    fig, ax = plt.subplots()
+
+    # Plot the first graph
+    ax.plot(weekly_avg_one, label=title1)
+
+    # Plot the second graph
+    ax.plot(weekly_avg_two, label=title2, color='red')
+
+    # Add a legend
+    ax.legend()
+
+    # Calculate the correlation coefficient
+
+    corr = np.corrcoef(datavector_one, datavector_two)[0, 1]
+
+    # Display the correlation coefficient
+    print(f"The correlation coefficient between y1 and y2 is {corr}")
+
+    # Show the plot
+
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.title(title)
+    plt.show()
+
+    return 0
+
+def plot_Vect_Daily(datavector_one, datavector_two, xlabel, ylabel, title1, title2, title):
+
+    if len(datavector_one) > len(datavector_two):
+        datavector_one = datavector_one[:len(datavector_two)]
+    if len(datavector_two) > len(datavector_one):
+        datavector_two = datavector_two[:len(datavector_one)]
+
+    # Create a list of indices corresponding to each day
+    indices = [i for i in range(0, len(datavector_one), 24)]
+
+    # Calculate the average for each day
+    daily_avg = [sum(datavector_one[i:i + 24]) / 24 for i in indices]
+
+    # Calculate the average for each day in the second list
+    second_daily_avg = [sum(datavector_two[i:i + 24]) / 24 for i in indices]
+
+    # Create the figure and axes objects
+    fig, ax = plt.subplots()
+
+    # Plot the first graph
+    ax.plot(daily_avg, label=title1)
+
+    # Plot the second graph
+    ax.plot(second_daily_avg, label=title2, color='red')
+
+    # Add a legend
+    ax.legend()
+
+    # Calculate the correlation coefficient
+
+    corr = np.corrcoef(datavector_one, datavector_two)[0, 1]
+
+    # Display the correlation coefficient
+    print(f"The correlation coefficient between y1 and y2 is {corr}")
+
+    # Show the plot
+
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.title(title + ' daily')
+    plt.show()
+
+    return 0
+
+def plot_Vect_hourly(datavector_one, datavector_two, xlabel, ylabel, title1, title2, title):
+
+    if len(datavector_one) > len(datavector_two):
+        datavector_one = datavector_one[:len(datavector_two)]
+    if len(datavector_two) > len(datavector_one):
+        datavector_two = datavector_two[:len(datavector_one)]
+
+    # Create the figure and axes objects
+    fig, ax = plt.subplots()
+
+    # Plot the first graph
+    ax.plot(datavector_one, label=title1)
+
+    # Plot the second graph
+    ax.plot(datavector_two, label=title2, color='red')
+
+    # Add a legend
+    ax.legend()
+
+    # Show the plot
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+
+    # Calculate the correlation coefficient
+
+    corr = np.corrcoef(datavector_one, datavector_two)[0, 1]
+
+    # Display the correlation coefficient
+    print(f"The correlation coefficient between y1 and y2 is {corr}")
+    plt.ylim(0, 25)
+    plt.title(title + " hourly")
+    plt.show()
+
+    return 0
+
+def plot_Vect_hourly_single(datavector_one, xlabel, ylabel, title1, title):
+
+
+    # Create the figure and axes objects
+    fig, ax = plt.subplots()
+
+    # Plot the first graph
+    ax.plot(datavector_one, label=title1, color = "red")
+
+    # Add a legend
+    ax.legend()
+
+    # Show the plot
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+
+    plt.ylim(0, 25)
+    plt.title(title + " hourly")
+    plt.show()
+
+    return 0
