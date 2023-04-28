@@ -126,7 +126,7 @@ def read_array_from_file(filename_func):
     data_array = []
     #print(f"im reading {filename_func} now")
     for i in range(len(readdata)):
-        data_array.append(round(readdata.loc[i].iat[1],3))
+        data_array.append(round(readdata.loc[i].iat[2],3))
     #print(data_array)
     return data_array
 

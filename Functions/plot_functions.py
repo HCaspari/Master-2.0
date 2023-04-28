@@ -6,6 +6,7 @@ import pandas as pd
 from route_handling import mac_windows_file_handle
 import matplotlib as mpl
 import math
+from file_handling import read_array_from_file
 #Input stats
 mean_wind_speed = 10 #knots
 mean_wind_direction = 90 #degrees
@@ -83,17 +84,18 @@ def histogram(filename, title):
     columns = ['number', 'speed']
     df1 = pd.read_csv(filename,header = None, names=columns)
 
-    plt.hist(df1['speed'], edgecolor='black', range=[0,10], bins=10)
+    plt.hist(df1['speed'], edgecolor='black', range=[0,12], bins=12)
     plt.title(title)
-    plt.xlabel('Speed [Knots]')
+    plt.xlabel('Speed [knots]')
     plt.ylabel('Occurences')
     plt.show()
     return 0
 
+
 def plot_histogram(data1,data2,title):
 
     # Define the range of values to bin the data into
-    bins = [0,2,4,6,8,10,12,14,16,18,20,22,24]
+    bins = [0,1,2,3,4,5,6,7,8,9,10,11,12]
 
     # Calculate the histogram of the data
     hist_1, bin_edges_1 = np.histogram(data1, bins=bins)
@@ -109,20 +111,22 @@ def plot_histogram(data1,data2,title):
     #plt.bar(bins[:-1], bin_percentages_2,edgecolor='black', width=np.diff(bins), align='edge')
 
     # Create a bar plot of the percentage of values in each bin
-    plt.bar(bins[:-1], bin_percentages_1, color = "red" , edgecolor='black', width=np.diff(bins), align='edge', label = "Measured")
-    plt.bar(bins[:-1], bin_percentages_2, edgecolor='black', width=np.diff(bins), align='edge', alpha=0.5, hatch=':', label = "Calculated",
+    plt.bar(bins[:-1], bin_percentages_1, color = "red" , edgecolor='black', width=np.diff(bins), align='edge', label = "Speed retrofit")
+    plt.bar(bins[:-1], bin_percentages_2, edgecolor='black', width=np.diff(bins), align='edge', alpha=0.5, label = "Speed newbuild",
             lw=0.5)
 
     #plt.hist(data,edgecolor='black', range=[0,10], bins=bins)
     # Add axis labels and a title
     plt.legend(loc='upper right')
-    plt.xlabel('Speed in knots')
+    plt.xlabel('Speed in m/s')
     plt.ylabel('Percentage of Values')
     plt.title(title)
 
     #Show plot
     plt.show()
     return 0
+
+
 Trond_Aalesund      = "Trondheim Ålesund"
 Aalesund_Floro      = "Ålesund Florø"
 Floro_Bergen        = "Florø Bergen"
@@ -181,7 +185,6 @@ def histogramangle(filename, title):
     plt.ylabel('Occurences')
     plt.show()
     return 0
-
 
 # assume your data is stored in a list called WSPD_Vect_Troll_Old
 def plot_Vect_Weekly(datavector_one, datavector_two, xlabel, ylabel, title1, title2, title):
@@ -323,6 +326,7 @@ def plot_Vect_hourly(datavector_one, datavector_two, xlabel, ylabel, title1, tit
 
     return 0
 
+
 def plot_Vect_hourly_single(datavector_one, xlabel, ylabel, title1, title):
 
 
@@ -344,3 +348,63 @@ def plot_Vect_hourly_single(datavector_one, xlabel, ylabel, title1, title):
     plt.show()
 
     return 0
+
+def plot_Vect_daily_single(datavector_one, xlabel, ylabel, title):
+    # Create the figure and axes objects
+    fig, ax = plt.subplots()
+
+    # Create a list of indices corresponding to each day
+    indices = [i for i in range(0, len(datavector_one), 24)]
+
+    # Calculate the average for each day
+    daily_avg = [sum(datavector_one[i:i + 24]) / 24 for i in indices]
+
+    # Plot the first graph
+    ax.plot(datavector_one, label=title, color="red")
+
+    # Add a legend
+    ax.legend()
+
+    # Show the plot
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+
+    plt.ylim(0, 25)
+    plt.title(title + " daily")
+    plt.show()
+
+    return 0
+
+def plot_histogram_single(data1,title):
+    # Define the range of values to bin the data into
+    bins = [0,1,2,3,4,5,6,7,8,9,10,11,12]
+
+    # Calculate the histogram of the data
+    hist_1, bin_edges_1 = np.histogram(data1, bins=bins)
+
+
+    # Calculate the percentage of values in each bin
+    bin_percentages_1 = hist_1 / np.sum(hist_1) * 100
+
+    # Create a bar plot of the percentage of values in each bin
+    plt.bar(bins[:-1], bin_percentages_1, edgecolor='black', width=np.diff(bins), align='edge', label = "Faraoe Island - Ålesund")
+
+
+    #plt.hist(data,edgecolor='black', range=[0,10], bins=bins)
+    # Add axis labels and a title
+    plt.legend(loc='upper right')
+    plt.xlabel('Sailed speed in m/s')
+    plt.ylabel('Percentage of Values')
+    plt.title(title)
+
+    #Show plot
+    plt.show()
+    return 0
+
+#file_Alesund    = "../Output_files/Færøyene_Ålesund/savespeed_Færøyene_Ålesund.csv"
+#file_Alesund_2x = "../Output_files/Færøyene_Ålesund_2x/savespeed_Færøyene_Ålesund.csv"
+#speed_1x = read_array_from_file(file_Alesund)
+#speed_2x = read_array_from_file(file_Alesund_2x)
+
+#plot_histogram_single(speed_2x,"Speed with newbuild")
+#plot_histogram(speed_1x,speed_2x,"Speed with newbuild")

@@ -110,7 +110,7 @@ def main(route, iteration, date_of_simulation):
     true_wind_speed_vector          = []
     true_wind_direction_vector      = []
     datestamp_vector                = [date_of_simulation]
-
+    battery_use_vector              = []
     #np.append(tot_sailing_dist,[1])
 
     for i in range(len(route)-1): #create itteration through route
@@ -125,8 +125,11 @@ def main(route, iteration, date_of_simulation):
         AWS                 = Apparent_Wind_Speed(TWS,vessel_speed,TWD)                                  #Apparent wind speed
         AWA                 = alpha(vessel_speed,vessel_heading,WSN,WSE )                                #Apparent wind angle
         Forward_Force,Perp_Force = Force_produced(AWS, AWA)                           #Forward and Perpendicular force from Flettners
-        vessel_speed    = round(Speed_achieved_old(Perp_Force, Forward_Force),3)    #Sailing Speed obtained in KNOTS
 
+        #With utilization of modern vessel design.
+        Forward_Force       = 2.5*Forward_Force
+
+        vessel_speed,total_resistance,battery_need_power    = Speed_achieved_old(Perp_Force, Forward_Force)    #Sailing Speed obtained in KNOTS
 
         if type(Forward_Force) == MaskedConstant or type(Perp_Force) == MaskedConstant:
             print("ouchie, we have a mask", i)
@@ -145,6 +148,26 @@ def main(route, iteration, date_of_simulation):
             poor_sailing_time += sailing_time
             poor_sailing_distance += sailing_distance
 
+        ################################################
+        ################################################
+        ################################################
+        ################################################
+        ################################################
+
+
+        #use battery power commenting out zerobattery and vessel speed limiter including this
+        #REMEMBER TO CHANGE SAVEFILES TO NONBATTERY
+
+        #battery_need_power = 0
+
+        if vessel_speed < 2:
+            vessel_speed = 2
+
+        ################################################
+        ################################################
+        ################################################
+        ################################################
+
         #Append data to vectors
         sailing_speed_vector.append(vessel_speed)
         coordinate_sailing_time.append(sailing_time)
@@ -152,6 +175,7 @@ def main(route, iteration, date_of_simulation):
         true_wind_direction_vector.append(TWD)
         apparent_wind_speed_observed.append(AWS)
         tot_sailing_dist += sailing_distance
+        battery_use_vector.append(round(battery_need_power*(sailing_distance/2),3))
 
         route_sailing_time += sailing_time                          #Sailing time of total route
         if len(coordinate_sailing_time) != 0:
@@ -173,7 +197,7 @@ def main(route, iteration, date_of_simulation):
     #coordinate_sailing_time         = np.array(coordinate_sailing_time)
 
     return total_time_sailed_route,tot_sailing_dist, poor_sailing_time, poor_sailing_distance, sailing_speed_vector,\
-           true_wind_speed_vector, true_wind_direction_vector, route_sailing_time, coordinate_sailing_time, datestamp_vector
+           true_wind_speed_vector, true_wind_direction_vector, route_sailing_time, coordinate_sailing_time, datestamp_vector, battery_use_vector
 
 
 
@@ -222,14 +246,16 @@ def simulation(csv,routenumber,interval):
     VS_simulation_vector            = []
     TWS_simulation_vector           = []
     TWD_simulation_vector           = []
+    battery_use_iteration_vect      = []
     date_of_simulation = starttime
     poor_sailing_speed = 0
-
+    total_battery_needed            = []
 
     for iteration in range(0,int(time_of_simulation/hour_intervall)) : #repeating simulation for each hour_intervall through a year
     #for iteration in range(8400,8600) : #repeating simulation for each hour_intervall through a year
 
-        time_of_trip_1,tot_sailing_dist_1, poor_sailing_time_1, poor_sailing_distance_1, sailing_speed_vector, TWS_vector, TWD_vector, route_sailing_time, coordinate_sailing_time, datestamp = main(route_travel,iteration, date_of_simulation)
+        time_of_trip_1,tot_sailing_dist_1, poor_sailing_time_1, poor_sailing_distance_1, sailing_speed_vector, TWS_vector, TWD_vector,\
+        route_sailing_time, coordinate_sailing_time, datestamp, battery_use_vector = main(route_travel,iteration, date_of_simulation)
         time_of_trip[int(iteration)]            = time_of_trip_1
         tot_sailing_dist[int(iteration)]        = tot_sailing_dist_1
         poor_sailing_time[int(iteration)]       = poor_sailing_time_1
@@ -239,18 +265,8 @@ def simulation(csv,routenumber,interval):
         TWD_simulation_vector.extend(TWD_vector)
         datestamp_simulation_vector.extend(datestamp)
 
-#Komenterer ut dette når jeg simultankjører
-        #if iteration%1000 == 0 and iteration != 0 or iteration == 1:
-        #    poor_sailing_speed = 0
-        #    if poor_sailing_time_1 > 0:
-        #        poor_sailing_speed = poor_sailing_distance_1 / poor_sailing_time_1
-        #    print(f"[1] speed sailing the distance of {tot_sailing_dist[iteration]} nm\n"
-        #          f" is {np.average(sailing_speed_vector[0:iteration])} knots")
-        #    print(f"[2] total iteration sailed at less than 1 knot is {poor_sailing_time[iteration]}\n"
-        #          f"[3] this iteration is used to sail {poor_sailing_distance[iteration]} nm\n"
-        #          f"[4] at an average speed of {poor_sailing_speed} knots")
-        #    #print(f"[5] The wind at this point in time was measured to be {TWS_simulation_vector[iteration]} with an AWA of {TWD_simulation_vector[iteration]}")
-        #    print(f"[6] {datetime.now()},iteration is {iteration}")
+        battery_use_iteration_vect.extend(battery_use_vector)
+        total_battery_needed.append(sum(battery_use_vector))
 
         if iteration%100 == 0:
             print("progress is made, iteration:", iteration, "on route", routenumber)
@@ -262,8 +278,9 @@ def simulation(csv,routenumber,interval):
     print(f"Throughout all iterations, the vessel sails less than one knot for an average of {np.average(poor_sailing_time)} hours\n"
           f"this iteration is used to sail on average {np.average(poor_sailing_distance)} nautical miles\n"
           f"at an average speed of {poor_sailing_speed} knots")
-    print(np.average(time_of_trip))
-
+    print(f"the average batterypower needed for each iteration of the simulation is {np.average(total_battery_needed)}"
+          f"with a max used batterypower over one simulation of {max(total_battery_needed)}"
+          f"and a min used batterypower over one simulation of {min(total_battery_needed)}")
     #Read files:
     #Trond_Ålesund
     file_speed_Trond_Aalesund   = mac_windows_file_handle("Output_files/Trondheim_Ålesund/savespeed_TrondAales.csv")
@@ -316,9 +333,9 @@ def simulation(csv,routenumber,interval):
 
     #Færøyene Ålesund
 
-    file_speed_Faer_Aal = mac_windows_file_handle("Output_files/Færøyene_Ålesund/savespeed_Færøyene_Ålesund.csv")
-    file_TWS_Faer_Aal   = mac_windows_file_handle("Output_files/Færøyene_Ålesund/saveTWD_Færøyene_Ålesund.csv")
-    file_TWD_Faer_Aal   = mac_windows_file_handle("Output_files/Færøyene_Ålesund/saveTWS_Færøyene_Ålesund.csv")
+    file_speed_Faer_Aal = mac_windows_file_handle("Output_files/Færøyene_Ålesund_2x_with_BATTERY/savespeed_Færøyene_Ålesund.csv")
+    file_TWS_Faer_Aal   = mac_windows_file_handle("Output_files/Færøyene_Ålesund_2x_with_BATTERY/saveTWD_Færøyene_Ålesund.csv")
+    file_TWD_Faer_Aal   = mac_windows_file_handle("Output_files/Færøyene_Ålesund_2x_with_BATTERY/saveTWS_Færøyene_Ålesund.csv")
     datestamp_file_8    = mac_windows_file_handle("Output_files/Datestamps/datestamp8.csv")
 
 
@@ -478,7 +495,7 @@ def runsimulation(route, interval):
     Aberdeen_Faer       = mac_windows_file_handle("Route_data/Aberdeen_Færøyene_Route/Route_Aberdeen_Færøyene.csv")
     Amst_New            = mac_windows_file_handle("Route_data/Amsterdam_Newcastle_Route/Route_Amsterdam_Newcastle.csv")
     DK_Amst             = mac_windows_file_handle("Route_data/Danmark_Amsterdam_Route/Route_Danmark_Amsterdam.csv")
-    Faer_Aale           = mac_windows_file_handle("Route_data/Færøyene_Ålesund_Route/Route_Færøyene_Ålesund.csv")
+    Faer_Aale           = mac_windows_file_handle("Route_data/Ålesund_Færøyene_Route/Route_Ålesund_Færøyene.csv")
     New_Aber            = mac_windows_file_handle("Route_data/Newcastle_Aberdeen_Route/Route_Newcastle_Aberdeen.csv")
     Aale_DK             = mac_windows_file_handle("Route_data/Ålesund_Danmark_Route/Route_Ålesund_DK.csv")
     Floro_port          = mac_windows_file_handle("Route_data/Floro_port/Floro_port.csv")
@@ -570,8 +587,9 @@ def test_func():
 
 
 #reset_index()
-print("Everything is working 1241, 16/03")
-steps = 100
+steps = 1000
+print(f"Everything is working 1241, 16/03 "
+      f"running simulation with steps {steps}")
 #runsimulation(1,steps)
 #runsimulation(2,steps)
 #runsimulation(3,steps)
@@ -579,7 +597,7 @@ steps = 100
 #runsimulation(5,steps)
 #runsimulation(6,steps)
 #runsimulation(7,steps)
-#runsimulation(8,steps)
+runsimulation(8,steps)
 #runsimulation(9,steps)
 #runsimulation(10,steps)
 #runsimulation(11,steps)
@@ -592,6 +610,6 @@ steps = 100
 
 
 print("Finished <3<3")
-print("Bonus print: Mathias er digg, kl. 1112, den 20032023")
+print("Bonus print: Mathias er digg, kl. 1501, den 28/04/2023")
 
 

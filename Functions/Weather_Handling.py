@@ -177,7 +177,6 @@ WDIR_S_clean  = WDIR_S_masked[~WDIR_S_masked.mask]
 
 
 
-
 #print("first 1 lat",northward_lat_1[0])
 #print("last 1 lat",northward_lat_1[-1])
 #print("first 1 lon",northward_lon_1[0])
@@ -587,18 +586,20 @@ def Time_Concat(ten_mins):
 
     return hourly_avg
 
-WSPD_Vect_Sleipner_Measured, WDIR_Vect_Sleipner_Measured = find_average_weather_Sleipnir_Measured()
-WSPD_Vect_Sleipner_Calculated, WDIR_Vect_Sleipner_Calculated = get_calculated_weather_vect_Sleipner()
+#WSPD_Vect_Sleipner_Measured, WDIR_Vect_Sleipner_Measured = find_average_weather_Sleipnir_Measured()
+#WSPD_Vect_Sleipner_Calculated, WDIR_Vect_Sleipner_Calculated = get_calculated_weather_vect_Sleipner()
 
-WSPD_Vect_Troll_Measured, WDIR_Vect_Troll_Measured = find_average_weather_Troll_Measured()
-WSPD_Vect_Troll_Calculated, WDIR_Vect_Troll_Calculated = get_calculated_weather_vect_Troll()
+#WSPD_Vect_Troll_Measured, WDIR_Vect_Troll_Measured = find_average_weather_Troll_Measured()
+#WSPD_Vect_Troll_Calculated, WDIR_Vect_Troll_Calculated = get_calculated_weather_vect_Troll()
 
-a = []
-for i in range(31):
-    a.append(i)
-#plot_something("Sleipner_Calculated", WSPD_Vect_Sleipner_Calculated,"Day","WSPD")
-#plot_something("Sleipner_Measured", WSPD_Vect_Sleipner_Measured,"Day","WSPD")
-plot_something("Troll Measured", WSPD_Vect_Troll_Measured,"Hour","WSPD")
+#WSPD_Troll_Year_calc, WDIR_year_calc = get_calculated_weather_vect_Troll_year(2020)
+#WSPD_Troll_year_measured, WDIR_year_measured = find_average_weather_Troll_Measured()
+#a = []
+#for i in range(31):
+#    a.append(i)
+#plot_something("Sleipner_Calculated", WSPD_Vect_Sleipner_Calculated,"Day","Wind Speed")
+#plot_something("Sleipner_Measured", WSPD_Vect_Sleipner_Measured,"Day","Wind Speed")
+#plot_something("Troll Measured", WSPD_Vect_Troll_Measured,"Hour","Wind Speed")
 
 
 #print("Average wind Troll new july of 2020 ", np.average(WSPD_Vect_Troll_Measured))
@@ -618,18 +619,18 @@ for i in range(31):
 #print(add_days_to_date(Time_T_clean[0]))
 #print(add_days_to_date(Time_T_clean[-1]))
 
-#plot_Vect_Daily(WSPD_Vect_Sleipner_Calculated,WSPD_Vect_Sleipner_Measured,"Day","WSPD", "WSPD Calculated", " WSPD Measured","Sleipner March 2021")
-#plot_Vect_Daily(WSPD_Vect_Troll_Calculated,WSPD_Vect_Troll_Measured,"Day","WSPD", "WSPD Calculated", "WSPD Measured", "Troll July 2020")
+#plot_Vect_Daily(WSPD_Vect_Sleipner_Calculated,WSPD_Vect_Sleipner_Measured,"Day","Wind Speed", "Wind Speed Calculated", " Wind Speed Measured","Sleipner March 2021")
+#plot_Vect_Daily(WSPD_Vect_Troll_Calculated,WSPD_Vect_Troll_Measured,"Day","Wind Speed", "Wind Speed Calculated", "Wind Speed Measured", "Troll July 2020")
 
 
 
 
 #WSPD_Troll_Hourly_Calculated_2019, WDir_Vect_Troll_Calculated_2019 = get_calculated_weather_vect_Troll_year(2019)
-WSPD_Troll_Hourly_Calculated_2020, WDir_Vect_Troll_Calculated_2020 = get_calculated_weather_vect_Troll_year(2020)
+#WSPD_Troll_Hourly_Calculated_2020, WDir_Vect_Troll_Calculated_2020 = get_calculated_weather_vect_Troll_year(2020)
 #WSPD_Troll_Hourly_Calculated_2021, WDir_Vect_Troll_Calculated_2021 = get_calculated_weather_vect_Troll_year(2021)
 
 #WSPD_T_conc_Measured_2021, WDIR_T_conc_Measured_2021, TIME_T_conc_Measured_2021 = combine_troll("2021 Troll", 2021)
-WSPD_T_conc_Measured_2020, WDIR_T_conc_Measured_2020, TIME_T_conc_Measured_2020 = combine_troll("2020 Troll", 2020)
+#WSPD_T_conc_Measured_2020, WDIR_T_conc_Measured_2020, TIME_T_conc_Measured_2020 = combine_troll("2020 Troll", 2020)
 #WSPD_T_conc_measured_2019, WDIR_T_conc_Measured_2019, TIME_T_conc_Measuredd_2019 = combine_troll("2019 Troll", 2019)
 
 #2019
@@ -638,7 +639,7 @@ WSPD_T_conc_Measured_2020, WDIR_T_conc_Measured_2020, TIME_T_conc_Measured_2020 
 #TIME_Troll_Hourly_measured_2019 = Time_Concat(TIME_T_conc_Measured_2019)
 
 #2020
-WSPD_Troll_Hourly_measured_2020 = Hourly_Concat(WSPD_T_conc_Measured_2020)
+#WSPD_Troll_Hourly_measured_2020 = Hourly_Concat(WSPD_T_conc_Measured_2020)
 #WDIR_Troll_Hourly_Measured_2020 = Hourly_Concat(WDIR_T_conc_Measured_2020)
 #TIME_Troll_Hourly_measured_2020 = Time_Concat(TIME_T_conc_Measured_2020)
 
@@ -649,14 +650,20 @@ WSPD_Troll_Hourly_measured_2020 = Hourly_Concat(WSPD_T_conc_Measured_2020)
 
 
 #plot_Vect_Weekly(WSPD_Troll_Hourly_Calculated_2020,WSPD_Troll_Hourly_measured_2020,  "Week",
-#                "WSPD in m/s","Calculated","Measured","Troll 2020 by week")
+#                "Wind Speed in m/s","Calculated","Measured","Troll 2020 by week")
 
 #plot_histogram(WSPD_Troll_Hourly_measured_2020,WSPD_Troll_Hourly_Calculated_2020, "Distribution of Wind Speeds Measured vs Calculated")
 
-#plot_Vect_Daily(WSPD_Vect_Sleipner_Calculated,WSPD_Vect_Sleipner_Measured,"Hour","Average WSPD", "Average WSPD Calculated", "Average WSPD Measured","Sleipner March 2021")
-#plot_Vect_Daily(WSPD_Vect_Troll_Calculated,WSPD_Vect_Troll_Measured,"Hour","Average WSPD", "Average WSPD Calculated", "Average WSPD Measured", "Troll July 2020")
+#plot_Vect_Daily(WSPD_Vect_Sleipner_Calculated,WSPD_Vect_Sleipner_Measured,"Hour","Average Wind Speed", "Average Wind Speed Calculated", "Average Wind Speed Measured","Sleipner March 2021")
+#plot_Vect_Daily(WSPD_Vect_Troll_Calculated,WSPD_Vect_Troll_Measured,"Hour","Average Wind Speed", "Average Wind Speed Calculated", "Average Wind Speed Measured", "Troll July 2020")
 
-#plot_Vect_hourly(WSPD_Vect_Sleipner_Calculated,WSPD_Vect_Sleipner_Measured,"Hour","WSPD", "WSPD Calculated", " WSPD Measured","Sleipner March 2021")
-plot_Vect_hourly(WSPD_Vect_Troll_Calculated,WSPD_Vect_Troll_Measured,"Hour","WSPD", "WSPD Calculated", "WSPD Measured", "Troll July 2020")
+#plot_Vect_hourly(WSPD_Vect_Sleipner_Calculated,WSPD_Vect_Sleipner_Measured,"Hour","Wind Speed", "Wind Speed Calculated", " Wind Speed Measured","Sleipner March 2021")
+#plot_Vect_hourly(WSPD_Vect_Troll_Calculated,WSPD_Vect_Troll_Measured,"Hour","Wind Speed", "Wind Speed Calculated", "Wind Speed Measured", "Troll July 2020")
 
-#plot_Vect_hourly_single(WSPD_Vect_Troll_Measured,"Hour","WSPD", "WSPD measured", "Troll July 2020")
+#plot_Vect_hourly_single(WSPD_Vect_Troll_Measured,"Hour","Wind Speed", "Wind Speed measured", "Troll July 2020")
+
+#print(np.mean(WSPD_Troll_Year))
+#print(np.mean(WSPD_Vect_Sleipner_Calculated))
+#print(np.mean(WSPD_Vect_Sleipner_Measured))
+#print(np.mean(WSPD_Vect_Troll_Calculated))
+#print(np.mean(WSPD_Vect_Troll_Measured))
