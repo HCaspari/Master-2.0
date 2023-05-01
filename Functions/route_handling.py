@@ -9,6 +9,7 @@ from geopy.distance import geodesic
 import platform
 
 
+
 #write data found to file called filename_func
 def write_to_file(data,filename_func):
     pd.DataFrame(data).to_csv(filename_func)
@@ -177,7 +178,7 @@ def generate_intermediate_points(start_point, end_point, num_points):
         intermediate_points.append((round(latitude,3), round(longitude,3)))
 
     return intermediate_points
-test_route = [(0,0),(10,10),(20,20)]
+#test_route = [(0,0),(10,10),(20,20)]
 
 def equal_dist():
     start_point = Route_Trond_Aal[0]
@@ -197,7 +198,7 @@ def equal_dist():
     folium.PolyLine(points, color="blue", weight=2.5, opacity=1).add_to(maptest)
     maptest.show_in_browser()
     return 0
-
+#equal_dist()
 
 
 def generate_intricate_route(route,points):
@@ -215,6 +216,8 @@ def generate_intricate_route(route,points):
         newroute.append((round(end_position[0],3),round(end_position[1],3)))
     return newroute
 
+#generate_intricate_route(Route_Trond_Aal,4)
+
 def testthingy():
     print(f"Test Short route start {test_route[0]}")
     print(f"Test Short route end {test_route[-1]}")
@@ -230,12 +233,13 @@ def testthingy():
     print(f"lenght of short route: {len(Route_Trond_Aal)}")
     print(f"lenght of long route: {len(Route_Trond_Aal_Long)}")
     return 0
+#testthingy()
+#Route_Trond_Aal_Long = generate_intricate_route(Route_Trond_Aal, 3)#
 def createmap(trip_vector):
     """
     :param trip_vector: A vector of coordinates over route
     :return: a map that shows given route
     """
-    middle_of_route = [59.6131,5.0301]
 
     foliummap = folium.Map(location=[59.6131, 5.0301], tiles="Stamen Terrain", zoom_start=5)
     #foliummap.show_in_browser()
@@ -257,6 +261,7 @@ def createmap(trip_vector):
 #createmap(Route_Trond_Aal)
 #Specific_route_TA = generate_intricate_route(Route_Trond_Aal,15)
 #createmap(Specific_route_TA)
+
 def distance_calc(route):
     totaldist = 0
     for i in range(len(route)-1):
@@ -285,7 +290,7 @@ def distance_between_points(route):
 intricate_Trond_aal = generate_intricate_route(Route_Trond_Aal,15)
 intricate_Aal_Floro = generate_intricate_route(Route_Aal_Floro,15)
 intricate_Floro_Brg = generate_intricate_route(Route_Floro_Bergen,15)
-intricate_Brg_Stvg  = generate_intricate_route(Route_Bergen_Stvg,15)
+intricate_Brg_Stvg  = generate_intricate_route(Route_Bergen_Stvg,10)
 route_Trond_Aals_intricate  = mac_windows_file_handle("Route_data/route_Trond_Aales_Intricate")
 route_Aals_Floro_intricate  = mac_windows_file_handle("Route_data/route_Aales_Floro_Intricate")
 route_Floro_Brg_intricate   = mac_windows_file_handle("Route_data/route_Floro_Brg_Intricate")
@@ -360,7 +365,7 @@ def auto_create_Route(start_point_coordinates, end_point_coordinates, midpoint1 
 Aalesund        = (62.48342017643765, 5.922191001412515)
 Stavanger       = (58.92502271580142, 5.580428183923716)
 Bergen          = (60.134509001387705, 4.958929708820197)
-Mid_Danmark_stvg= (58.534289780314545, 5.195293578632795)
+Mid_Danmark_stvg= (58.534289780314545, 4.595293578632795)
 Færøyene        = (62.01263234289485, -6.774748315943504)
 Midpoint_Fa_Ab  = (58.80320072664799, -1.1708712520663145)
 Aberdeen        = (57.15470822505185, -2.1185733842766115)
@@ -369,8 +374,12 @@ Amsterdam       = (52.47169283545967, 4.537125962881187)
 Danmark         = (55.47341900177149, 8.301921187910168)
 Midpoint_1_Dan_Aal  = (60.44513450388027, 3.418535867789226)
 Midpoint_2_Dan_Aal  = (62.324854695720006, 5.0124722561975235)
+Florø           = (61.476094547417446, 4.716076439675587)
 
-
+#createmap([Færøyene,Stavanger])
+#createmap([Færøyene,(61.242101, -0.405119),Stavanger])
+#Fær_Stvg = auto_create_Route(Færøyene,Stavanger,(61.242101, -0.405119))
+#createmap(Fær_Stvg)
 #to create route:
 #1. Run create_folder_with_files(Route_name,directory_path)
 #   Directory path is usually = "C:\\Users\\haako\\Documents\\10. Semester\\MASTAH\\Master-2.0\\Output_files"
@@ -381,9 +390,9 @@ Midpoint_2_Dan_Aal  = (62.324854695720006, 5.0124722561975235)
 
 
 
-route_stv_Dk        = auto_create_Route(Stavanger,Danmark,Mid_Danmark_stvg)
-filename_Stv_Dk     = mac_windows_file_handle("Route_data/Stavanger_Danmark_Route/Route_Stavanger_Danmark.csv")
-write_to_file(route_stv_Dk,filename_Stv_Dk)
+#route_stv_Dk        = auto_create_Route(Stavanger,Danmark,Mid_Danmark_stvg)
+#filename_Stv_Dk     = mac_windows_file_handle("Route_data/Stavanger_Danmark_Route/Route_Stavanger_Danmark.csv")
+#write_to_file(route_stv_Dk,filename_Stv_Dk)
 #route_Aber_Faer,route_Faer_Aales,route_Aales_Dk,route_Dk_Amst,route_DK_Stav,route_New_Aber,route_Amst_New = create_routes()
 #route_New_Faer = auto_create_Route(Newcastle,Færøyene,Midpoint_Fa_Ab)
 #print(route_stv_Dk)
@@ -477,3 +486,97 @@ def invert_csv(csv_File):
 #4. run route_start_end = auto_create_route(Startcoordinate, endcoordinate, optional midcoordinate 1, optional midcoordinate 2)
 #5. run write_to_file(route_start_end), this writes route coordinates to file
 #6. run main(routename, simulation count)
+
+def auto_create_Route_2(start_point_coordinates, end_point_coordinates, midpoint1 = (), midpoint2 = (),midpoint3 = (),midpoint4 = (),midpoint5 = ()):
+
+    route_step_1 = [start_point_coordinates, midpoint1]  # first segment of 1 step route
+    route_step_2 = [midpoint1, midpoint2]  # second segment of 1 step route
+    route_step_3 = [midpoint2, midpoint3]  # second segment of 1 step route
+    route_step_4 = [midpoint3, midpoint4]  # second segment of 1 step route
+    route_step_5 = [midpoint4, end_point_coordinates]  # second segment of 1 step route
+
+    distance_step_1 = geodesic(start_point_coordinates, midpoint1).kilometers  # distance of first step
+    distance_step_2 = geodesic(midpoint1, midpoint2).kilometers  # distance of second step
+    distance_step_3 = geodesic(midpoint2, midpoint3).kilometers  # distance of second step
+    distance_step_4 = geodesic(midpoint3, midpoint4).kilometers  # distance of second step
+    distance_step_5 = geodesic(midpoint4, end_point_coordinates).kilometers  # distance of second step
+
+    distance_tot = int(np.floor((distance_step_1 + distance_step_2 + distance_step_3 + distance_step_4 +distance_step_5) // 7))  # distance div by 7
+
+    Route1 = generate_intricate_route(route_step_1, distance_tot)  # route part 1
+    Route2 = generate_intricate_route(route_step_2, distance_tot)  # route part 2
+    Route3 = generate_intricate_route(route_step_3, distance_tot)  # route part 3
+    Route4 = generate_intricate_route(route_step_4, distance_tot)  # route part 4
+    Route5 = generate_intricate_route(route_step_5, distance_tot)  # route part 5
+
+
+
+    Route = Route1 + Route2 + Route3 + Route4 + Route5
+    createmap(Route)
+    return Route
+
+def auto_create_Route_3(start_point_coordinates, end_point_coordinates, midpoint1 = (), midpoint2 = (),midpoint3 = (),midpoint4 = (),midpoint5 = ()):
+
+    route_step_1 = [start_point_coordinates, midpoint1]  # first segment of 1 step route
+    route_step_2 = [midpoint1, midpoint2]  # second segment of 2. step route
+    route_step_3 = [midpoint2, midpoint3]  # second segment of 3. step route
+    route_step_4 = [midpoint3, midpoint4]  # second segment of 4. step route
+    route_step_5 = [midpoint4, midpoint5]  # second segment of 5. step route
+    route_step_6 = [midpoint5, end_point_coordinates]  # second segment of final step route
+
+    distance_step_1 = geodesic(start_point_coordinates, midpoint1).kilometers  # distance of 1. step
+    distance_step_2 = geodesic(midpoint1, midpoint2).kilometers  # distance of 2. step
+    distance_step_3 = geodesic(midpoint2, midpoint3).kilometers  # distance of 3. step
+    distance_step_4 = geodesic(midpoint3, midpoint4).kilometers  # distance of 4. step
+    distance_step_5 = geodesic(midpoint4, midpoint5).kilometers  # distance of 5. step
+    distance_step_6 = geodesic(midpoint5, end_point_coordinates).kilometers  # distance of final step
+
+    distance_tot = int(np.floor((distance_step_1 + distance_step_2 + distance_step_3 + distance_step_4 + distance_step_5 + distance_step_6) // 7))  # distance div by 7
+
+    Route1 = generate_intricate_route(route_step_1, distance_tot)  # route part 1
+    Route2 = generate_intricate_route(route_step_2, distance_tot)  # route part 2
+    Route3 = generate_intricate_route(route_step_3, distance_tot)  # route part 3
+    Route4 = generate_intricate_route(route_step_4, distance_tot)  # route part 4
+    Route5 = generate_intricate_route(route_step_5, distance_tot)  # route part 5
+    Route6 = generate_intricate_route(route_step_6, distance_tot)  # route part 6
+
+    Route = Route1 + Route2 + Route3 + Route4 + Route5 + Route6
+
+    #Creates a tripvector of points from start_point to end_point with stepdistance of max 7 km.
+    # (meaning weather will always be recalculated when entering new 0.125 degree lat/lon which is weather granularity
+    #print("no route found")
+    #createmap(Route)
+    return Route
+
+#route_poor = [Danmark,Mid_Danmark_stvg,Aalesund,Aberdeen,Newcastle,Amsterdam]
+#route_good = [Danmark,Mid_Danmark_stvg,Florø,Færøyene,Midpoint_Fa_Ab,Newcastle,Amsterdam]
+
+#Route_good_complete = auto_create_Route_3(Danmark, Amsterdam,Mid_Danmark_stvg, Midpoint_2_Dan_Aal, Aalesund,Aberdeen,Newcastle)
+#Route_bad_complete = auto_create_Route_3(Danmark, Amsterdam,Mid_Danmark_stvg,   Florø,              Færøyene,Midpoint_Fa_Ab,Newcastle)
+#create_route_files("Good_Route",file_path_routes)
+#create_route_files("Poor_Route",file_path_routes)
+#create_folder_with_files("Poor_Route",route_directory)
+
+#write_to_file(Route_good_complete,"../Route_data/Good_Route/Route_Good_Route.csv")
+#write_to_file(Route_bad_complete,"../Route_data/Poor_Route/Route_Poor_Route.csv")
+
+def read_route2(csv):
+    """
+    reads route data from a csv file
+    :param csv: file containing route data
+    :return: vector of positions thorugh route
+    """
+    df = pd.read_csv(csv)
+    latitudes   = df["latitude"]
+    longitudes = df["longitude"]
+    positions = []
+    for i in range(len(latitudes)):
+        positions.append((latitudes[i],longitudes[i]))
+    positions = np.asarray(positions)
+    return positions
+
+#Poor_route = read_route2("../Route_data/Poor_Route/Poor_route.csv")
+#createmap(Poor_route)
+
+#Good_route = read_route2("../Route_data/Good_Route/Good_route.csv")
+#createmap(Good_route)

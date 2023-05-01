@@ -6,7 +6,7 @@ import re
 import csv
 from route_handling import mac_windows_file_handle
 
-
+import folium
 
 #Input stats
 mean_wind_speed = 10 #knots
@@ -115,6 +115,7 @@ def find_vals():
     df.to_csv(mac_windows_file_handle("ais_data_v4.csv"))
     return 0
 
+
 def read_array_from_file(filename_func):
     """
     function to read data from file (save time after running program through)
@@ -129,6 +130,7 @@ def read_array_from_file(filename_func):
         data_array.append(round(readdata.loc[i].iat[2],3))
     #print(data_array)
     return data_array
+
 
 def read_datestamp_from_file(datestamp_file):
     datestamp = pd.read_csv(datestamp_file)
@@ -562,5 +564,14 @@ def combine_Sleipnir():
     TIME_S_concatenated = np.concatenate(TIME_list)
     return WSPD_S_concatenated,WDIR_S_concatenated,TIME_S_concatenated
 
-WSPD_concat_2021,WDIR_concat_2021,TIME_concat_2021 = combine_troll("2021 Troll",2021)
+#WSPD_concat_2021,WDIR_concat_2021,TIME_concat_2021 = combine_troll("2021 Troll",2021)
+
+# Read the CSV file into a DataFrame
+#df = pd.read_csv('../Route_data/Poor_Route/Route_Poor_Route.csv')
+
+# Drop the column you want to remove
+#df = df.drop(df.columns[0], axis=1)
+
+# Write the updated DataFrame to a new CSV file
+#df.to_csv('../Route_data/Poor_Route/Good_route.csv', index=False)
 

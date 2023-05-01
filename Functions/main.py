@@ -361,7 +361,17 @@ def simulation(csv,routenumber,interval):
     file_TWD_Floro_port     = mac_windows_file_handle("Output_files/Floro_port/TWS_Floro_port.csv")
     datestamp_file_11       = mac_windows_file_handle("Output_files/Datestamps/datestamp11.csv")
 
+    #Poor route
+    file_speed_Poor         = mac_windows_file_handle("Output_files/Poor_Route/savespeed_Poor_Route.csv")
+    file_TWS_Poor           = mac_windows_file_handle("Output_files/Floro_port/saveTWS_Poor_Route.csv")
+    file_TWD_Poor           = mac_windows_file_handle("Output_files/Poor_Route/saveTWD_Poor_Route.csv")
+    datestamp_file_12       = mac_windows_file_handle("Output_files/Datestamps/datestamp12.csv")
 
+    #Favourable route
+    file_speed_Fav          = mac_windows_file_handle("Output_files/Good_Route/savespeed_Good_Route.csv")
+    file_TWS_Fav            = mac_windows_file_handle("Output_files/Good_Route/saveTWS_Good_Route.csv")
+    file_TWD_Fav            = mac_windows_file_handle("Output_files/Good_Route/saveTWD_Good_Route.csv")
+    datestamp_file_13       = mac_windows_file_handle("Output_files/Datestamps/datestamp13.csv")
     #Write to files
 
     if routenumber == 1:
@@ -464,6 +474,24 @@ def simulation(csv,routenumber,interval):
         add_timestamp_to_dataframe(file_TWS_Floro_port, datestamp_file_11)
         add_timestamp_to_dataframe(file_TWD_Floro_port, datestamp_file_11)
 
+    elif routenumber == 12:
+        write_to_file(VS_simulation_vector, file_speed_Poor)  # VS vector file
+        write_to_file(TWS_simulation_vector, file_TWS_Poor)  # TWS vector file
+        write_to_file(TWD_simulation_vector, file_TWD_Poor)  # TWD vector file
+        write_to_file(datestamp_simulation_vector, datestamp_file_12)  # Datestamp file
+        add_timestamp_to_dataframe(file_speed_Poor, datestamp_file_12)
+        add_timestamp_to_dataframe(file_TWS_Poor, datestamp_file_12)
+        add_timestamp_to_dataframe(file_TWD_Poor, datestamp_file_12)
+
+    elif routenumber == 13:
+        write_to_file(VS_simulation_vector, file_speed_Fav)  # VS vector file
+        write_to_file(TWS_simulation_vector, file_TWS_Fav)  # TWS vector file
+        write_to_file(TWD_simulation_vector, file_TWD_Fav)  # TWD vector file
+        write_to_file(datestamp_simulation_vector, datestamp_file_13)  # Datestamp file
+        add_timestamp_to_dataframe(file_speed_Fav, datestamp_file_13)
+        add_timestamp_to_dataframe(file_TWS_Fav, datestamp_file_13)
+        add_timestamp_to_dataframe(file_TWD_Fav, datestamp_file_13)
+
     return 0
 
 
@@ -499,6 +527,8 @@ def runsimulation(route, interval):
     New_Aber            = mac_windows_file_handle("Route_data/Newcastle_Aberdeen_Route/Route_Newcastle_Aberdeen.csv")
     Aale_DK             = mac_windows_file_handle("Route_data/Ålesund_Danmark_Route/Route_Ålesund_DK.csv")
     Floro_port          = mac_windows_file_handle("Route_data/Floro_port/Floro_port.csv")
+    Poor_route          = mac_windows_file_handle("Route_data/Poor_Route/Good_route.csv")
+    Favourable_route    = mac_windows_file_handle("Route_data/Good_Route/Poor_route.csv")
 
 
     if route == 1:
@@ -558,7 +588,14 @@ def runsimulation(route, interval):
         simulation(Floro_port, route, interval)
         print("Simulation for route in florø port is now complete")
 
-
+    if route == 12:
+        print("Running simulation for poor route now")
+        simulation(Poor_route, route, interval)
+        print("Simulation for Poor Route  is now complete")
+    if route == 13:
+        print("Running simulation for Favourable route now")
+        simulation(Favourable_route, route, interval)
+        print("Simulation for Favourable route is now complete")
     return 0
 
 
@@ -597,10 +634,12 @@ print(f"Everything is working 1241, 16/03 "
 #runsimulation(5,steps)
 #runsimulation(6,steps)
 #runsimulation(7,steps)
-runsimulation(8,steps)
+#runsimulation(8,steps)
 #runsimulation(9,steps)
 #runsimulation(10,steps)
 #runsimulation(11,steps)
+runsimulation(12,steps)
+runsimulation(13,steps)
 
 
 
