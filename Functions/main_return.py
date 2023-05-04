@@ -4,7 +4,7 @@ import geopy.distance #package to calculate distance between two lat/lon points
 from numpy.ma.core import MaskedConstant
 from datetime import datetime
 from file_handling import write_to_file, read_route, add_timestamp_to_dataframe
-from Force_functions import Force_produced, Speed_achieved_old
+from Force_functions import Force_produced, Speed_achieved_Valid
 from Weather_Handling import getweather, r2d, True_wind_direction, True_wind_speed, Apparent_Wind_Speed, Apparent_wind_angle, alpha, add_hours_to_date
 
 from route_handling import mac_windows_file_handle, calc_vessel_heading_2
@@ -87,7 +87,7 @@ def main(route, iteration, date_of__return):
         AWS                 = Apparent_Wind_Speed(TWS,vessel_speed,TWD)                                  #Apparent wind speed
         AWA                 = alpha(vessel_speed,vessel_heading,WSN,WSE )                                #Apparent wind angle
         Forward_Force,Perp_Force = Force_produced(AWS, AWA)                           #Forward and Perpendicular force from Flettners
-        vessel_speed    = round(Speed_achieved_old(Perp_Force, Forward_Force),3)    #Sailing Speed obtained in KNOTS
+        vessel_speed    = round(Speed_achieved_Valid(Perp_Force, Forward_Force), 3)    #Sailing Speed obtained in KNOTS
 
 
         if type(Forward_Force) == MaskedConstant or type(Perp_Force) == MaskedConstant:

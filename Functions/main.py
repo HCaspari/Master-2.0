@@ -4,7 +4,7 @@ import pandas as pd
 from numpy.ma.core import MaskedConstant
 from datetime import datetime
 from file_handling import write_to_file, read_route, test_read_files, write_to_file_2, add_timestamp_to_dataframe
-from Force_functions import Force_produced, Speed_achieved_old
+from Force_functions import Force_produced, Speed_achieved_Valid
 from Weather_Handling import getweather, r2d, True_wind_direction, True_wind_speed, Apparent_Wind_Speed, Apparent_wind_angle, alpha, add_hours_to_date
 
 from route_handling import calc_vessel_heading, mac_windows_file_handle, calc_vessel_heading_2
@@ -126,10 +126,27 @@ def main(route, iteration, date_of_simulation):
         AWA                 = alpha(vessel_speed,vessel_heading,WSN,WSE )                                #Apparent wind angle
         Forward_Force,Perp_Force = Force_produced(AWS, AWA)                           #Forward and Perpendicular force from Flettners
 
-        #With utilization of modern vessel design.
-        Forward_Force       = 2.5*Forward_Force
 
-        vessel_speed,total_resistance,battery_need_power    = Speed_achieved_old(Perp_Force, Forward_Force)    #Sailing Speed obtained in KNOTS
+        ################################
+        ################################
+        ################################
+        ################################
+
+
+        #With utilization of modern vessel design., Remove 2.5 to get normal Flettner Output.
+        #Forward_Force        = 2.5*Forward_Force
+
+        #With Kite added aswell as Flettner, assume 1.4 times more force generated
+        #Forward_Force       = 1.4*Forward_Force
+
+        # With Kite and Slimmer vessel aswell as Flettner, assume 3.5 (2.5*1.4) times more force generated
+        #Forward_Force        = 3.5*Forward_Force
+
+        ################################
+        ################################
+        ################################
+        ################################
+        vessel_speed,total_resistance,battery_need_power    = Speed_achieved_Valid(Perp_Force, Forward_Force)    #Sailing Speed obtained in KNOTS
 
         if type(Forward_Force) == MaskedConstant or type(Perp_Force) == MaskedConstant:
             print("ouchie, we have a mask", i)
@@ -158,10 +175,10 @@ def main(route, iteration, date_of_simulation):
         #use battery power commenting out zerobattery and vessel speed limiter including this
         #REMEMBER TO CHANGE SAVEFILES TO NONBATTERY
 
-        #battery_need_power = 0
+        battery_need_power = 0
 
-        if vessel_speed < 2:
-            vessel_speed = 2
+        #if vessel_speed < 2:
+        #    vessel_speed = 2
 
         ################################################
         ################################################
@@ -281,100 +298,16 @@ def simulation(csv,routenumber,interval):
     print(f"the average batterypower needed for each iteration of the simulation is {np.average(total_battery_needed)}"
           f"with a max used batterypower over one simulation of {max(total_battery_needed)}"
           f"and a min used batterypower over one simulation of {min(total_battery_needed)}")
-    #Read files:
-    #Trond_Ålesund
-    file_speed_Trond_Aalesund   = mac_windows_file_handle("Output_files/Trondheim_Ålesund/savespeed_TrondAales.csv")
-    file_TWS_Trond_Aalesund     = mac_windows_file_handle("Output_files/Trondheim_Ålesund/saveTWS_TrondAales.csv")
-    file_TWD_Trond_Aalesund     = mac_windows_file_handle("Output_files/Trondheim_Ålesund/saveTWD_TrondAales.csv")
-    datestamp_file_1            = mac_windows_file_handle("Output_files/Datestamps/datestamp1.csv")
 
+#Run each function
 
-    #Ålesund_floro
-    file_speed_Aalesund_Floro   = mac_windows_file_handle("Output_files/Ålesund_Florø/savespeed_AalesFloro.csv")
-    file_TWS_Aalesund_Floro     = mac_windows_file_handle("Output_files/Ålesund_Florø/saveTWS_AalesFloro.csv")
-    file_TWD_Aalesund_Floro     = mac_windows_file_handle("Output_files/Ålesund_Florø/saveTWD_AalesFloro.csv")
-    datestamp_file_2            = mac_windows_file_handle("Output_files/Datestamps/datestamp2.csv")
-
-
-    #Floro_bergen
-    file_speed_Floro_Bergen     = mac_windows_file_handle("Output_files/Florø_Bergen/savespeed_FloroBergen.csv")
-    file_TWS_Floro_Bergen       = mac_windows_file_handle("Output_files/Florø_Bergen/saveTWS_FloroBergen.csv")
-    file_TWD_Floro_Bergen       = mac_windows_file_handle("Output_files/Florø_Bergen/saveTWD_FloroBergen.csv")
-    datestamp_file_3            = mac_windows_file_handle("Output_files/Datestamps/datestamp3.csv")
-
-
-    #Bergen_stavanger
-    file_speed_Bergen_Stavanger = mac_windows_file_handle("Output_files/Bergen_Stavanger/savespeed_BrgStvg.csv")
-    file_TWS_Bergen_Stavanger   = mac_windows_file_handle("Output_files/Bergen_Stavanger/saveTWS_BergenStavanger.csv")
-    file_TWD_Bergen_Stavanger   = mac_windows_file_handle("Output_files/Bergen_Stavanger/saveTWD_BergenStavanger.csv")
-    datestamp_file_4            = mac_windows_file_handle("Output_files/Datestamps/datestamp4.csv")
-
-
-    #Aberdeen_Færøyene
-    file_speed_Aber_Faer    = mac_windows_file_handle("Output_files/Aberdeen_Færøyene/savespeed_Aberdeen_Færøyene.csv")
-    file_TWS_Aber_Faer      = mac_windows_file_handle("Output_files/Aberdeen_Færøyene/saveTWD_Aberdeen_Færøyene.csv")
-    file_TWD_Aber_Faer      = mac_windows_file_handle("Output_files/Aberdeen_Færøyene/saveTWS_Aberdeen_Færøyene.csv")
-    datestamp_file_5        = mac_windows_file_handle("Output_files/Datestamps/datestamp5.csv")
-
-
-    #Amsterdam Newcastle
-    file_speed_Amst_New = mac_windows_file_handle("Output_files/Amsterdam_Newcastle/savespeed_Amsterdam_Newcastle.csv")
-    file_TWS_Amst_New   = mac_windows_file_handle("Output_files/Amsterdam_Newcastle/saveTWD_Amsterdam_Newcastle.csv")
-    file_TWD_Amst_New    = mac_windows_file_handle("Output_files/Amsterdam_Newcastle/saveTWS_Amsterdam_Newcastle.csv")
-    datestamp_file_6    = mac_windows_file_handle("Output_files/Datestamps/datestamp6.csv")
-
-
-    #Danmark Amsterdam
-    file_speed_Dk_Amst  = mac_windows_file_handle("Output_files/Danmark_Amsterdam/savespeed_Danmark_Amsterdam.csv")
-    file_TWS_Dk_Amst    = mac_windows_file_handle("Output_files/Danmark_Amsterdam/saveTWD_Danmark_Amsterdam.csv")
-    file_TWD_Dk_Amst    = mac_windows_file_handle("Output_files/Danmark_Amsterdam/saveTWS_Danmark_Amsterdam.csv")
-    datestamp_file_7    = mac_windows_file_handle("Output_files/Datestamps/datestamp7.csv")
-
-
-    #Færøyene Ålesund
-
-    file_speed_Faer_Aal = mac_windows_file_handle("Output_files/Færøyene_Ålesund_2x_with_BATTERY/savespeed_Færøyene_Ålesund.csv")
-    file_TWS_Faer_Aal   = mac_windows_file_handle("Output_files/Færøyene_Ålesund_2x_with_BATTERY/saveTWD_Færøyene_Ålesund.csv")
-    file_TWD_Faer_Aal   = mac_windows_file_handle("Output_files/Færøyene_Ålesund_2x_with_BATTERY/saveTWS_Færøyene_Ålesund.csv")
-    datestamp_file_8    = mac_windows_file_handle("Output_files/Datestamps/datestamp8.csv")
-
-
-    #Newcastle Aberdeen
-
-    file_speed_New_Aber = mac_windows_file_handle("Output_files/Newcastle_Aberdeen/SS_Newcastle_Aberdeen.csv")
-    file_TWS_New_Aber   = mac_windows_file_handle("Output_files/Newcastle_Aberdeen/TWD_Newcastle_Aberdeen.csv")
-    file_TWD_New_Aber   = mac_windows_file_handle("Output_files/Newcastle_Aberdeen/TWS_Newcastle_Aberdeen.csv")
-    datestamp_file_9    = mac_windows_file_handle("Output_files/Datestamps/datestamp9.csv")
-
-
-    #Ålesund Danmark
-
-    file_speed_Aal_Dk   = mac_windows_file_handle("Output_files/Ålesund_Danmark/savespeed_Ålesund_Danmark.csv")
-    file_TWS_Aal_Dk     = mac_windows_file_handle("Output_files/Ålesund_Danmark/saveTWD_Ålesund_Danmark.csv")
-    file_TWD_Aal_Dk     = mac_windows_file_handle("Output_files/Ålesund_Danmark/saveTWS_Ålesund_Danmark.csv")
-    datestamp_file_10   = mac_windows_file_handle("Output_files/Datestamps/datestamp10.csv")
-
-    #Floro port
-
-    file_speed_Floro_port   = mac_windows_file_handle("Output_files/Floro_port/savespeed_port.csv")
-    file_TWS_Floro_port     = mac_windows_file_handle("Output_files/Floro_port/TWD_Floro_port.csv")
-    file_TWD_Floro_port     = mac_windows_file_handle("Output_files/Floro_port/TWS_Floro_port.csv")
-    datestamp_file_11       = mac_windows_file_handle("Output_files/Datestamps/datestamp11.csv")
-
-    #Poor route
-    file_speed_Poor         = mac_windows_file_handle("Output_files/Poor_Route/savespeed_Poor_Route.csv")
-    file_TWS_Poor           = mac_windows_file_handle("Output_files/Floro_port/saveTWS_Poor_Route.csv")
-    file_TWD_Poor           = mac_windows_file_handle("Output_files/Poor_Route/saveTWD_Poor_Route.csv")
-    datestamp_file_12       = mac_windows_file_handle("Output_files/Datestamps/datestamp12.csv")
-
-    #Favourable route
-    file_speed_Fav          = mac_windows_file_handle("Output_files/Good_Route/savespeed_Good_Route.csv")
-    file_TWS_Fav            = mac_windows_file_handle("Output_files/Good_Route/saveTWS_Good_Route.csv")
-    file_TWD_Fav            = mac_windows_file_handle("Output_files/Good_Route/saveTWD_Good_Route.csv")
-    datestamp_file_13       = mac_windows_file_handle("Output_files/Datestamps/datestamp13.csv")
-    #Write to files
+ # Trond_Ålesund
 
     if routenumber == 1:
+        file_speed_Trond_Aalesund = mac_windows_file_handle("Output_files/Trondheim_Ålesund/savespeed_TrondAales.csv")
+        file_TWS_Trond_Aalesund = mac_windows_file_handle("Output_files/Trondheim_Ålesund/saveTWS_TrondAales.csv")
+        file_TWD_Trond_Aalesund = mac_windows_file_handle("Output_files/Trondheim_Ålesund/saveTWD_TrondAales.csv")
+        datestamp_file_1 = mac_windows_file_handle("Output_files/Datestamps/datestamp1.csv")
 
         write_to_file(VS_simulation_vector, file_speed_Trond_Aalesund)  #VS vector file
         write_to_file(TWS_simulation_vector,file_TWS_Trond_Aalesund)    #TWS vector file
@@ -384,7 +317,14 @@ def simulation(csv,routenumber,interval):
         add_timestamp_to_dataframe(file_TWS_Trond_Aalesund, datestamp_file_1)
         add_timestamp_to_dataframe(file_TWD_Trond_Aalesund, datestamp_file_1)
 
+# Ålesund_floro
+
     elif routenumber == 2:
+        file_speed_Aalesund_Floro = mac_windows_file_handle("Output_files/Ålesund_Florø/savespeed_AalesFloro.csv")
+        file_TWS_Aalesund_Floro = mac_windows_file_handle("Output_files/Ålesund_Florø/saveTWS_AalesFloro.csv")
+        file_TWD_Aalesund_Floro = mac_windows_file_handle("Output_files/Ålesund_Florø/saveTWD_AalesFloro.csv")
+        datestamp_file_2 = mac_windows_file_handle("Output_files/Datestamps/datestamp2.csv")
+
         write_to_file(VS_simulation_vector, file_speed_Aalesund_Floro)  #VS vector file
         write_to_file(TWS_simulation_vector,file_TWS_Aalesund_Floro)    #TWS vector file
         write_to_file(TWD_simulation_vector,file_TWD_Aalesund_Floro)    #TWD vector file
@@ -393,7 +333,13 @@ def simulation(csv,routenumber,interval):
         add_timestamp_to_dataframe(file_TWS_Aalesund_Floro, datestamp_file_2)
         add_timestamp_to_dataframe(file_TWD_Aalesund_Floro, datestamp_file_2)
 
+# Floro_bergen
+
     elif routenumber == 3:
+        file_speed_Floro_Bergen = mac_windows_file_handle("Output_files/Florø_Bergen/savespeed_FloroBergen.csv")
+        file_TWS_Floro_Bergen = mac_windows_file_handle("Output_files/Florø_Bergen/saveTWS_FloroBergen.csv")
+        file_TWD_Floro_Bergen = mac_windows_file_handle("Output_files/Florø_Bergen/saveTWD_FloroBergen.csv")
+        datestamp_file_3 = mac_windows_file_handle("Output_files/Datestamps/datestamp3.csv")
         write_to_file(VS_simulation_vector, file_speed_Floro_Bergen)    #VS vector file
         write_to_file(TWS_simulation_vector,file_TWS_Floro_Bergen)      #TWS vector file
         write_to_file(TWD_simulation_vector,file_TWD_Floro_Bergen)      #TWD vector file
@@ -402,7 +348,13 @@ def simulation(csv,routenumber,interval):
         add_timestamp_to_dataframe(file_TWS_Floro_Bergen, datestamp_file_3)
         add_timestamp_to_dataframe(file_TWD_Floro_Bergen, datestamp_file_3)
 
+# Bergen_stavanger
     elif routenumber == 4:
+        file_speed_Bergen_Stavanger = mac_windows_file_handle("Output_files/Bergen_Stavanger/savespeed_BrgStvg.csv")
+        file_TWS_Bergen_Stavanger = mac_windows_file_handle("Output_files/Bergen_Stavanger/saveTWS_BergenStavanger.csv")
+        file_TWD_Bergen_Stavanger = mac_windows_file_handle("Output_files/Bergen_Stavanger/saveTWD_BergenStavanger.csv")
+        datestamp_file_4 = mac_windows_file_handle("Output_files/Datestamps/datestamp4.csv")
+
         write_to_file(VS_simulation_vector,file_speed_Bergen_Stavanger) #VS vector file
         write_to_file(TWS_simulation_vector,file_TWS_Bergen_Stavanger)  #TWS vector file
         write_to_file(TWD_simulation_vector,file_TWD_Bergen_Stavanger)  #TWD vector file
@@ -410,8 +362,14 @@ def simulation(csv,routenumber,interval):
         add_timestamp_to_dataframe(file_speed_Bergen_Stavanger, datestamp_file_4)
         add_timestamp_to_dataframe(file_TWS_Bergen_Stavanger, datestamp_file_4)
         add_timestamp_to_dataframe(file_TWD_Bergen_Stavanger, datestamp_file_4)
+# Aberdeen_Færøyene
 
     elif routenumber == 5:
+        file_speed_Aber_Faer = mac_windows_file_handle("Output_files/Aberdeen_Færøyene/savespeed_Aberdeen_Færøyene.csv")
+        file_TWS_Aber_Faer = mac_windows_file_handle("Output_files/Aberdeen_Færøyene/saveTWD_Aberdeen_Færøyene.csv")
+        file_TWD_Aber_Faer = mac_windows_file_handle("Output_files/Aberdeen_Færøyene/saveTWS_Aberdeen_Færøyene.csv")
+        datestamp_file_5 = mac_windows_file_handle("Output_files/Datestamps/datestamp5.csv")
+
         write_to_file(VS_simulation_vector,file_speed_Aber_Faer) #VS vector file
         write_to_file(TWS_simulation_vector,file_TWS_Aber_Faer)  #TWS vector file
         write_to_file(TWD_simulation_vector,file_TWD_Aber_Faer)  #TWD vector file
@@ -419,8 +377,15 @@ def simulation(csv,routenumber,interval):
         add_timestamp_to_dataframe(file_speed_Aber_Faer, datestamp_file_5)
         add_timestamp_to_dataframe(file_TWS_Aber_Faer, datestamp_file_5)
         add_timestamp_to_dataframe(file_TWD_Aber_Faer, datestamp_file_5)
+# Amsterdam Newcastle
 
     elif routenumber == 6:
+        file_speed_Amst_New = mac_windows_file_handle(
+            "Output_files/Amsterdam_Newcastle/savespeed_Amsterdam_Newcastle.csv")
+        file_TWS_Amst_New = mac_windows_file_handle("Output_files/Amsterdam_Newcastle/saveTWD_Amsterdam_Newcastle.csv")
+        file_TWD_Amst_New = mac_windows_file_handle("Output_files/Amsterdam_Newcastle/saveTWS_Amsterdam_Newcastle.csv")
+        datestamp_file_6 = mac_windows_file_handle("Output_files/Datestamps/datestamp6.csv")
+
         write_to_file(VS_simulation_vector,file_speed_Amst_New) #VS vector file
         write_to_file(TWS_simulation_vector,file_TWS_Amst_New)  #TWS vector file
         write_to_file(TWD_simulation_vector,file_TWD_Amst_New)  #TWD vector file
@@ -429,7 +394,14 @@ def simulation(csv,routenumber,interval):
         add_timestamp_to_dataframe(file_TWS_Amst_New, datestamp_file_6)
         add_timestamp_to_dataframe(file_TWD_Amst_New, datestamp_file_6)
 
+# Danmark Amsterdam
+
     elif routenumber == 7:
+        file_speed_Dk_Amst = mac_windows_file_handle("Output_files/Danmark_Amsterdam/savespeed_Danmark_Amsterdam.csv")
+        file_TWS_Dk_Amst = mac_windows_file_handle("Output_files/Danmark_Amsterdam/saveTWD_Danmark_Amsterdam.csv")
+        file_TWD_Dk_Amst = mac_windows_file_handle("Output_files/Danmark_Amsterdam/saveTWS_Danmark_Amsterdam.csv")
+        datestamp_file_7 = mac_windows_file_handle("Output_files/Datestamps/datestamp7.csv")
+
         write_to_file(VS_simulation_vector,file_speed_Dk_Amst) #VS vector file
         write_to_file(TWS_simulation_vector,file_TWS_Dk_Amst)  #TWS vector file
         write_to_file(TWD_simulation_vector,file_TWD_Dk_Amst)  #TWD vector file
@@ -437,8 +409,18 @@ def simulation(csv,routenumber,interval):
         add_timestamp_to_dataframe(file_speed_Dk_Amst, datestamp_file_7)
         add_timestamp_to_dataframe(file_TWS_Dk_Amst, datestamp_file_7)
         add_timestamp_to_dataframe(file_TWD_Dk_Amst, datestamp_file_7)
+# Færøyene Ålesund
 
     elif routenumber == 8:
+
+        file_speed_Faer_Aal = mac_windows_file_handle(
+            "Output_files/Færøyene_Ålesund_2x_with_BATTERY/savespeed_Færøyene_Ålesund.csv")
+        file_TWS_Faer_Aal = mac_windows_file_handle(
+            "Output_files/Færøyene_Ålesund_2x_with_BATTERY/saveTWD_Færøyene_Ålesund.csv")
+        file_TWD_Faer_Aal = mac_windows_file_handle(
+            "Output_files/Færøyene_Ålesund_2x_with_BATTERY/saveTWS_Færøyene_Ålesund.csv")
+        datestamp_file_8 = mac_windows_file_handle("Output_files/Datestamps/datestamp8.csv")
+
         write_to_file(VS_simulation_vector,file_speed_Faer_Aal) #VS vector file
         write_to_file(TWS_simulation_vector,file_TWS_Faer_Aal)  #TWS vector file
         write_to_file(TWD_simulation_vector,file_TWD_Faer_Aal)  #TWD vector file
@@ -446,8 +428,15 @@ def simulation(csv,routenumber,interval):
         add_timestamp_to_dataframe(file_speed_Faer_Aal,datestamp_file_8)
         add_timestamp_to_dataframe(file_TWS_Faer_Aal,datestamp_file_8)
         add_timestamp_to_dataframe(file_TWD_Faer_Aal,datestamp_file_8)
+# Newcastle Aberdeen
 
     elif routenumber == 9:
+
+        file_speed_New_Aber = mac_windows_file_handle("Output_files/Newcastle_Aberdeen/SS_Newcastle_Aberdeen.csv")
+        file_TWS_New_Aber = mac_windows_file_handle("Output_files/Newcastle_Aberdeen/TWD_Newcastle_Aberdeen.csv")
+        file_TWD_New_Aber = mac_windows_file_handle("Output_files/Newcastle_Aberdeen/TWS_Newcastle_Aberdeen.csv")
+        datestamp_file_9 = mac_windows_file_handle("Output_files/Datestamps/datestamp9.csv")
+
         write_to_file(VS_simulation_vector,file_speed_New_Aber) #VS vector file
         write_to_file(TWS_simulation_vector,file_TWS_New_Aber)  #TWS vector file
         write_to_file(TWD_simulation_vector,file_TWD_New_Aber)  #TWD vector file
@@ -455,8 +444,16 @@ def simulation(csv,routenumber,interval):
         add_timestamp_to_dataframe(file_speed_New_Aber, datestamp_file_9)
         add_timestamp_to_dataframe(file_TWS_New_Aber, datestamp_file_9)
         add_timestamp_to_dataframe(file_TWD_New_Aber, datestamp_file_9)
+# Ålesund Danmark
 
     elif routenumber == 10:
+
+
+        file_speed_Aal_Dk = mac_windows_file_handle("Output_files/Ålesund_Danmark/savespeed_Ålesund_Danmark.csv")
+        file_TWS_Aal_Dk = mac_windows_file_handle("Output_files/Ålesund_Danmark/saveTWD_Ålesund_Danmark.csv")
+        file_TWD_Aal_Dk = mac_windows_file_handle("Output_files/Ålesund_Danmark/saveTWS_Ålesund_Danmark.csv")
+        datestamp_file_10 = mac_windows_file_handle("Output_files/Datestamps/datestamp10.csv")
+
         write_to_file(VS_simulation_vector,file_speed_Aal_Dk) #VS vector file
         write_to_file(TWS_simulation_vector,file_TWS_Aal_Dk)  #TWS vector file
         write_to_file(TWD_simulation_vector,file_TWD_Aal_Dk)  #TWD vector file
@@ -464,8 +461,15 @@ def simulation(csv,routenumber,interval):
         add_timestamp_to_dataframe(file_speed_Aal_Dk, datestamp_file_10)
         add_timestamp_to_dataframe(file_TWS_Aal_Dk, datestamp_file_10)
         add_timestamp_to_dataframe(file_TWD_Aal_Dk, datestamp_file_10)
-
+# Floro port
     elif routenumber == 11:
+
+
+        file_speed_Floro_port = mac_windows_file_handle("Output_files/Floro_port/savespeed_port.csv")
+        file_TWS_Floro_port = mac_windows_file_handle("Output_files/Floro_port/TWD_Floro_port.csv")
+        file_TWD_Floro_port = mac_windows_file_handle("Output_files/Floro_port/TWS_Floro_port.csv")
+        datestamp_file_11 = mac_windows_file_handle("Output_files/Datestamps/datestamp11.csv")
+
         write_to_file(VS_simulation_vector,file_speed_Floro_port) #VS vector file
         write_to_file(TWS_simulation_vector,file_TWS_Floro_port)  #TWS vector file
         write_to_file(TWD_simulation_vector,file_TWD_Floro_port)  #TWD vector file
@@ -473,31 +477,118 @@ def simulation(csv,routenumber,interval):
         add_timestamp_to_dataframe(file_speed_Floro_port, datestamp_file_11)
         add_timestamp_to_dataframe(file_TWS_Floro_port, datestamp_file_11)
         add_timestamp_to_dataframe(file_TWD_Floro_port, datestamp_file_11)
-
+# Poor route
     elif routenumber == 12:
+
+        file_speed_Poor = mac_windows_file_handle("Output_files/Poor_Route/savespeed_Poor_Route.csv")
+        file_TWS_Poor = mac_windows_file_handle("Output_files/Floro_port/saveTWS_Poor_Route.csv")
+        file_TWD_Poor = mac_windows_file_handle("Output_files/Poor_Route/saveTWD_Poor_Route.csv")
+        file_battery  = mac_windows_file_handle("Output_files/Poor_Route/Battery_use.csv")
+        datestamp_file_12 = mac_windows_file_handle("Output_files/Datestamps/datestamp12.csv")
+
         write_to_file(VS_simulation_vector, file_speed_Poor)  # VS vector file
         write_to_file(TWS_simulation_vector, file_TWS_Poor)  # TWS vector file
         write_to_file(TWD_simulation_vector, file_TWD_Poor)  # TWD vector file
+        write_to_file(total_battery_needed,file_battery)
         write_to_file(datestamp_simulation_vector, datestamp_file_12)  # Datestamp file
         add_timestamp_to_dataframe(file_speed_Poor, datestamp_file_12)
         add_timestamp_to_dataframe(file_TWS_Poor, datestamp_file_12)
         add_timestamp_to_dataframe(file_TWD_Poor, datestamp_file_12)
+        add_timestamp_to_dataframe(file_battery,datestamp_file_12)
 
+# Good route
     elif routenumber == 13:
+        file_speed_Fav = mac_windows_file_handle("Output_files/Good_Route/savespeed_Good_Route.csv")
+        file_TWS_Fav = mac_windows_file_handle("Output_files/Good_Route/saveTWS_Good_Route.csv")
+        file_TWD_Fav = mac_windows_file_handle("Output_files/Good_Route/saveTWD_Good_Route.csv")
+        file_battery = mac_windows_file_handle("Output_files/Good_Route/Battery_use.csv")
+        datestamp_file_13 = mac_windows_file_handle("Output_files/Datestamps/datestamp13.csv")
         write_to_file(VS_simulation_vector, file_speed_Fav)  # VS vector file
         write_to_file(TWS_simulation_vector, file_TWS_Fav)  # TWS vector file
         write_to_file(TWD_simulation_vector, file_TWD_Fav)  # TWD vector file
         write_to_file(datestamp_simulation_vector, datestamp_file_13)  # Datestamp file
+        write_to_file(total_battery_needed,file_battery)
         add_timestamp_to_dataframe(file_speed_Fav, datestamp_file_13)
         add_timestamp_to_dataframe(file_TWS_Fav, datestamp_file_13)
         add_timestamp_to_dataframe(file_TWD_Fav, datestamp_file_13)
+        add_timestamp_to_dataframe(file_battery,datestamp_file_13)
+
+# Good route with Kite
+# Set forcefunction to 1.4
+    elif routenumber == 14:
+        file_speed_Fav = mac_windows_file_handle("Output_files/Good_Route_With_Kite/savespeed_Good_Route.csv")
+        file_TWS_Fav = mac_windows_file_handle("Output_files/Good_Route_With_Kite/saveTWS_Good_Route.csv")
+        file_TWD_Fav = mac_windows_file_handle("Output_files/Good_Route_With_Kite/saveTWD_Good_Route.csv")
+        file_battery = mac_windows_file_handle("Output_files/Good_Route_With_Kite/Battery_use.csv")
+        datestamp_file_14 = mac_windows_file_handle("Output_files/Datestamps/datestamp14.csv")
+        write_to_file(VS_simulation_vector, file_speed_Fav)  # VS vector file
+        write_to_file(TWS_simulation_vector, file_TWS_Fav)  # TWS vector file
+        write_to_file(TWD_simulation_vector, file_TWD_Fav)  # TWD vector file
+        write_to_file(datestamp_simulation_vector, datestamp_file_14)  # Datestamp file
+        write_to_file(total_battery_needed,file_battery)
+        add_timestamp_to_dataframe(file_speed_Fav, datestamp_file_14)
+        add_timestamp_to_dataframe(file_TWS_Fav, datestamp_file_14)
+        add_timestamp_to_dataframe(file_TWD_Fav, datestamp_file_14)
+        add_timestamp_to_dataframe(file_battery,datestamp_file_14)
+
+# Good Route with Battery
+# Set batteryfunction on
+    elif routenumber == 15:
+        file_speed_Fav = mac_windows_file_handle("Output_files/Good_Route_With_Battery/savespeed_Good_Route.csv")
+        file_TWS_Fav = mac_windows_file_handle("Output_files/Good_Route_With_Battery/saveTWS_Good_Route.csv")
+        file_TWD_Fav = mac_windows_file_handle("Output_files/Good_Route_With_Battery/saveTWD_Good_Route.csv")
+        file_battery = mac_windows_file_handle("Output_files/Good_Route_With_Battery/Battery_use.csv")
+        datestamp_file_15 = mac_windows_file_handle("Output_files/Datestamps/datestamp15.csv")
+        write_to_file(VS_simulation_vector, file_speed_Fav)  # VS vector file
+        write_to_file(TWS_simulation_vector, file_TWS_Fav)  # TWS vector file
+        write_to_file(TWD_simulation_vector, file_TWD_Fav)  # TWD vector file
+        write_to_file(datestamp_simulation_vector, datestamp_file_15)  # Datestamp file
+        write_to_file(total_battery_needed,file_battery)
+        add_timestamp_to_dataframe(file_speed_Fav, datestamp_file_15)
+        add_timestamp_to_dataframe(file_TWS_Fav, datestamp_file_15)
+        add_timestamp_to_dataframe(file_TWD_Fav, datestamp_file_15)
+        add_timestamp_to_dataframe(file_battery,datestamp_file_15)
+
+# Good Route With Newbuild:
+# Set Forcefunction to 2.5
+    elif routenumber == 16:
+        file_speed_Fav = mac_windows_file_handle("Output_files/Good_Route_Newbuild/savespeed_Good_Route.csv")
+        file_TWS_Fav = mac_windows_file_handle("Output_files/Good_Route_Newbuild/saveTWS_Good_Route.csv")
+        file_TWD_Fav = mac_windows_file_handle("Output_files/Good_Route_Newbuild/saveTWD_Good_Route.csv")
+        file_battery = mac_windows_file_handle("Output_files/Good_Route_Newbuild/Battery_use.csv")
+        datestamp_file_16 = mac_windows_file_handle("Output_files/Datestamps/datestamp16.csv")
+        write_to_file(VS_simulation_vector, file_speed_Fav)  # VS vector file
+        write_to_file(TWS_simulation_vector, file_TWS_Fav)  # TWS vector file
+        write_to_file(TWD_simulation_vector, file_TWD_Fav)  # TWD vector file
+        write_to_file(datestamp_simulation_vector, datestamp_file_16)  # Datestamp file
+        write_to_file(total_battery_needed, file_battery)
+        add_timestamp_to_dataframe(file_speed_Fav, datestamp_file_16)
+        add_timestamp_to_dataframe(file_TWS_Fav, datestamp_file_16)
+        add_timestamp_to_dataframe(file_TWD_Fav, datestamp_file_16)
+        add_timestamp_to_dataframe(file_battery, datestamp_file_16)
+
+# Good Route With Flettner, Kite and Battery and Newbuild
+ #Set forcefunction to 2.5*1.4, add battery option
+    elif routenumber == 17:
+        file_speed_Fav = mac_windows_file_handle("Output_files/Good_Route_With_Kite_Battery_Newbuild/savespeed_Good_Route.csv")
+        file_TWS_Fav   = mac_windows_file_handle("Output_files/Good_Route_With_Kite_Battery_Newbuild/saveTWS_Good_Route.csv")
+        file_TWD_Fav   = mac_windows_file_handle("Output_files/Good_Route_With_Kite_Battery_Newbuild/saveTWD_Good_Route.csv")
+        file_battery   = mac_windows_file_handle("Output_files/Good_Route_With_Kite_Battery_Newbuild/Battery_use.csv")
+        datestamp_file_17 = mac_windows_file_handle("Output_files/Datestamps/datestamp17.csv")
+        write_to_file(VS_simulation_vector, file_speed_Fav)  # VS vector file
+        write_to_file(TWS_simulation_vector, file_TWS_Fav)  # TWS vector file
+        write_to_file(TWD_simulation_vector, file_TWD_Fav)  # TWD vector file
+        write_to_file(datestamp_simulation_vector, datestamp_file_17)  # Datestamp file
+        write_to_file(total_battery_needed, file_battery)
+        add_timestamp_to_dataframe(file_speed_Fav, datestamp_file_17)
+        add_timestamp_to_dataframe(file_TWS_Fav, datestamp_file_17)
+        add_timestamp_to_dataframe(file_TWD_Fav, datestamp_file_17)
+        add_timestamp_to_dataframe(file_battery, datestamp_file_17)
+
 
     return 0
 
-
-
 #change to simulation(route) so that you dont need to hardcode
-
 
 def runsimulation(route, interval):
     """
@@ -516,115 +607,114 @@ def runsimulation(route, interval):
         :return: saved files with simulation results
         """
 
-    Trond_aalesund      = mac_windows_file_handle("Route_data/Trondheim_Ålesund_Route/Route_Trond_Aales.csv")
-    Aalesund_Floro      = mac_windows_file_handle("Route_data/Ålsund_Florø_Rute/Route_Ålesund_Florø.csv")
-    Floro_Bergen        = mac_windows_file_handle("Route_data/Florø_Bergen_Rute/Route_Floro_Bergen.csv")
-    Bergen_Stavanger    = mac_windows_file_handle("Route_data/Bergen_Stavanger_Route/Route_Bergen_Stavanger.csv")
-    Aberdeen_Faer       = mac_windows_file_handle("Route_data/Aberdeen_Færøyene_Route/Route_Aberdeen_Færøyene.csv")
-    Amst_New            = mac_windows_file_handle("Route_data/Amsterdam_Newcastle_Route/Route_Amsterdam_Newcastle.csv")
-    DK_Amst             = mac_windows_file_handle("Route_data/Danmark_Amsterdam_Route/Route_Danmark_Amsterdam.csv")
-    Faer_Aale           = mac_windows_file_handle("Route_data/Ålesund_Færøyene_Route/Route_Ålesund_Færøyene.csv")
-    New_Aber            = mac_windows_file_handle("Route_data/Newcastle_Aberdeen_Route/Route_Newcastle_Aberdeen.csv")
-    Aale_DK             = mac_windows_file_handle("Route_data/Ålesund_Danmark_Route/Route_Ålesund_DK.csv")
-    Floro_port          = mac_windows_file_handle("Route_data/Floro_port/Floro_port.csv")
-    Poor_route          = mac_windows_file_handle("Route_data/Poor_Route/Good_route.csv")
-    Favourable_route    = mac_windows_file_handle("Route_data/Good_Route/Poor_route.csv")
-
-
     if route == 1:
+        Trond_aalesund = mac_windows_file_handle("Route_data/Trondheim_Ålesund_Route/Route_Trond_Aales.csv")
+
         print("Running simulation for route Trondheim Aalesund now")
         simulation(Trond_aalesund,route,interval)
         print("Simulation Trondheim to Ålesund is now complete.\n")
-
     if route == 2:
+        Aalesund_Floro      = mac_windows_file_handle("Route_data/Ålsund_Florø_Rute/Route_Ålesund_Florø.csv")
         print("Running simulation for route Ålesund Florø now")
         simulation(Aalesund_Floro,route,interval)
         print("Simulation Ålesund to Florø is now complete.\n")
-
-
     if route == 3:
+        Floro_Bergen        = mac_windows_file_handle("Route_data/Florø_Bergen_Rute/Route_Floro_Bergen.csv")
         print("Running simulation for route Florø Bergen now")
         simulation(Floro_Bergen,route,interval)
         print("Simulation Florø to Bergen d is now complete.\n")
-
     if route == 4:
+        Bergen_Stavanger    = mac_windows_file_handle("Route_data/Bergen_Stavanger_Route/Route_Bergen_Stavanger.csv")
         print("Running simulation for route Bergen Stavanger now")
         simulation(Bergen_Stavanger,route,interval)
         print("Simulation Bergen to Stavanger is now complete.\n")
-
-
     if route == 5:
+        Aberdeen_Faer       = mac_windows_file_handle("Route_data/Aberdeen_Færøyene_Route/Route_Aberdeen_Færøyene.csv")
         print("Running simulation for route Aberdeen_Faerøyene now")
         simulation(Aberdeen_Faer, route,interval)
         print("Simulation Aberdeen to Færøyene is now complete.\n")
-
     if route == 6:
+        Amst_New            = mac_windows_file_handle("Route_data/Amsterdam_Newcastle_Route/Route_Amsterdam_Newcastle.csv")
         print("Running simulation for route Amsterdam_Newcastle now")
         simulation(Amst_New, route,interval)
         print("Simulation Amsterdam to Newcastle is now complete.\n")
-
     if route == 7:
+        DK_Amst             = mac_windows_file_handle("Route_data/Danmark_Amsterdam_Route/Route_Danmark_Amsterdam.csv")
         print("Running simulation for route Danmark_Amsterdam now")
         simulation(DK_Amst, route,interval)
         print("Simulation Danmark to Amsterdam is now complete.\n")
-
     if route == 8:
+        Faer_Aale           = mac_windows_file_handle("Route_data/Ålesund_Færøyene_Route/Route_Ålesund_Færøyene.csv")
         print("Running simulation for route Færøyene_Ålesund now")
         simulation(Faer_Aale, route,interval)
         print("Simulation Færøyene to Ålesund is now complete.\n")
-
     if route == 9:
+        New_Aber            = mac_windows_file_handle("Route_data/Newcastle_Aberdeen_Route/Route_Newcastle_Aberdeen.csv")
         print("Running simulation for route Newcastle_Aberdeen now")
         simulation(New_Aber, route,interval)
         print("Simulation Newcastle to Aberdeen is now complete.\n")
-
     if route == 10:
+        Aale_DK             = mac_windows_file_handle("Route_data/Ålesund_Danmark_Route/Route_Ålesund_DK.csv")
         print("Running simulation for route Ålesund_Danmark now")
         simulation(Aale_DK, route,interval)
         print("Simulation Ålesund to Danmark is now complete.\n")
-
     if route == 11:
+        Floro_port          = mac_windows_file_handle("Route_data/Floro_port/Floro_port.csv")
         print("Running simulation for route in florø port now")
         simulation(Floro_port, route, interval)
         print("Simulation for route in florø port is now complete")
-
+# Poor Route
     if route == 12:
+        Poor_route          = mac_windows_file_handle("Route_data/Poor_Route/Poor_route.csv")
         print("Running simulation for poor route now")
         simulation(Poor_route, route, interval)
         print("Simulation for Poor Route  is now complete")
+# Good route
     if route == 13:
-        print("Running simulation for Favourable route now")
-        simulation(Favourable_route, route, interval)
-        print("Simulation for Favourable route is now complete")
+        Good_route    = mac_windows_file_handle("Route_data/Good_Route/Good_route.csv")
+        print("Running simulation for Good route now")
+        simulation(Good_route, route, interval)
+        print("Simulation for Good route is now complete")
+
+# Good route with Kite
+    if route == 14:
+        Kite   = mac_windows_file_handle("Route_data/Good_Route/Good_route.csv")
+        print("Running simulation for Kite now")
+        simulation(Kite, route, interval)
+        print("Simulation for Kite is now complete")
+
+# Good Route With Battery
+    if route == 15:
+        Battery    = mac_windows_file_handle("Route_data/Good_Route/Good_route.csv")
+        print("Running simulation for Battery now")
+        simulation(Battery, route, interval)
+        print("Simulation for Battery is now complete")
+
+# Good Route With Newbuild
+    if route == 16:
+        Newbuild = mac_windows_file_handle("Route_data/Good_Route/Good_route.csv")
+        print("Running simulation for Newbuild now")
+        simulation(Newbuild, route, interval)
+        print("Simulation for Newbuild is now complete")
+
+# Good Route With Flettner, Kite and Battery and Newbuild
+    if route == 17:
+        Flettner_kite_battery_Newbuild    = mac_windows_file_handle("Route_data/Good_Route/Good_route.csv")
+        print("Running simulation for Everything now")
+        simulation(Flettner_kite_battery_Newbuild, route, interval)
+        print("Simulation for Everythin is now complete")
     return 0
 
 
 
-def test_func():
-    #AWS (wind speed, vessel speed, wind direction)
-    WSN_temp            = 5
-    WSE_temp            = -5
-    vessel_speed_temp   = 0
-    vessel_heading_temp = 0
-    twd_temp            = True_wind_direction(vessel_heading_temp,WSN_temp,WSE_temp) #Heading, WSN, WSE
-    degrees             = r2d(twd_temp)
-    tws_temp            = True_wind_speed(WSN_temp,WSE_temp)
-    AWS_temp            = Apparent_Wind_Speed(tws_temp,vessel_speed_temp,twd_temp) #TWS, VS, Twd
-    print("AWS", AWS_temp)
-    print("TWS",tws_temp)
-    print("TWD",r2d(twd_temp))
-    sediek              = Apparent_wind_angle(tws_temp,AWS_temp,vessel_speed_temp)
-    egendefinert        = alpha(vessel_speed_temp,vessel_heading_temp,WSN_temp,WSE_temp)
-    print("apparent wind angle using alpha, egendefinert",egendefinert)
-    print("apparent wind angle using function from sediek",sediek)
-    return 0
+
 
 
 
 
 
 #reset_index()
-steps = 1000
+steps = 10
 print(f"Everything is working 1241, 16/03 "
       f"running simulation with steps {steps}")
 #runsimulation(1,steps)
@@ -638,8 +728,12 @@ print(f"Everything is working 1241, 16/03 "
 #runsimulation(9,steps)
 #runsimulation(10,steps)
 #runsimulation(11,steps)
-runsimulation(12,steps)
-runsimulation(13,steps)
+runsimulation(12,steps) #normal bad route planning
+runsimulation(13,steps) #normal good route planning
+#runsimulation(14,steps) #Kite, cahnge to 1.4 force
+#runsimulation(15,steps) #Battery, Turn on battery function
+#runsimulation(16,steps) #Newbuild, change to 2.5 force
+#runsimulation(17,steps) #Everything, change to 3.5 force with battery
 
 
 
