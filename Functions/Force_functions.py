@@ -191,7 +191,7 @@ def Speed_achieved_Valid(perp_force, forward_force):
     """
     :param perp_force: sideforces observed by the vessel from flettners (in kN)
     :param forward_force:  propulsive force observed by vessel from flettners (in kN)
-    :return: speed achieved by vessel when observing these forces
+    :return: speed achieved by vessel when observing these forces (in knots)
     """
 
     # ratio hydrodynamic resistance to total res is approximately 0.85
@@ -204,10 +204,9 @@ def Speed_achieved_Valid(perp_force, forward_force):
 
     # Set vessel speed [knots] in intervall from 0,20 with stepsize 0.1
     vessel_velocity = np.linspace(0.1, 20, 200)
-    total_resistance = 0
-    total_resistance_2_knots = 0
+
     battery_need_power = 0
-    #
+
     for velocity in vessel_velocity:
         hydro_sailing_resistance = Sailing_resistance(velocity) * ratio_hydrodyn_to_tot_res
         hydro_sailing_resistance_vector.append(hydro_sailing_resistance)
@@ -240,6 +239,8 @@ def Speed_achieved_Valid(perp_force, forward_force):
                     total_resistance_vector_2_knots.append(total_resistance_2_knots)
 
                 battery_need_force = total_resistance_2_knots - forward_force
+                if battery_need_force < 0:
+                    battery_need_force == 0
                 battery_need_power = battery_need_force * 2 * 1.54              #kW
                 #print("Batterypower needed to sail at 2 knots", battery_need_power, "with perp force =", perp_force,
                 #  "and forward force =", forward_force)
@@ -266,3 +267,4 @@ def powerinput_flettner_traut(AWS):
     return 0
 
 
+#print(Speed_achieved_Valid(0,1400))

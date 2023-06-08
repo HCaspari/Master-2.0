@@ -8,7 +8,7 @@ from plot_functions import plot_something, plot_histogram, plot_Vect_Daily,plot_
 from file_handling import write_to_file, combine_troll,combine_Sleipnir
 import matplotlib.pyplot as plt
 
-#Input stats
+#Input stats for code
 mean_wind_speed = 10 #knots
 mean_wind_direction = 90 #degrees
 time_intervall =0.10 #hours
@@ -66,8 +66,23 @@ dataset_Troll_A     = nc.Dataset(file_Troll_A)
 
 ##
 #print(dataset_Sleipnir_A)
-#print(dataset_Troll_A)
+print(dataset_Troll_A)
+#for var in dataset_Troll_A.variables():
+#    print(var)
 
+variable = dataset_Troll_A.variables["WSPD"]
+print('Variable Name:', variable.name)
+print('Variable Shape:', variable.shape)
+print('Variable Dimensions:', variable.dimensions)
+print('Variable Attributes:', variable.ncattrs())
+print('Variable Data Type:', variable.dtype)
+
+# Retrieve the data array
+data = variable[:]
+
+# Retrieve the first row of the data array
+first_row = variable[0, :]
+print(first_row)
 ##################
     #geospatial_lat_min: 58.9375
     #geospatial_lat_max: 70.1875
@@ -175,93 +190,6 @@ WDIR_S_clean  = WDIR_S_masked[~WDIR_S_masked.mask]
 
 
 
-
-
-#print("first 1 lat",northward_lat_1[0])
-#print("last 1 lat",northward_lat_1[-1])
-#print("first 1 lon",northward_lon_1[0])
-#print("last 1 lon",northward_lon_1[-1])
-#print("first 2 lat",northward_lat_2[0])
-#print("last 2 lat",northward_lat_2[-1])
-#print("first 2 lon",northward_lon_2[0])
-#print("last 2 lon",northward_lon_2[-1])
-
-
-
-#print(f"The size of Eastward time_1 is: {eastward_time_1.shape}")
-#print(f"The size of Eastward time_2 is: {eastward_time_2.shape}")
-
-#print(f"The first and last elements of Eastward time are {eastward_time[0]}, and {eastward_time[-1]}\n"
-#      f"this gives {eastward_time[-1]-eastward_time[0]} seconds")
-#print(f"given that start time is 01/01/1990 00:00:00, then adding 962 409 600 seconds \n"
-#      f"gives the start date {date(1990,1,1)+ timedelta(days=11139)} "
-#      f"and the end date {date(1990,1,1)+ timedelta(days=11869.9583333)}")
-#print(f"The first and last elements of Eastward lat are {eastward_lat[0]}, and {eastward_lat[-1]}")
-#print(f"The first and last elements of Eastward lon are {eastward_lon[0]}, and {eastward_lon[-1]}")
-#print(f"The first and last elements of Eastward time are {eastward_time[0]}, and {eastward_time[-1]}"
-#      f"it is {eastward_time[-1] - eastward_time[0]} elements")
-#print(f"The second element of Eastward time is {eastward_time[1]}")
-#print(f"The increment of Eastward time is {eastward_time[1]-eastward_time[0]} which is {(eastward_time[1]-eastward_time[0])/60}  minutes or "
-#      f"{(eastward_time[1]-eastward_time[0])/3600} hours")
-#
-#print(f"The size of latitudes is: {eastward_lat.shape}")
-#print(f"The size of longditudes  is: {eastward_lon.shape}")
-#print(dataset_NW_1["northward_wind"][0,60,20])
-
-
-#print(f"hour since 1990{date(1990,1,1)+ timedelta(days=42731850)}")
-
-
-
-
-#dist_vect,travel_time,latitudes_vect,longditudes_vect,heading_vect = read_cols(filename_AIS)
-#vector_of_positions(latitudes_vect,longditudes_vect)
-
-#data = download_data() #Downloads data locally
-
-#calculates weather at time=tid, latitude and londitude of trip
-#def getweather(tid,latitude, longditude):
-    #to get the correct index one needs to increase values by 0.125
-    #for example, latitude 58.9375 = latitude[0]
-#    lat_pos_north = round((latitude-dataset_NW["lat"][0])*8)/8
-#    lon_pos_north = round((longditude-dataset_NW["lon"][0])*8)/8
-#    lat_pos_north = dataset_NW.variables["lat"][0]              #Access correct position in vector of north wind
-#    lon_pos_north = int((longditude-dataset_NW["northward_wind"]["lon"][0])*8)             #Access correct position in vector of east wind
-#    lat_pos_east = int((longditude-dataset_EW["eastward_wind"]["lat"][0])*8)             #Access correct position in vector of east wind
-#    lon_pos_east = int((longditude-dataset_EW["eastward_wind"]["lon"][0])*8)             #Access correct position in vector of east wind
-
-
-    #tid         += 962409600 #measurements go from 01/07/2020 - to 01/07/2022
-    #latitude    = round(latitude*8)/8
-    #longditude  = round(longditude*8)/8
-    #if tid < 0 or tid >= len(dataset_NW["northward_wind"][:,lat_pos,lon_pos]):
-    #    print(f"time was out of bounds at {tid}, time must be within the span of one year (less than 1460)")
-    #    return 1
-#    if latitude < 58.9375 or latitude > 70.1875:
-#        print("latitude out of bounds, latitude between 58.9375 and 70.1875")
-#        return 1
-#    elif longditude < 3.0625 or longditude > 20.9375: #været må være hentet på posisjonen longditude
-#        print("longditude out of bounds, longditude between 3.0625 and 20.9375")
-#        return 1
-#    elif lat_pos_north >= len(dataset_NW["northward_wind"][tid,:,lon_pos_north]):
-#        print(f"lat posistion is out of bound at {lat_pos_north} degrees")
-#        return 1
-#    elif lon_pos_north >= len(dataset_NW["northward_wind"][tid, lat_pos_north, :]):
-#        print(f"lon posistion is out of bound at {lon_pos_north} degrees")
-#        return 1#
-#    WSN = dataset_NW["northward_wind"][tid,lat_pos_north,lon_pos_north]
-#    WSE = dataset_EW["eastward_wind"][tid,lat_pos_east,lon_pos_east]
-
-
-#    return WSN,WSE
-#print(northward_lat[0])
-#print(northward_lon[0])
-#print(northward_lat[:])
-#print(northward_lon[:])
-#print(len(eastward_time[:]))
-
-#translates radians to degrees for python
-
 def r2d(rad):
     """
     :param rad: input angle radians
@@ -277,7 +205,6 @@ def d2r(degree):
     """
     rad = np.pi*degree/180
     return rad
-
 
 def getweather(tid,latitude, longditude):
     """
@@ -325,9 +252,6 @@ def getweather(tid,latitude, longditude):
         WSE = dataset_EW_2["eastward_wind"][tid, lat_pos, lon_pos]
 
     return WSN,WSE
-
-
-
 
 def datetime_seconds(dtime):
     """
@@ -383,21 +307,9 @@ def Apparent_Wind_Speed(true_wind_speed, vessel_speed, true_wind_direction):
 
     return AWS
 
-#function that gives AWA by Seddiek
-def Apparent_wind_angle(TWS, AWS, VS):
-    """
-    :param      TWS: Speed of wind in relation to global axis
-    :param      AWS: speed of wind in relation to vessel speed and heading
-    :param      VS: speed of vessel
-    :return:    AWA: Apparent wind angle [degree]
-    """
-    AWA = math.acos((TWS ** 2 - AWS ** 2 - VS ** 2) / (-2 * AWS * VS))
-    AWA = (AWA + 360)%360
-    return r2d(AWA)
-
 
 #Function that calculates AWA selfmade
-def alpha(vessel_speed,vessel_heading, NWS,EWS):
+def Apparent_Wind_Angle(vessel_speed, vessel_heading, NWS, EWS):
     """
     :param vessel_speed: Speed of vessel
     :param vessel_heading: Heading of vessel
@@ -411,8 +323,8 @@ def alpha(vessel_speed,vessel_heading, NWS,EWS):
     Wsy = NWS                                   #Decompose Wind speed
     Vawx = Vsx + Wsx                            #Recombine speeds
     Vawy = Vsy + Wsy                            #Recombine speeds
-    alpha_temp = r2d(math.atan2(Vawy,Vawx))          #Change to degrees, calculate angle
-    alpha      = (alpha_temp+360) % 360                   #Normalize angle between 0 and 360 degrees
+    alpha_temp = r2d(math.atan2(Vawy,Vawx))     #Change to degrees, calculate angle
+    alpha      = (alpha_temp+360) % 360         #Normalize angle between 0 and 360 degrees
 
     return alpha
 
@@ -430,7 +342,7 @@ def add_hours_to_date(date,hours):
     """
 
     date_start = date
-    hours = hours*6
+
     # add the specified number of hours to the input date
     new_datetime = date_start + timedelta(hours=hours)
 
@@ -586,84 +498,4 @@ def Time_Concat(ten_mins):
 
     return hourly_avg
 
-#WSPD_Vect_Sleipner_Measured, WDIR_Vect_Sleipner_Measured = find_average_weather_Sleipnir_Measured()
-#WSPD_Vect_Sleipner_Calculated, WDIR_Vect_Sleipner_Calculated = get_calculated_weather_vect_Sleipner()
 
-#WSPD_Vect_Troll_Measured, WDIR_Vect_Troll_Measured = find_average_weather_Troll_Measured()
-#WSPD_Vect_Troll_Calculated, WDIR_Vect_Troll_Calculated = get_calculated_weather_vect_Troll()
-
-#WSPD_Troll_Year_calc, WDIR_year_calc = get_calculated_weather_vect_Troll_year(2020)
-#WSPD_Troll_year_measured, WDIR_year_measured = find_average_weather_Troll_Measured()
-#a = []
-#for i in range(31):
-#    a.append(i)
-#plot_something("Sleipner_Calculated", WSPD_Vect_Sleipner_Calculated,"Day","Wind Speed")
-#plot_something("Sleipner_Measured", WSPD_Vect_Sleipner_Measured,"Day","Wind Speed")
-#plot_something("Troll Measured", WSPD_Vect_Troll_Measured,"Hour","Wind Speed")
-
-
-#print("Average wind Troll new july of 2020 ", np.average(WSPD_Vect_Troll_Measured))
-#print("Average wind Troll old july of 2020", np.average(WSPD_Vect_Troll_Calculated))
-#print("Average wind Sleipnir new march of 2021", np.average(WSPD_Vect_Sleipner_Measured))
-#print("Average wind Sleipnir old march of 2021", np.average(WSPD_Vect_Sleipner_Calculated))
-
-x_axis = []
-y_axis = []
-for i in range(31):
-    x_axis.append(i)
-
-
-#print(add_days_to_date(Time_S_clean[0]))
-#print(add_days_to_date(Time_S_clean[-1]))
-
-#print(add_days_to_date(Time_T_clean[0]))
-#print(add_days_to_date(Time_T_clean[-1]))
-
-#plot_Vect_Daily(WSPD_Vect_Sleipner_Calculated,WSPD_Vect_Sleipner_Measured,"Day","Wind Speed", "Wind Speed Calculated", " Wind Speed Measured","Sleipner March 2021")
-#plot_Vect_Daily(WSPD_Vect_Troll_Calculated,WSPD_Vect_Troll_Measured,"Day","Wind Speed", "Wind Speed Calculated", "Wind Speed Measured", "Troll July 2020")
-
-
-
-
-#WSPD_Troll_Hourly_Calculated_2019, WDir_Vect_Troll_Calculated_2019 = get_calculated_weather_vect_Troll_year(2019)
-#WSPD_Troll_Hourly_Calculated_2020, WDir_Vect_Troll_Calculated_2020 = get_calculated_weather_vect_Troll_year(2020)
-#WSPD_Troll_Hourly_Calculated_2021, WDir_Vect_Troll_Calculated_2021 = get_calculated_weather_vect_Troll_year(2021)
-
-#WSPD_T_conc_Measured_2021, WDIR_T_conc_Measured_2021, TIME_T_conc_Measured_2021 = combine_troll("2021 Troll", 2021)
-#WSPD_T_conc_Measured_2020, WDIR_T_conc_Measured_2020, TIME_T_conc_Measured_2020 = combine_troll("2020 Troll", 2020)
-#WSPD_T_conc_measured_2019, WDIR_T_conc_Measured_2019, TIME_T_conc_Measuredd_2019 = combine_troll("2019 Troll", 2019)
-
-#2019
-#WSPD_Troll_Hourly_measured_2019 = Hourly_Concat(WSPD_T_conc_measured_2019)
-#WDIR_Troll_Hourly_Measured_2019 = Hourly_Concat(WDIR_T_conc_Measured_2019)
-#TIME_Troll_Hourly_measured_2019 = Time_Concat(TIME_T_conc_Measured_2019)
-
-#2020
-#WSPD_Troll_Hourly_measured_2020 = Hourly_Concat(WSPD_T_conc_Measured_2020)
-#WDIR_Troll_Hourly_Measured_2020 = Hourly_Concat(WDIR_T_conc_Measured_2020)
-#TIME_Troll_Hourly_measured_2020 = Time_Concat(TIME_T_conc_Measured_2020)
-
-#2021
-#WSPD_Troll_Hourly_measured_2021 = Hourly_Concat(WSPD_T_conc_Measured_2021)
-#WDIR_Troll_Hourly_Measured_2021 = Hourly_Concat(WDIR_T_conc_Measured_2021)
-#TIME_Troll_Hourly_measured_2021 = Time_Concat(TIME_T_conc_Measured_2021)
-
-
-#plot_Vect_Weekly(WSPD_Troll_Hourly_Calculated_2020,WSPD_Troll_Hourly_measured_2020,  "Week",
-#                "Wind Speed in m/s","Calculated","Measured","Troll 2020 by week")
-
-#plot_histogram(WSPD_Troll_Hourly_measured_2020,WSPD_Troll_Hourly_Calculated_2020, "Distribution of Wind Speeds Measured vs Calculated")
-
-#plot_Vect_Daily(WSPD_Vect_Sleipner_Calculated,WSPD_Vect_Sleipner_Measured,"Hour","Average Wind Speed", "Average Wind Speed Calculated", "Average Wind Speed Measured","Sleipner March 2021")
-#plot_Vect_Daily(WSPD_Vect_Troll_Calculated,WSPD_Vect_Troll_Measured,"Hour","Average Wind Speed", "Average Wind Speed Calculated", "Average Wind Speed Measured", "Troll July 2020")
-
-#plot_Vect_hourly(WSPD_Vect_Sleipner_Calculated,WSPD_Vect_Sleipner_Measured,"Hour","Wind Speed", "Wind Speed Calculated", " Wind Speed Measured","Sleipner March 2021")
-#plot_Vect_hourly(WSPD_Vect_Troll_Calculated,WSPD_Vect_Troll_Measured,"Hour","Wind Speed", "Wind Speed Calculated", "Wind Speed Measured", "Troll July 2020")
-
-#plot_Vect_hourly_single(WSPD_Vect_Troll_Measured,"Hour","Wind Speed", "Wind Speed measured", "Troll July 2020")
-
-#print(np.mean(WSPD_Troll_Year))
-#print(np.mean(WSPD_Vect_Sleipner_Calculated))
-#print(np.mean(WSPD_Vect_Sleipner_Measured))
-#print(np.mean(WSPD_Vect_Troll_Calculated))
-#print(np.mean(WSPD_Vect_Troll_Measured))

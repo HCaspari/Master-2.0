@@ -5,7 +5,7 @@ from numpy.ma.core import MaskedConstant
 from datetime import datetime
 from file_handling import write_to_file, read_route, add_timestamp_to_dataframe
 from Force_functions import Force_produced, Speed_achieved_Valid
-from Weather_Handling import getweather, r2d, True_wind_direction, True_wind_speed, Apparent_Wind_Speed, Apparent_wind_angle, alpha, add_hours_to_date
+from Weather_Handling import getweather, r2d, True_wind_direction, True_wind_speed, Apparent_Wind_Speed, Apparent_wind_angle, Apparent_Wind_Angle, add_hours_to_date
 
 from route_handling import mac_windows_file_handle, calc_vessel_heading_2
 
@@ -85,7 +85,7 @@ def main(route, iteration, date_of__return):
         TWS                 = True_wind_speed(WSN,WSE)                                                   #True Windspeed (pythagoras)
         TWD                 = True_wind_direction(vessel_heading,WSN,WSE)                                #True Wind Direction
         AWS                 = Apparent_Wind_Speed(TWS,vessel_speed,TWD)                                  #Apparent wind speed
-        AWA                 = alpha(vessel_speed,vessel_heading,WSN,WSE )                                #Apparent wind angle
+        AWA                 = Apparent_Wind_Angle(vessel_speed, vessel_heading, WSN, WSE)                                #Apparent wind angle
         Forward_Force,Perp_Force = Force_produced(AWS, AWA)                           #Forward and Perpendicular force from Flettners
         vessel_speed    = round(Speed_achieved_Valid(Perp_Force, Forward_Force), 3)    #Sailing Speed obtained in KNOTS
 
@@ -424,7 +424,7 @@ def run_return(route, interval):
     Aberdeen_Faer_retur       = mac_windows_file_handle("Route_data/Aberdeen_Færøyene_Return_Route/Route_Aberdeen_Færøyene_retur.csv")
     Amst_New_retur            = mac_windows_file_handle("Route_data/Amsterdam_Newcastle_Return_Route/Route_Amsterdam_Newcastle_retur.csv")
     DK_Amst_retur             = mac_windows_file_handle("Route_data/Danmark_Amsterdam_Return_Route/Route_Danmark_Amsterdam_retur.csv")
-    Faer_Aale_retur           = mac_windows_file_handle("Route_data/Ålesund_Færøyene_Return_Route/Route_Færøyene_Ålesund_retur.csv")
+    Faer_Aale_retur           = mac_windows_file_handle("Route_data/Færøyene_Ålesund_Route/Route_Færøyene_Ålesund.csv")
     New_Aber_retur            = mac_windows_file_handle("Route_data/Newcastle_Aberdeen_Return_Route/Route_Newcastle_Aberdeen_retur.csv")
     Aale_DK_retur             = mac_windows_file_handle("Route_data/Ålesund_Danmark_Return_Route/Route_Ålesund_DK_retur.csv")
 
@@ -501,8 +501,8 @@ def test_func():
     print("TWS",tws_temp)
     print("TWD",r2d(twd_temp))
     sediek              = Apparent_wind_angle(tws_temp,AWS_temp,vessel_speed_temp)
-    egendefinert        = alpha(vessel_speed_temp,vessel_heading_temp,WSN_temp,WSE_temp)
-    print("apparent wind angle using alpha, egendefinert",egendefinert)
+    egendefinert        = Apparent_Wind_Angle(vessel_speed_temp, vessel_heading_temp, WSN_temp, WSE_temp)
+    print("apparent wind angle using Apparent_Wind_Angle, egendefinert",egendefinert)
     print("apparent wind angle using function from sediek",sediek)
     return 0
 
@@ -512,10 +512,10 @@ def test_func():
 
 #reset_index()
 print("Everything is working 1151, 21/03")
-steps = 1000
+steps = 10
 #run_return(1,steps)
 #run_return(2,steps)
-#run_return(3,steps)
+run_return(3,steps)
 #run_return(4,steps)
 #run_return(5,steps)
 #run_return(6,steps)

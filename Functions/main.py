@@ -5,11 +5,11 @@ from numpy.ma.core import MaskedConstant
 from datetime import datetime
 from file_handling import write_to_file, read_route, test_read_files, write_to_file_2, add_timestamp_to_dataframe
 from Force_functions import Force_produced, Speed_achieved_Valid
-from Weather_Handling import getweather, r2d, True_wind_direction, True_wind_speed, Apparent_Wind_Speed, Apparent_wind_angle, alpha, add_hours_to_date
+from Weather_Handling import getweather, r2d, True_wind_direction, True_wind_speed, Apparent_Wind_Speed, Apparent_wind_angle, Apparent_Wind_Angle, add_hours_to_date
 
 from route_handling import calc_vessel_heading, mac_windows_file_handle, calc_vessel_heading_2
 
-
+timestart = datetime.now()
 
 #Input stats
 mean_wind_speed = 10 #knots
@@ -40,6 +40,8 @@ Cm  = 0.2
 alpha_const = 3.5
 
 mac_windows_file_handle(filename_AIS)
+
+
 #comparisson_vessel_power_by_speed = vessel_velocity**3*0.8*0.55
 
 
@@ -81,25 +83,28 @@ mac_windows_file_handle(filename_AIS)
 #Windspeed_North, Windspeed_East = getweather(0,60,0)
 
 
-#Function that calculates time spent sailing from port a to port b, through predetermined route
-def main(route, iteration, date_of_simulation):
+#Function that calculates time spent sailing from port a to port b, through route
+def main(route, iteration, date_of_simulation,routenumber):
     """
     :param route: Vector of route coordinates [(x1,y1),(x2,y2),...,(xn,yn)]
     :param iteration: Number of repetitions of simulation
 
-    :return:    For each iteration of simulation:
-                total_time_sailed_route: float
-                tot_sailing_dist: vector of sailing distances over route
-                poor_sailing_time: float, time sailed less than 1 knot
-                poor_sailing_distance: float, distance sailed at less than 1 knot
-                sailing_speed_vector: vector of speed sailed at each point along route
-                TWS: Vector of true wind speed
-                TWD: Vector of true wind direction
+    :return:For each iteration of simulation:
+            total_time_sailed_route: float
+            tot_sailing_dist: vector of sailing distances over route
+            poor_sailing_time: float, time sailed less than 1 knot
+            poor_sailing_distance: float, distance sailed at less than 1 knot
+            sailing_speed_vector: vector of speed sailed at each point along route
+            TWS: Vector of true wind speed
+            TWD: Vector of true wind direction
+            Route sailing time: Time used to sail each route iteration
+            Coordinate sailing time: Time used to sail between two points on route
+            datestamp_vector: Vector containing times vessel is at each point over route
+            battery_use_vector: Total batterypower neeed for sailing route this iteration
 
     """
-
-
-    vessel_speed                    = 4 #initializing sailing speed of 4 knots (will change after one iteration)
+    # initializing sailing speed of 4 knots (will change after one iteration)
+    vessel_speed                    = 4
     route_sailing_time              = iteration
     tot_sailing_dist                = 0
     poor_sailing_time               = 0
@@ -111,79 +116,73 @@ def main(route, iteration, date_of_simulation):
     true_wind_direction_vector      = []
     datestamp_vector                = [date_of_simulation]
     battery_use_vector              = []
-    #np.append(tot_sailing_dist,[1])
+    forward_force_vect              = []
+    total_time_sailed_route         = 0
 
     for i in range(len(route)-1): #create itteration through route
-
         position_first      = route[i]
         position_next       = route[i+1]
-        sailing_distance    = round(geopy.distance.geodesic(position_first,position_next).nautical,3)    #In Nautical Miles
-        vessel_heading      = calc_vessel_heading_2(position_first, position_next)                       #In Degrees (North is 90)
-        WSE,WSN             = getweather(route_sailing_time,position_first[0],position_first[1])         #Wind speed East and North
-        TWS                 = True_wind_speed(WSN,WSE)                                                   #True Windspeed (pythagoras)
-        TWD                 = True_wind_direction(vessel_heading,WSN,WSE)                                #True Wind Direction
-        AWS                 = Apparent_Wind_Speed(TWS,vessel_speed,TWD)                                  #Apparent wind speed
-        AWA                 = alpha(vessel_speed,vessel_heading,WSN,WSE )                                #Apparent wind angle
-        Forward_Force,Perp_Force = Force_produced(AWS, AWA)                           #Forward and Perpendicular force from Flettners
+        sailing_distance    = geopy.distance.geodesic(position_first,position_next).nautical#In Nm
+        vessel_heading      = calc_vessel_heading_2(position_first, position_next)
+        WSE,WSN             = getweather(route_sailing_time,position_first[0],position_first[1])
+        TWS                 = True_wind_speed(WSN,WSE)
+        TWD                 = True_wind_direction(vessel_heading,WSN,WSE)
+        AWS                 = Apparent_Wind_Speed(TWS,vessel_speed,TWD)
+        AWA                 = Apparent_Wind_Angle(vessel_speed, vessel_heading, WSN, WSE)
+        Forward_Force,Perp_Force = Force_produced(AWS, AWA)
 
 
-        ################################
-        ################################
-        ################################
-        ################################
-
-
-        #With utilization of modern vessel design., Remove 2.5 to get normal Flettner Output.
-        #Forward_Force        = 2.5*Forward_Force
 
         #With Kite added aswell as Flettner, assume 1.4 times more force generated
-        #Forward_Force       = 1.4*Forward_Force
+        if routenumber == 14:
+            Forward_Force       = 1.4*Forward_Force
+            if iteration % 1000 == 0 and i == 1:
+                print("Running kite (1.4 force)")
 
-        # With Kite and Slimmer vessel aswell as Flettner, assume 3.5 (2.5*1.4) times more force generated
-        #Forward_Force        = 3.5*Forward_Force
+        #With utilization of modern vessel design.
+        if routenumber == 16 or routenumber == 151 or routenumber == 152:
+            Forward_Force        = 2.5*Forward_Force
 
-        ################################
-        ################################
-        ################################
-        ################################
-        vessel_speed,total_resistance,battery_need_power    = Speed_achieved_Valid(Perp_Force, Forward_Force)    #Sailing Speed obtained in KNOTS
+
+        #With Kite and Slimmer vessel aswell as Flettner,
+        # assume 3.5 (2.5*1.4) times more force generated
+        if routenumber == 17:
+            if iteration % 1000 == 0 and i == 1:
+                print("running Kite, and newbuild (3.5 force)")
+            Forward_Force        = 3.5*Forward_Force
+
+
+        vessel_speed,total_resistance,battery_need_power = \
+            Speed_achieved_Valid(Perp_Force, Forward_Force)
+
 
         if type(Forward_Force) == MaskedConstant or type(Perp_Force) == MaskedConstant:
             print("ouchie, we have a mask", i)
             return 1
 
-        #Speed and time calculations:
+        #If wind observed equals zero, sailing time is set to one
+        # and calculations are reated with new experienced wind at next intervall
 
+        # If ship experiences no wind, it waits an hour recalculating forces
         if vessel_speed == 0:
-            sailing_time = 1.00                                           #If ship experiences no wind, it waits an hour before attempting to sail with new wind
-            print(f"Slowsteam :( at location {position_first}, at time {route_sailing_time}")
+            sailing_time = 1.00
         else:
-            sailing_time     = round(sailing_distance/vessel_speed,3)           #time used to sail trip added
+            sailing_time     = round(sailing_distance/vessel_speed,3)
 
-        # check for extreme time usage
+        # check for extreme time usage, whenever sailed speed is less than 1 knot.
         if vessel_speed < 1:
             poor_sailing_time += sailing_time
             poor_sailing_distance += sailing_distance
 
-        ################################################
-        ################################################
-        ################################################
-        ################################################
-        ################################################
+        #When batteries are not utilized, the batterypower calculated is set to 0
+        if routenumber != 15 and routenumber != 152:
+            battery_need_power = 0
 
+        #When batteries are utilized, speeds below 2 knots are st to 2 knots
+        if routenumber == 15 or routenumber == 152:
+            if vessel_speed < 2:
+                vessel_speed = 2
 
-        #use battery power commenting out zerobattery and vessel speed limiter including this
-        #REMEMBER TO CHANGE SAVEFILES TO NONBATTERY
-
-        battery_need_power = 0
-
-        #if vessel_speed < 2:
-        #    vessel_speed = 2
-
-        ################################################
-        ################################################
-        ################################################
-        ################################################
 
         #Append data to vectors
         sailing_speed_vector.append(vessel_speed)
@@ -193,8 +192,10 @@ def main(route, iteration, date_of_simulation):
         apparent_wind_speed_observed.append(AWS)
         tot_sailing_dist += sailing_distance
         battery_use_vector.append(round(battery_need_power*(sailing_distance/2),3))
+        forward_force_vect.append(round(Forward_Force,3))
 
-        route_sailing_time += sailing_time                          #Sailing time of total route
+
+        route_sailing_time += sailing_time  #Sailing time of total route
         if len(coordinate_sailing_time) != 0:
             total_time_sailed_route = sum(coordinate_sailing_time)
 
@@ -204,26 +205,10 @@ def main(route, iteration, date_of_simulation):
             time_new        = add_hours_to_date(time_beginning,sailing_time)
             datestamp_vector.append(time_new)
 
-    #Create vector of lists
-
-    #tot_sailing_dist                = np.array(tot_sailing_dist)
-    #sailing_speed_vector            = np.array(sailing_speed_vector)
-    #true_wind_speed_vector          = np.array(true_wind_speed_vector)
-    #true_wind_direction_vector      = np.array(true_wind_direction_vector)
-    #route_sailing_time              = np.array(route_sailing_time)
-    #coordinate_sailing_time         = np.array(coordinate_sailing_time)
-
-    return total_time_sailed_route,tot_sailing_dist, poor_sailing_time, poor_sailing_distance, sailing_speed_vector,\
-           true_wind_speed_vector, true_wind_direction_vector, route_sailing_time, coordinate_sailing_time, datestamp_vector, battery_use_vector
-
-
-
-
-#Wind_North_vector_func,Wind_East_vector_func, Wind_tot_vector_func = Find_WSV_over_trip_at_time_TID(position_array,0)
-#time_of_trip,total_sailing_distance = main(position_array)
-#print(f"Time of trip is {time_of_trip},\n"
-#      f" giving a total trip distance is {total_sailing_distance}\n"
-#      f"with an average sailing speed of {total_sailing_distance/time_of_trip} knots")
+    return total_time_sailed_route,tot_sailing_dist, poor_sailing_time, \
+           poor_sailing_distance, sailing_speed_vector,true_wind_speed_vector,\
+           true_wind_direction_vector, route_sailing_time, coordinate_sailing_time, \
+           datestamp_vector, battery_use_vector
 
 
 
@@ -241,6 +226,7 @@ def simulation(csv,routenumber,interval):
                         6 runs Amsterdam Newcastle
                         7 runs Danmark AMsterdam
                         8 runs Færøyene Ålesund
+                        81 runs Fær - åles retur
                         9 runs Newcastle Aberdeen
                         10 runs Ålesund Danmark
     :param interval: What intervall to write files
@@ -254,39 +240,38 @@ def simulation(csv,routenumber,interval):
     hour_intervall                  = interval                                                 #at what hourly interval should we simulate?
     route_travel                    = read_route(csv)
     time_of_simulation              = 17520                                             #two years in hours
-    time_of_trip                    = np.zeros(int(time_of_simulation/hour_intervall))
-    tot_sailing_dist                = np.zeros(int(time_of_simulation/hour_intervall))
-    poor_sailing_time               = np.zeros(int(time_of_simulation/hour_intervall))
-    poor_sailing_distance           = np.zeros(int(time_of_simulation/hour_intervall))
+    time_of_trip                    = []
+    tot_sailing_dist                = []
+    poor_sailing_time               = []
+    poor_sailing_distance           = []
     #VS_simulation_vector            = np.zeros(int(time_of_simulation/hour_intervall), dtype=object)
     datestamp_simulation_vector     = []
     VS_simulation_vector            = []
     TWS_simulation_vector           = []
     TWD_simulation_vector           = []
     battery_use_iteration_vect      = []
-    date_of_simulation = starttime
+    #date_of_simulation              = starttime
     poor_sailing_speed = 0
-    total_battery_needed            = []
+    Batteryneed_simulation_Vector            = []
 
-    for iteration in range(0,int(time_of_simulation/hour_intervall)) : #repeating simulation for each hour_intervall through a year
-    #for iteration in range(8400,8600) : #repeating simulation for each hour_intervall through a year
-
+    for iteration in range(0,time_of_simulation,hour_intervall) : #repeating simulation for each hour_intervall through a year
+        date_of_simulation = add_hours_to_date(starttime,iteration)
         time_of_trip_1,tot_sailing_dist_1, poor_sailing_time_1, poor_sailing_distance_1, sailing_speed_vector, TWS_vector, TWD_vector,\
-        route_sailing_time, coordinate_sailing_time, datestamp, battery_use_vector = main(route_travel,iteration, date_of_simulation)
-        time_of_trip[int(iteration)]            = time_of_trip_1
-        tot_sailing_dist[int(iteration)]        = tot_sailing_dist_1
-        poor_sailing_time[int(iteration)]       = poor_sailing_time_1
-        poor_sailing_distance[int(iteration)]   = poor_sailing_distance_1
+        route_sailing_time, coordinate_sailing_time, datestamp_vector, battery_use_vector = main(route_travel,iteration, date_of_simulation,routenumber)
+        time_of_trip.append(time_of_trip_1)
+        tot_sailing_dist.append(tot_sailing_dist_1)
+        poor_sailing_time.append(poor_sailing_time_1)
+        poor_sailing_distance.append(poor_sailing_distance_1)
         VS_simulation_vector.extend(sailing_speed_vector)
         TWS_simulation_vector.extend(TWS_vector)
         TWD_simulation_vector.extend(TWD_vector)
-        datestamp_simulation_vector.extend(datestamp)
+        datestamp_simulation_vector.extend(datestamp_vector)
+        Batteryneed_simulation_Vector.extend(battery_use_vector) #dette er totalt batteri brukt for denne iterasjonen
 
-        battery_use_iteration_vect.extend(battery_use_vector)
-        total_battery_needed.append(sum(battery_use_vector))
+        battery_use_iteration_vect.extend(battery_use_vector)               #Dette er vectoren med batteribruk per punkt over ruten
 
         if iteration%100 == 0:
-            print("progress is made, iteration:", iteration, "on route", routenumber)
+            print("progress is made, iteration:", iteration, "/", time_of_simulation," on route ", routenumber, "at time",  datetime.now())
         date_of_simulation = add_hours_to_date(date_of_simulation,hour_intervall)
 
 
@@ -295,20 +280,20 @@ def simulation(csv,routenumber,interval):
     print(f"Throughout all iterations, the vessel sails less than one knot for an average of {np.average(poor_sailing_time)} hours\n"
           f"this iteration is used to sail on average {np.average(poor_sailing_distance)} nautical miles\n"
           f"at an average speed of {poor_sailing_speed} knots")
-    print(f"the average batterypower needed for each iteration of the simulation is {np.average(total_battery_needed)}"
-          f"with a max used batterypower over one simulation of {max(total_battery_needed)}"
-          f"and a min used batterypower over one simulation of {min(total_battery_needed)}")
+    print(f"the average batterypower needed for each iteration of the simulation is {np.average(Batteryneed_simulation_Vector)}"
+          f"with a max used batterypower over one simulation of {max(Batteryneed_simulation_Vector)}"
+          f"and a min used batterypower over one simulation of {min(Batteryneed_simulation_Vector)}")
 
 #Run each function
-
+    if routenumber == 151:
+        print("here")
  # Trond_Ålesund
 
     if routenumber == 1:
-        file_speed_Trond_Aalesund = mac_windows_file_handle("Output_files/Trondheim_Ålesund/savespeed_TrondAales.csv")
-        file_TWS_Trond_Aalesund = mac_windows_file_handle("Output_files/Trondheim_Ålesund/saveTWS_TrondAales.csv")
-        file_TWD_Trond_Aalesund = mac_windows_file_handle("Output_files/Trondheim_Ålesund/saveTWD_TrondAales.csv")
+        file_speed_Trond_Aalesund = mac_windows_file_handle("Output_files/Trondheim_Ålesund_iteration_1/savespeed_TrondAales.csv")
+        file_TWS_Trond_Aalesund = mac_windows_file_handle("Output_files/Trondheim_Ålesund_iteration_1/saveTWS_TrondAales.csv")
+        file_TWD_Trond_Aalesund = mac_windows_file_handle("Output_files/Trondheim_Ålesund_iteration_1/saveTWD_TrondAales.csv")
         datestamp_file_1 = mac_windows_file_handle("Output_files/Datestamps/datestamp1.csv")
-
         write_to_file(VS_simulation_vector, file_speed_Trond_Aalesund)  #VS vector file
         write_to_file(TWS_simulation_vector,file_TWS_Trond_Aalesund)    #TWS vector file
         write_to_file(TWD_simulation_vector,file_TWD_Trond_Aalesund)    #TWD vector file
@@ -317,8 +302,55 @@ def simulation(csv,routenumber,interval):
         add_timestamp_to_dataframe(file_TWS_Trond_Aalesund, datestamp_file_1)
         add_timestamp_to_dataframe(file_TWD_Trond_Aalesund, datestamp_file_1)
 
-# Ålesund_floro
+    if routenumber == 110:
+        file_speed_Trond_Aalesund = mac_windows_file_handle(
+            "Output_files/Trondheim_Ålesund_iteration_10/savespeed_TrondAales.csv")
+        file_TWS_Trond_Aalesund = mac_windows_file_handle(
+            "Output_files/Trondheim_Ålesund_iteration_10/saveTWS_TrondAales.csv")
+        file_TWD_Trond_Aalesund = mac_windows_file_handle(
+            "Output_files/Trondheim_Ålesund_iteration_10/saveTWD_TrondAales.csv")
+        datestamp_file_21 = mac_windows_file_handle("Output_files/Datestamps/datestamp21.csv")
+        write_to_file(VS_simulation_vector, file_speed_Trond_Aalesund)  # VS vector file
+        write_to_file(TWS_simulation_vector, file_TWS_Trond_Aalesund)  # TWS vector file
+        write_to_file(TWD_simulation_vector, file_TWD_Trond_Aalesund)  # TWD vector file
+        write_to_file(datestamp_simulation_vector, datestamp_file_21)  # Datestamp file
+        add_timestamp_to_dataframe(file_speed_Trond_Aalesund, datestamp_file_21)
+        add_timestamp_to_dataframe(file_TWS_Trond_Aalesund, datestamp_file_21)
+        add_timestamp_to_dataframe(file_TWD_Trond_Aalesund, datestamp_file_21)
 
+    if routenumber == 1100:
+        file_speed_Trond_Aalesund = mac_windows_file_handle(
+            "Output_files/Trondheim_Ålesund_iteration_100/savespeed_TrondAales.csv")
+        file_TWS_Trond_Aalesund = mac_windows_file_handle(
+            "Output_files/Trondheim_Ålesund_iteration_100/saveTWS_TrondAales.csv")
+        file_TWD_Trond_Aalesund = mac_windows_file_handle(
+            "Output_files/Trondheim_Ålesund_iteration_100/saveTWD_TrondAales.csv")
+        datestamp_file_22 = mac_windows_file_handle("Output_files/Datestamps/datestamp22.csv")
+        write_to_file(VS_simulation_vector, file_speed_Trond_Aalesund)  # VS vector file
+        write_to_file(TWS_simulation_vector, file_TWS_Trond_Aalesund)  # TWS vector file
+        write_to_file(TWD_simulation_vector, file_TWD_Trond_Aalesund)  # TWD vector file
+        write_to_file(datestamp_simulation_vector, datestamp_file_22)  # Datestamp file
+        add_timestamp_to_dataframe(file_speed_Trond_Aalesund, datestamp_file_22)
+        add_timestamp_to_dataframe(file_TWS_Trond_Aalesund, datestamp_file_22)
+        add_timestamp_to_dataframe(file_TWD_Trond_Aalesund, datestamp_file_22)
+
+    if routenumber == 11000:
+        file_speed_Trond_Aalesund = mac_windows_file_handle(
+            "Output_files/Trondheim_Ålesund_iteration_1000/savespeed_TrondAales.csv")
+        file_TWS_Trond_Aalesund = mac_windows_file_handle(
+            "Output_files/Trondheim_Ålesund_iteration_1000/saveTWS_TrondAales.csv")
+        file_TWD_Trond_Aalesund = mac_windows_file_handle(
+            "Output_files/Trondheim_Ålesund_iteration_1000/saveTWD_TrondAales.csv")
+        datestamp_file_23 = mac_windows_file_handle("Output_files/Datestamps/datestamp23.csv")
+        write_to_file(VS_simulation_vector, file_speed_Trond_Aalesund)  # VS vector file
+        write_to_file(TWS_simulation_vector, file_TWS_Trond_Aalesund)  # TWS vector file
+        write_to_file(TWD_simulation_vector, file_TWD_Trond_Aalesund)  # TWD vector file
+        write_to_file(datestamp_simulation_vector, datestamp_file_23)  # Datestamp file
+        add_timestamp_to_dataframe(file_speed_Trond_Aalesund, datestamp_file_23)
+        add_timestamp_to_dataframe(file_TWS_Trond_Aalesund, datestamp_file_23)
+        add_timestamp_to_dataframe(file_TWD_Trond_Aalesund, datestamp_file_23)
+
+# Ålesund_floro
     elif routenumber == 2:
         file_speed_Aalesund_Floro = mac_windows_file_handle("Output_files/Ålesund_Florø/savespeed_AalesFloro.csv")
         file_TWS_Aalesund_Floro = mac_windows_file_handle("Output_files/Ålesund_Florø/saveTWS_AalesFloro.csv")
@@ -332,9 +364,7 @@ def simulation(csv,routenumber,interval):
         add_timestamp_to_dataframe(file_speed_Aalesund_Floro, datestamp_file_2)
         add_timestamp_to_dataframe(file_TWS_Aalesund_Floro, datestamp_file_2)
         add_timestamp_to_dataframe(file_TWD_Aalesund_Floro, datestamp_file_2)
-
 # Floro_bergen
-
     elif routenumber == 3:
         file_speed_Floro_Bergen = mac_windows_file_handle("Output_files/Florø_Bergen/savespeed_FloroBergen.csv")
         file_TWS_Floro_Bergen = mac_windows_file_handle("Output_files/Florø_Bergen/saveTWS_FloroBergen.csv")
@@ -347,7 +377,6 @@ def simulation(csv,routenumber,interval):
         add_timestamp_to_dataframe(file_speed_Floro_Bergen, datestamp_file_3)
         add_timestamp_to_dataframe(file_TWS_Floro_Bergen, datestamp_file_3)
         add_timestamp_to_dataframe(file_TWD_Floro_Bergen, datestamp_file_3)
-
 # Bergen_stavanger
     elif routenumber == 4:
         file_speed_Bergen_Stavanger = mac_windows_file_handle("Output_files/Bergen_Stavanger/savespeed_BrgStvg.csv")
@@ -363,7 +392,6 @@ def simulation(csv,routenumber,interval):
         add_timestamp_to_dataframe(file_TWS_Bergen_Stavanger, datestamp_file_4)
         add_timestamp_to_dataframe(file_TWD_Bergen_Stavanger, datestamp_file_4)
 # Aberdeen_Færøyene
-
     elif routenumber == 5:
         file_speed_Aber_Faer = mac_windows_file_handle("Output_files/Aberdeen_Færøyene/savespeed_Aberdeen_Færøyene.csv")
         file_TWS_Aber_Faer = mac_windows_file_handle("Output_files/Aberdeen_Færøyene/saveTWD_Aberdeen_Færøyene.csv")
@@ -378,7 +406,6 @@ def simulation(csv,routenumber,interval):
         add_timestamp_to_dataframe(file_TWS_Aber_Faer, datestamp_file_5)
         add_timestamp_to_dataframe(file_TWD_Aber_Faer, datestamp_file_5)
 # Amsterdam Newcastle
-
     elif routenumber == 6:
         file_speed_Amst_New = mac_windows_file_handle(
             "Output_files/Amsterdam_Newcastle/savespeed_Amsterdam_Newcastle.csv")
@@ -393,9 +420,7 @@ def simulation(csv,routenumber,interval):
         add_timestamp_to_dataframe(file_speed_Amst_New, datestamp_file_6)
         add_timestamp_to_dataframe(file_TWS_Amst_New, datestamp_file_6)
         add_timestamp_to_dataframe(file_TWD_Amst_New, datestamp_file_6)
-
 # Danmark Amsterdam
-
     elif routenumber == 7:
         file_speed_Dk_Amst = mac_windows_file_handle("Output_files/Danmark_Amsterdam/savespeed_Danmark_Amsterdam.csv")
         file_TWS_Dk_Amst = mac_windows_file_handle("Output_files/Danmark_Amsterdam/saveTWD_Danmark_Amsterdam.csv")
@@ -409,8 +434,7 @@ def simulation(csv,routenumber,interval):
         add_timestamp_to_dataframe(file_speed_Dk_Amst, datestamp_file_7)
         add_timestamp_to_dataframe(file_TWS_Dk_Amst, datestamp_file_7)
         add_timestamp_to_dataframe(file_TWD_Dk_Amst, datestamp_file_7)
-# Færøyene Ålesund
-
+# Færøyene Ålesund with battery
     elif routenumber == 8:
 
         file_speed_Faer_Aal = mac_windows_file_handle(
@@ -428,8 +452,22 @@ def simulation(csv,routenumber,interval):
         add_timestamp_to_dataframe(file_speed_Faer_Aal,datestamp_file_8)
         add_timestamp_to_dataframe(file_TWS_Faer_Aal,datestamp_file_8)
         add_timestamp_to_dataframe(file_TWD_Faer_Aal,datestamp_file_8)
-# Newcastle Aberdeen
+#Faraoe Ålesund Return
+    elif routenumber == 81:
 
+        file_speed_Faer_Aal_return = mac_windows_file_handle("Output_files/Færøyene_Ålesund_return/savespeed_Færøyene_Ålesund_return.csv")
+        #file_TWS_Faer_Aal_return = mac_windows_file_handle("Output_files/Færøyene_Ålesund_return/saveTWS_Færøyene_Ålesund_return.csv")
+        #file_TWD_Faer_Aal_return = mac_windows_file_handle("Output_files/Færøyene_Ålesund_return/saveTWD_Færøyene_Ålesund_return.csv")
+        datestamp_file_8 = mac_windows_file_handle("Output_files/Datestamps/datestamp8.csv")
+
+        write_to_file(VS_simulation_vector,file_speed_Faer_Aal_return) #VS vector file
+        #write_to_file(TWS_simulation_vector,file_TWS_Faer_Aal_return)  #TWS vector file
+        #write_to_file(TWD_simulation_vector,file_TWD_Faer_Aal_return)  #TWD vector file
+        write_to_file(datestamp_simulation_vector, datestamp_file_8)         #Datestamp file
+        add_timestamp_to_dataframe(file_speed_Faer_Aal_return,datestamp_file_8)
+        #add_timestamp_to_dataframe(file_TWS_Faer_Aal_return,datestamp_file_8)
+        #add_timestamp_to_dataframe(file_TWD_Faer_Aal_return,datestamp_file_8)
+# Newcastle Aberdeen
     elif routenumber == 9:
 
         file_speed_New_Aber = mac_windows_file_handle("Output_files/Newcastle_Aberdeen/SS_Newcastle_Aberdeen.csv")
@@ -445,7 +483,6 @@ def simulation(csv,routenumber,interval):
         add_timestamp_to_dataframe(file_TWS_New_Aber, datestamp_file_9)
         add_timestamp_to_dataframe(file_TWD_New_Aber, datestamp_file_9)
 # Ålesund Danmark
-
     elif routenumber == 10:
 
 
@@ -481,7 +518,7 @@ def simulation(csv,routenumber,interval):
     elif routenumber == 12:
 
         file_speed_Poor = mac_windows_file_handle("Output_files/Poor_Route/savespeed_Poor_Route.csv")
-        file_TWS_Poor = mac_windows_file_handle("Output_files/Floro_port/saveTWS_Poor_Route.csv")
+        file_TWS_Poor = mac_windows_file_handle("Output_files/Poor_Route/saveTWS_Poor_Route.csv")
         file_TWD_Poor = mac_windows_file_handle("Output_files/Poor_Route/saveTWD_Poor_Route.csv")
         file_battery  = mac_windows_file_handle("Output_files/Poor_Route/Battery_use.csv")
         datestamp_file_12 = mac_windows_file_handle("Output_files/Datestamps/datestamp12.csv")
@@ -489,13 +526,12 @@ def simulation(csv,routenumber,interval):
         write_to_file(VS_simulation_vector, file_speed_Poor)  # VS vector file
         write_to_file(TWS_simulation_vector, file_TWS_Poor)  # TWS vector file
         write_to_file(TWD_simulation_vector, file_TWD_Poor)  # TWD vector file
-        write_to_file(total_battery_needed,file_battery)
+        write_to_file(Batteryneed_simulation_Vector,file_battery)
         write_to_file(datestamp_simulation_vector, datestamp_file_12)  # Datestamp file
         add_timestamp_to_dataframe(file_speed_Poor, datestamp_file_12)
         add_timestamp_to_dataframe(file_TWS_Poor, datestamp_file_12)
         add_timestamp_to_dataframe(file_TWD_Poor, datestamp_file_12)
         add_timestamp_to_dataframe(file_battery,datestamp_file_12)
-
 # Good route
     elif routenumber == 13:
         file_speed_Fav = mac_windows_file_handle("Output_files/Good_Route/savespeed_Good_Route.csv")
@@ -507,49 +543,71 @@ def simulation(csv,routenumber,interval):
         write_to_file(TWS_simulation_vector, file_TWS_Fav)  # TWS vector file
         write_to_file(TWD_simulation_vector, file_TWD_Fav)  # TWD vector file
         write_to_file(datestamp_simulation_vector, datestamp_file_13)  # Datestamp file
-        write_to_file(total_battery_needed,file_battery)
+        write_to_file(Batteryneed_simulation_Vector,file_battery)
         add_timestamp_to_dataframe(file_speed_Fav, datestamp_file_13)
         add_timestamp_to_dataframe(file_TWS_Fav, datestamp_file_13)
         add_timestamp_to_dataframe(file_TWD_Fav, datestamp_file_13)
         add_timestamp_to_dataframe(file_battery,datestamp_file_13)
-
 # Good route with Kite
 # Set forcefunction to 1.4
     elif routenumber == 14:
-        file_speed_Fav = mac_windows_file_handle("Output_files/Good_Route_With_Kite/savespeed_Good_Route.csv")
-        file_TWS_Fav = mac_windows_file_handle("Output_files/Good_Route_With_Kite/saveTWS_Good_Route.csv")
-        file_TWD_Fav = mac_windows_file_handle("Output_files/Good_Route_With_Kite/saveTWD_Good_Route.csv")
-        file_battery = mac_windows_file_handle("Output_files/Good_Route_With_Kite/Battery_use.csv")
+        file_speed_Fav = mac_windows_file_handle("Output_files/Færøyene_Ålesund_With_Kite/savespeed_Good_Route.csv")
+        file_TWS_Fav = mac_windows_file_handle("Output_files/Færøyene_Ålesund_With_Kite/saveTWS_Good_Route.csv")
+        file_TWD_Fav = mac_windows_file_handle("Output_files/Færøyene_Ålesund_With_Kite/saveTWD_Good_Route.csv")
+        file_battery = mac_windows_file_handle("Output_files/Færøyene_Ålesund_With_Kite/Battery_use.csv")
         datestamp_file_14 = mac_windows_file_handle("Output_files/Datestamps/datestamp14.csv")
         write_to_file(VS_simulation_vector, file_speed_Fav)  # VS vector file
         write_to_file(TWS_simulation_vector, file_TWS_Fav)  # TWS vector file
         write_to_file(TWD_simulation_vector, file_TWD_Fav)  # TWD vector file
         write_to_file(datestamp_simulation_vector, datestamp_file_14)  # Datestamp file
-        write_to_file(total_battery_needed,file_battery)
+        write_to_file(Batteryneed_simulation_Vector,file_battery)
         add_timestamp_to_dataframe(file_speed_Fav, datestamp_file_14)
         add_timestamp_to_dataframe(file_TWS_Fav, datestamp_file_14)
         add_timestamp_to_dataframe(file_TWD_Fav, datestamp_file_14)
         add_timestamp_to_dataframe(file_battery,datestamp_file_14)
-
-# Good Route with Battery
+# Færøyene with Battery
 # Set batteryfunction on
     elif routenumber == 15:
-        file_speed_Fav = mac_windows_file_handle("Output_files/Good_Route_With_Battery/savespeed_Good_Route.csv")
-        file_TWS_Fav = mac_windows_file_handle("Output_files/Good_Route_With_Battery/saveTWS_Good_Route.csv")
-        file_TWD_Fav = mac_windows_file_handle("Output_files/Good_Route_With_Battery/saveTWD_Good_Route.csv")
-        file_battery = mac_windows_file_handle("Output_files/Good_Route_With_Battery/Battery_use.csv")
+        file_speed_Fav = mac_windows_file_handle("Output_files/Færøyene_Ålesund_With_Battery/savespeed_Good_Route.csv")
+        file_TWS_Fav = mac_windows_file_handle("Output_files/Færøyene_Ålesund_With_Battery/saveTWS_Good_Route.csv")
+        file_TWD_Fav = mac_windows_file_handle("Output_files/Færøyene_Ålesund_With_Battery/saveTWD_Good_Route.csv")
+        file_battery = mac_windows_file_handle("Output_files/Færøyene_Ålesund_With_Battery/Battery_use.csv")
         datestamp_file_15 = mac_windows_file_handle("Output_files/Datestamps/datestamp15.csv")
         write_to_file(VS_simulation_vector, file_speed_Fav)  # VS vector file
         write_to_file(TWS_simulation_vector, file_TWS_Fav)  # TWS vector file
         write_to_file(TWD_simulation_vector, file_TWD_Fav)  # TWD vector file
         write_to_file(datestamp_simulation_vector, datestamp_file_15)  # Datestamp file
-        write_to_file(total_battery_needed,file_battery)
+        write_to_file(battery_use_iteration_vect,file_battery)
         add_timestamp_to_dataframe(file_speed_Fav, datestamp_file_15)
         add_timestamp_to_dataframe(file_TWS_Fav, datestamp_file_15)
         add_timestamp_to_dataframe(file_TWD_Fav, datestamp_file_15)
         add_timestamp_to_dataframe(file_battery,datestamp_file_15)
 
-# Good Route With Newbuild:
+    elif routenumber == 151:
+        file_speed_Fav = mac_windows_file_handle("Output_files/Færøyene_Ålesund_Newbuild/savespeed_Færøyene_Ålesund.csv")
+        file_battery = mac_windows_file_handle("Output_files/Færøyene_Ålesund_With_Battery/Battery_use.csv")
+        datestamp_file_18 = mac_windows_file_handle("Output_files/Datestamps/datestamp18.csv")
+        write_to_file(VS_simulation_vector, file_speed_Fav)  # VS vector file
+        write_to_file(datestamp_simulation_vector, datestamp_file_18)  # Datestamp file
+        write_to_file(Batteryneed_simulation_Vector, file_battery)
+        add_timestamp_to_dataframe(file_speed_Fav, datestamp_file_18)
+        add_timestamp_to_dataframe(file_battery, datestamp_file_18)
+
+# Færøyene with Battery and newbuild
+# Set batteryfunction and newbuild
+    elif routenumber == 152:
+        file_speed_Fav = mac_windows_file_handle("Output_files/Færøyene_Ålesund_Newbuild_Battery/savespeed_Good_Route.csv")
+        file_battery = mac_windows_file_handle("Output_files/Færøyene_Ålesund_Newbuild_Battery/Battery_use.csv")
+        datestamp_file_20 = mac_windows_file_handle("Output_files/Datestamps/datestamp20.csv")
+
+        write_to_file(datestamp_simulation_vector, datestamp_file_20)  # Datestamp file
+        write_to_file(VS_simulation_vector, file_speed_Fav)  # VS vector file
+        write_to_file(Batteryneed_simulation_Vector, file_battery)
+
+        add_timestamp_to_dataframe(file_speed_Fav, datestamp_file_20)
+        add_timestamp_to_dataframe(file_battery, datestamp_file_20)
+
+    # Good Route With Newbuild:
 # Set Forcefunction to 2.5
     elif routenumber == 16:
         file_speed_Fav = mac_windows_file_handle("Output_files/Good_Route_Newbuild/savespeed_Good_Route.csv")
@@ -561,7 +619,7 @@ def simulation(csv,routenumber,interval):
         write_to_file(TWS_simulation_vector, file_TWS_Fav)  # TWS vector file
         write_to_file(TWD_simulation_vector, file_TWD_Fav)  # TWD vector file
         write_to_file(datestamp_simulation_vector, datestamp_file_16)  # Datestamp file
-        write_to_file(total_battery_needed, file_battery)
+        write_to_file(Batteryneed_simulation_Vector, file_battery)
         add_timestamp_to_dataframe(file_speed_Fav, datestamp_file_16)
         add_timestamp_to_dataframe(file_TWS_Fav, datestamp_file_16)
         add_timestamp_to_dataframe(file_TWD_Fav, datestamp_file_16)
@@ -579,12 +637,18 @@ def simulation(csv,routenumber,interval):
         write_to_file(TWS_simulation_vector, file_TWS_Fav)  # TWS vector file
         write_to_file(TWD_simulation_vector, file_TWD_Fav)  # TWD vector file
         write_to_file(datestamp_simulation_vector, datestamp_file_17)  # Datestamp file
-        write_to_file(total_battery_needed, file_battery)
+        write_to_file(Batteryneed_simulation_Vector, file_battery)
         add_timestamp_to_dataframe(file_speed_Fav, datestamp_file_17)
         add_timestamp_to_dataframe(file_TWS_Fav, datestamp_file_17)
         add_timestamp_to_dataframe(file_TWD_Fav, datestamp_file_17)
         add_timestamp_to_dataframe(file_battery, datestamp_file_17)
-
+#Newcastle Ålesund
+    elif routenumber == 18:
+        file_speed_Fav = mac_windows_file_handle("Output_files/Newcastle_Ålesund/SS_Newcastle_Ålesund.csv")
+        datestamp_file_17 = mac_windows_file_handle("Output_files/Datestamps/datestampNew.csv")
+        write_to_file(VS_simulation_vector, file_speed_Fav)  # VS vector file
+        write_to_file(datestamp_simulation_vector, datestamp_file_17)  # Datestamp file
+        add_timestamp_to_dataframe(file_speed_Fav, datestamp_file_17)
 
     return 0
 
@@ -609,10 +673,24 @@ def runsimulation(route, interval):
 
     if route == 1:
         Trond_aalesund = mac_windows_file_handle("Route_data/Trondheim_Ålesund_Route/Route_Trond_Aales.csv")
-
         print("Running simulation for route Trondheim Aalesund now")
         simulation(Trond_aalesund,route,interval)
         print("Simulation Trondheim to Ålesund is now complete.\n")
+    if route == 110:
+        Trond_aalesund = mac_windows_file_handle("Route_data/Trondheim_Ålesund_Route/Route_Trond_Aales.csv")
+        print("Running simulation for route Trondheim Aalesund now 10")
+        simulation(Trond_aalesund,route,interval)
+        print("Simulation Trondheim to Ålesund is now complete. 10 \n")
+    if route == 1100:
+        Trond_aalesund = mac_windows_file_handle("Route_data/Trondheim_Ålesund_Route/Route_Trond_Aales.csv")
+        print("Running simulation for route Trondheim Aalesund now 100")
+        simulation(Trond_aalesund,route,interval)
+        print("Simulation Trondheim to Ålesund is now complete. 100\n")
+    if route == 11000:
+        Trond_aalesund = mac_windows_file_handle("Route_data/Trondheim_Ålesund_Route/Route_Trond_Aales.csv")
+        print("Running simulation for route Trondheim Aalesund now 1000")
+        simulation(Trond_aalesund,route,interval)
+        print("Simulation Trondheim to Ålesund is now complete. 1000 \n")
     if route == 2:
         Aalesund_Floro      = mac_windows_file_handle("Route_data/Ålsund_Florø_Rute/Route_Ålesund_Florø.csv")
         print("Running simulation for route Ålesund Florø now")
@@ -644,12 +722,17 @@ def runsimulation(route, interval):
         simulation(DK_Amst, route,interval)
         print("Simulation Danmark to Amsterdam is now complete.\n")
     if route == 8:
-        Faer_Aale           = mac_windows_file_handle("Route_data/Ålesund_Færøyene_Route/Route_Ålesund_Færøyene.csv")
+        Faer_Aale        = mac_windows_file_handle("Route_data/Færøyene_Ålesund_Route/Route_Færøyene_Ålesund.csv")
         print("Running simulation for route Færøyene_Ålesund now")
         simulation(Faer_Aale, route,interval)
         print("Simulation Færøyene to Ålesund is now complete.\n")
+    if route == 81:
+        Faer_Aale_return = mac_windows_file_handle("Route_data/Færøyene_Ålesund_Return_Route/Route_Færøyene_Ålesund_retur.csv")
+        print("Running simulation for route Færøyene_Ålesund Return now")
+        simulation(Faer_Aale_return, route, interval)
+        print("Simulation Færøyene to Ålesund REturn is now complete.\n")
     if route == 9:
-        New_Aber            = mac_windows_file_handle("Route_data/Newcastle_Aberdeen_Route/Route_Newcastle_Aberdeen.csv")
+        New_Aber            = mac_windows_file_handle("Route_data/Newcastle_Aberdeen_Route/Route_Newcastle_Ålesund.csv")
         print("Running simulation for route Newcastle_Aberdeen now")
         simulation(New_Aber, route,interval)
         print("Simulation Newcastle to Aberdeen is now complete.\n")
@@ -675,34 +758,47 @@ def runsimulation(route, interval):
         print("Running simulation for Good route now")
         simulation(Good_route, route, interval)
         print("Simulation for Good route is now complete")
-
-# Good route with Kite
+# Færøyene Ålesund  with Kite
     if route == 14:
-        Kite   = mac_windows_file_handle("Route_data/Good_Route/Good_route.csv")
-        print("Running simulation for Kite now")
+        Kite   = mac_windows_file_handle("Route_data/Færøyene_Ålesund_Route/Route_Færøyene_Ålesund.csv")
+        print("Running simulation Ålesund - Færøyene with Kite now")
         simulation(Kite, route, interval)
         print("Simulation for Kite is now complete")
-
-# Good Route With Battery
+# Færøyene Ålesund Route With Battery
     if route == 15:
-        Battery    = mac_windows_file_handle("Route_data/Good_Route/Good_route.csv")
+        Battery_route    = mac_windows_file_handle("Route_data/Færøyene_Ålesund_Route/Route_Færøyene_Ålesund.csv")
         print("Running simulation for Battery now")
-        simulation(Battery, route, interval)
+        simulation(Battery_route, route, interval)
         print("Simulation for Battery is now complete")
-
+# Færøyene Ålesund Route With Newbuild
+    if route == 151:
+        Fær_åles_New = mac_windows_file_handle("Route_data/Færøyene_Ålesund_Route/Route_Færøyene_Ålesund.csv")
+        print("Running simulation for Battery now")
+        simulation(Fær_åles_New, route, interval)
+        print("Simulation for Battery is now complete")
+# Færøyene Ålesund Route With Newbuild
+    if route == 152:
+        Fær_Åles_with_Bat = mac_windows_file_handle("Route_data/Færøyene_Ålesund_Route/Route_Færøyene_Ålesund.csv")
+        print("Running simulation for Battery now")
+        simulation(Fær_Åles_with_Bat, route, interval)
+        print("Simulation for Battery is now complete")
 # Good Route With Newbuild
     if route == 16:
         Newbuild = mac_windows_file_handle("Route_data/Good_Route/Good_route.csv")
         print("Running simulation for Newbuild now")
         simulation(Newbuild, route, interval)
         print("Simulation for Newbuild is now complete")
-
 # Good Route With Flettner, Kite and Battery and Newbuild
     if route == 17:
         Flettner_kite_battery_Newbuild    = mac_windows_file_handle("Route_data/Good_Route/Good_route.csv")
         print("Running simulation for Everything now")
         simulation(Flettner_kite_battery_Newbuild, route, interval)
         print("Simulation for Everythin is now complete")
+    if route == 18:
+        Newcastle_Åles = mac_windows_file_handle("Route_data/Newcastle_Ålesund_Route/Route_Newcastle_Ålesund.csv")
+        print("Running simulation for Newcastle to ålesund now")
+        simulation(Newcastle_Åles, route, interval)
+        print("Simulation for Newcastle to Ålesund is now complete")
     return 0
 
 
@@ -715,34 +811,37 @@ def runsimulation(route, interval):
 
 #reset_index()
 steps = 10
-print(f"Everything is working 1241, 16/03 "
-      f"running simulation with steps {steps}")
-#runsimulation(1,steps)
+print(f"Everything is working 1241, 16/03 running simulation with steps {steps}")
+#runsimulation(1,1)
+#runsimulation(110,10)
+#runsimulation(1100,100)
+#runsimulation(11000,1000)
 #runsimulation(2,steps)
 #runsimulation(3,steps)
 #runsimulation(4,steps)
 #runsimulation(5,steps)
 #runsimulation(6,steps)
 #runsimulation(7,steps)
-#runsimulation(8,steps)
+#runsimulation(8,steps) # Færøyene to Ålesund
+#runsimulation(81,steps) # Færøyene to Ålesund Return
 #runsimulation(9,steps)
 #runsimulation(10,steps)
 #runsimulation(11,steps)
-runsimulation(12,steps) #normal bad route planning
-runsimulation(13,steps) #normal good route planning
-#runsimulation(14,steps) #Kite, cahnge to 1.4 force
-#runsimulation(15,steps) #Battery, Turn on battery function
+
+#runsimulation(12,steps) #normal bad route planning
+
+#runsimulation(15,steps) # Færøyene Ålesund battery
 #runsimulation(16,steps) #Newbuild, change to 2.5 force
-#runsimulation(17,steps) #Everything, change to 3.5 force with battery
+#runsimulation(13,steps) #normal good route planning
+#runsimulation(151,steps) # Fær åles newbuild
+#runsimulation(152,steps) #Fær åles newbuild with battery
+#runsimulation(17,10)
+#runsimulation(18,10)
 
 
-
-
-
-
-
-
+timeend = datetime.now()
 print("Finished <3<3")
 print("Bonus print: Mathias er digg, kl. 1501, den 28/04/2023")
+print(f"time used is {timeend-timestart}")
 
 
