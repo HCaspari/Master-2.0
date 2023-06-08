@@ -1,5 +1,5 @@
 # Master-2.0
-Master thesis of Mathias Haugbråthen and Håkon Caspari
+Master thesis of Mathias Haugbråten and Håkon Caspari
 
 The code added in the Functions folder provides all code that is needed to create and run simulations that this thesis builds upon. 
 To be able to fully utilize the program, weather data in nc.files must be utilized and the data from them extracted using functions
